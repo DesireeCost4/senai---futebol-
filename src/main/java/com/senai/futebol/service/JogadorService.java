@@ -5,6 +5,8 @@ import com.senai.futebol.repository.JogadorRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,7 +19,30 @@ public class JogadorService {
     }
 
     public JogadorModel salvarJogador(JogadorModel jogador) {
+
         int overall = calcularOverall(jogador);
+
+        int velocidade = jogador.getVelocidade() != null ? jogador.getVelocidade() : 0;
+        int finalizacao = jogador.getFinalizacao() != null ? jogador.getFinalizacao() : 0;
+        int passe = jogador.getPasse() != null ? jogador.getPasse() : 0;
+        int drible = jogador.getDrible() != null ? jogador.getDrible() : 0;
+        int defesa = jogador.getDefesa() != null ? jogador.getDefesa() : 0;
+        int fisico = jogador.getFisico() != null ? jogador.getFisico() : 0;
+        int potencial = jogador.getPotencial() != null ? jogador.getPotencial() : 0;
+
+        // Validação da soma dos atributos
+
+        int somaAtributos = velocidade + finalizacao + passe + drible + defesa + fisico;
+        if (somaAtributos > 480) {
+            throw new IllegalArgumentException("A soma dos 6 atributos técnicos não pode ultrapassar 480.");
+        }
+
+        //Regra potencial não pode ser menor que o maior dos atributos
+
+        int maiorAtributo = Math.max(Math.max(Math.max(velocidade, finalizacao), Math.max(passe, drible)), Math.max(defesa, fisico));
+        if (potencial < maiorAtributo) {
+            throw new IllegalArgumentException("O potencial não pode ser menor que o maior dos 6 atributos.");
+        }
 
         //cálculo da média geral
         BigDecimal valorBase = calcularValorBase(overall, jogador.getIdade(), jogador.getPotencial());
@@ -27,9 +52,19 @@ public class JogadorService {
             jogador.setCondicao("APTO");
         }
 
+        // garantindo que não está null e evitando problema 500 no post
+        Instant agora = Instant.now();
+        if (jogador.getCriadoEm() == null) {
+            jogador.setCriadoEm(agora);
+        }
+        jogador.setAtualizadoEm(agora);
+        jogador.setAtualizadoEm(Instant.now());
+
         //1- salvar jogador
         return repository.save(jogador);
     }
+
+
 
     public int calcularOverall(JogadorModel jogador) {
 
@@ -180,4 +215,6 @@ public class JogadorService {
         jogador.setCondicao(novaCondicao);
         return repository.save(jogador);
     }
+
+
 }
