@@ -40,5 +40,16 @@ public class JogadorController {
         return ResponseEntity.ok(jogador);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Integer id){
+        boolean sucesso = jogadorService.excluirJogador(id);
+        if (!sucesso) {
+            return ResponseEntity.notFound().build();
+        }
+
+        //aqui garante o retorno 204 conforme regra 09
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

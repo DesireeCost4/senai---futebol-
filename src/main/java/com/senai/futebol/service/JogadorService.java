@@ -217,4 +217,21 @@ public class JogadorService {
     }
 
 
+    public boolean excluirJogador(Integer id) {
+
+        JogadorModel jogador = buscarPoId(id);
+        if (jogador == null) {
+            return false;
+        }
+
+        //Regra pendente com relação ao time, irei implementar em breve quando o modulo clubes subir.
+
+        jogador.setExcluidoEm(Instant.now());
+        jogador.setAtualizadoEm(Instant.now());
+        repository.save(jogador);
+        return true;
+
+
+    };
+
 }
