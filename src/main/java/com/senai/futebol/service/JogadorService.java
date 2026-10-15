@@ -5,42 +5,38 @@ import com.senai.futebol.repository.JogadorRepository;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
+import java.util.List;
 
 @Service
 public class JogadorService {
 
-    private JogadorRepository repository;
+    private final JogadorRepository repository;
 
-    private JogadorService (JogadorRepository repository) {
+    private JogadorService(JogadorRepository repository) {
         this.repository = repository;
     }
 
-    public JogadorModel salvarJogador(JogadorModel jogador){
-
+    public JogadorModel salvarJogador(JogadorModel jogador) {
         int overall = calcularOverall(jogador);
 
-        //2. média overall
-
+        //cálculo da média geral
         BigDecimal valorBase = calcularValorBase(overall, jogador.getIdade(), jogador.getPotencial());
         jogador.setValorBase(valorBase);
 
-        if  (jogador.getCondicao() == null){
+        if (jogador.getCondicao() == null) {
             jogador.setCondicao("APTO");
         }
 
-        //1. cadastro jogador
+        //1- salvar jogador
         return repository.save(jogador);
-
-    };
-
+    }
 
     public int calcularOverall(JogadorModel jogador) {
 
+        //1 - definindo pesos personalizados para categorias
         int pesoVelocidade = 0, pesoFinalizacao = 0, pesoPasse = 0;
         int pesoDrible = 0, pesoDefesa = 0, pesoFisico = 0;
 
-        // 1 definir pesos conforme a posição
         if (jogador.getPosicao() != null) {
             switch (jogador.getPosicao().toUpperCase()) {
                 case "GOL":
@@ -61,7 +57,6 @@ public class JogadorService {
             }
         }
 
-        // Soma dos atributos
         int somaProdutos = (jogador.getVelocidade() * pesoVelocidade) +
                 (jogador.getFinalizacao() * pesoFinalizacao) +
                 (jogador.getPasse() * pesoPasse) +
@@ -69,7 +64,7 @@ public class JogadorService {
                 (jogador.getDefesa() * pesoDefesa) +
                 (jogador.getFisico() * pesoFisico);
 
-        // Divisão por 100 e arredondamento para o inteiro mais próximo acima.
+        // 3- arredondamento para decimal positivo
         double media = somaProdutos / 100.0;
         return (int) Math.round(media);
     }
@@ -77,7 +72,6 @@ public class JogadorService {
     public BigDecimal calcularValorBase(int overall, int idade, int potencial) {
         double parteOverall = 0.0;
 
-        // Parte do Overall progressiva
         if (overall > 40 && overall <= 60) {
             parteOverall = (overall - 40) * 0.50;
         } else if (overall > 60 && overall <= 75) {
@@ -86,12 +80,10 @@ public class JogadorService {
             parteOverall = (20 * 0.50) + (15 * 2.00) + ((overall - 75) * 6.00);
         }
 
-        // Bónus de Jovem Promessa (idade <= 21 anos)
         if (idade <= 21) {
             parteOverall = parteOverall * ((100.0 + potencial - overall) / 100.0);
         }
 
-        // Arredondamento para 2 casas decimais (HALF_UP) e aplicação do piso de 1.00
         BigDecimal valorFinal = BigDecimal.valueOf(parteOverall).setScale(2, RoundingMode.HALF_UP);
 
         if (valorFinal.compareTo(BigDecimal.ONE) < 0) {
@@ -104,7 +96,6 @@ public class JogadorService {
     public BigDecimal calcularValorDeMercado(JogadorModel jogador) {
         double valorBase = jogador.getValorBase() != null ? jogador.getValorBase().doubleValue() : 0.0;
 
-        // 1. desconto por condição física
         double descontoCondicao = 0.0;
         String condicao = jogador.getCondicao() != null ? jogador.getCondicao() : "APTO";
 
@@ -114,38 +105,32 @@ public class JogadorService {
             descontoCondicao = 30.0;
         }
 
-        // 2. efeito da agilidade - apenas se estiver != de apto
         int agilidade = jogador.getAgilidade();
         if (!condicao.equals("APTO")) {
             if (agilidade >= 80 && agilidade <= 100) {
-                descontoCondicao = descontoCondicao / 2.0; // cai pela metade
+                descontoCondicao = descontoCondicao / 2.0;
             } else if (agilidade >= 1 && agilidade <= 30) {
-                descontoCondicao = descontoCondicao + 10.0; // aumenta 10 pontos
+                descontoCondicao = descontoCondicao + 10.0;
             }
         }
 
-        // 3. Ajuste por idade -RN04-
         double ajusteIdade = 0.0;
         int idade = jogador.getIdade();
         if (idade <= 21) {
-            ajusteIdade = 10.0; // jovem promessa +10%
+            ajusteIdade = 10.0;
         } else if (idade >= 32) {
-            ajusteIdade = -10.0; // veterano -10%
+            ajusteIdade = -10.0;
         }
 
-        // 4. Percentual total = ajuste por idade - desconto por condição
         double percentualTotal = ajusteIdade - descontoCondicao;
 
-        // 5. Teto do desconto (-40%)
         if (percentualTotal < -40.0) {
             percentualTotal = -40.0;
         }
 
-        // 6. Valor de mercado = valor base * (100 + percentualTotal) / 100
         double valorMercado = valorBase * (100.0 + percentualTotal) / 100.0;
 
-        // 7. Piso de 1.00
-        BigDecimal resultado = BigDecimal.valueOf(valorMercado).setScale(2, java.math.RoundingMode.HALF_UP);
+        BigDecimal resultado = BigDecimal.valueOf(valorMercado).setScale(2, RoundingMode.HALF_UP);
         if (resultado.compareTo(BigDecimal.ONE) < 0) {
             return BigDecimal.ONE.setScale(2);
         }
@@ -153,9 +138,46 @@ public class JogadorService {
         return resultado;
     }
 
-
     public JogadorModel buscarPoId(Integer id) {
         return repository.findById(id).orElse(null);
     }
 
+    public List<JogadorModel> listarTodosJogadores() {
+        return repository.findAll();
+    }
+
+    public JogadorModel atualizarJogador(Integer id, JogadorModel dadosAtualizados) {
+        JogadorModel jogador = buscarPoId(id);
+        if (jogador == null) {
+            return null;
+        }
+
+        if (dadosAtualizados.getIdade() < jogador.getIdade()) {
+            throw new IllegalArgumentException("A nova idade não pode ser menor que a idade atual.");
+        }
+
+        jogador.setNome(dadosAtualizados.getNome());
+        jogador.setPosicao(dadosAtualizados.getPosicao());
+        jogador.setAgilidade(dadosAtualizados.getAgilidade());
+        jogador.setIdade(dadosAtualizados.getIdade());
+
+        return repository.save(jogador);
+    }
+
+    public JogadorModel alterarCondicao(Integer id, String novaCondicao) {
+        JogadorModel jogador = buscarPoId(id);
+        if (jogador == null) {
+            return null;
+        }
+
+        String condicaoAtual = jogador.getCondicao() != null ? jogador.getCondicao() : "APTO";
+
+        //validacao:
+        if (condicaoAtual.equals("DOENTE") && novaCondicao.equals("APTO")) {
+            throw new IllegalArgumentException("Um jogador doente não pode ir diretamente para apto.");
+        }
+
+        jogador.setCondicao(novaCondicao);
+        return repository.save(jogador);
+    }
 }

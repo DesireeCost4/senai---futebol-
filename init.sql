@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS clubes (
     caixa DECIMAL(10,2) NOT NULL DEFAULT 300.00,
     formacao VARCHAR(5),
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-    );
+);
 
 CREATE TABLE IF NOT EXISTS jogadores (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,20 +27,20 @@ CREATE TABLE IF NOT EXISTS jogadores (
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (clube_id) REFERENCES clubes(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS contratos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    jogador_id INT NOT NULL,
-    clube_id INT NOT NULL,
-    valor_compra DECIMAL(6,2) NOT NULL,
-    fidelidade_ate TIMESTAMP NOT NULL,
-    situacao VARCHAR(12) NOT NULL DEFAULT 'ATIVO',
-    iniciado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    encerrado_em TIMESTAMP NULL,
-    FOREIGN KEY (jogador_id) REFERENCES jogadores(id),
-    FOREIGN KEY (clube_id) REFERENCES clubes(id)
-    );
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        jogador_id INT NOT NULL,
+        clube_id INT NOT NULL,
+        valor_compra DECIMAL(6,2) NOT NULL,
+        fidelidade_ate TIMESTAMP NOT NULL,
+        situacao VARCHAR(12) NOT NULL DEFAULT 'ATIVO',
+        iniciado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        encerrado_em TIMESTAMP NULL,
+        FOREIGN KEY (jogador_id) REFERENCES jogadores(id),
+        FOREIGN KEY (clube_id) REFERENCES clubes(id)
+);
 
 CREATE TABLE IF NOT EXISTS transacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,16 +56,16 @@ CREATE TABLE IF NOT EXISTS transacoes (
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (clube_id) REFERENCES clubes(id),
     FOREIGN KEY (jogador_id) REFERENCES jogadores(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS escalacoes (
-   clube_id INT NOT NULL,
+    clube_id INT NOT NULL,
     jogador_id INT NOT NULL UNIQUE,
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (clube_id, jogador_id),
     FOREIGN KEY (clube_id) REFERENCES clubes(id),
     FOREIGN KEY (jogador_id) REFERENCES jogadores(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS partidas (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -78,16 +78,16 @@ CREATE TABLE IF NOT EXISTS partidas (
     jogada_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (mandante_id) REFERENCES clubes(id),
     FOREIGN KEY (visitante_id) REFERENCES clubes(id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS duelos_partida (
-     id INT AUTO_INCREMENT PRIMARY KEY,
-     partida_id INT NOT NULL,
-     ordem INT NOT NULL,
-     clube_atacante_id INT NOT NULL,
-     atacante_id INT NOT NULL,
-     defensor_id INT NOT NULL,
-     nome_atacante VARCHAR(100) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    partida_id INT NOT NULL,
+    ordem INT NOT NULL,
+    clube_atacante_id INT NOT NULL,
+    atacante_id INT NOT NULL,
+    defensor_id INT NOT NULL,
+    nome_atacante VARCHAR(100) NOT NULL,
     nome_defensor VARCHAR(100) NOT NULL,
     posicao_atacante VARCHAR(3) NOT NULL,
     posicao_defensor VARCHAR(3) NOT NULL,
@@ -102,4 +102,4 @@ CREATE TABLE IF NOT EXISTS duelos_partida (
     FOREIGN KEY (clube_atacante_id) REFERENCES clubes(id),
     FOREIGN KEY (atacante_id) REFERENCES jogadores(id),
     FOREIGN KEY (defensor_id) REFERENCES jogadores(id)
-    );
+);

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/players")
 public class JogadorController {
@@ -14,6 +16,12 @@ public class JogadorController {
 
     public JogadorController(JogadorService jogadorService) {
         this.jogadorService = jogadorService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<JogadorModel>> listarJogadores() {
+        List<JogadorModel> jogadores = jogadorService.listarTodosJogadores();
+        return ResponseEntity.ok(jogadores);
     }
 
     @PostMapping
@@ -31,4 +39,6 @@ public class JogadorController {
 
         return ResponseEntity.ok(jogador);
     }
+
+
 }
