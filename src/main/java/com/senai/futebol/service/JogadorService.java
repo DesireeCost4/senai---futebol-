@@ -2,6 +2,8 @@ package com.senai.futebol.service;
 
 import com.senai.futebol.model.JogadorModel;
 import com.senai.futebol.repository.JogadorRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -226,4 +228,9 @@ public class JogadorService {
         repository.save(jogador);
         return true;
     }
+
+    public Page<JogadorModel> listarComFiltros(String search, String posicao, String condicao, Pageable pageable) {
+        return repository.filtrarJogadores(search, posicao, condicao, pageable);
+    }
+
 }
