@@ -51,5 +51,30 @@ public class JogadorController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<JogadorModel> atualizar(
+            @PathVariable Integer id,
+            @RequestBody JogadorModel dadosAtualizados) {
+
+        JogadorModel atualizado = jogadorService.atualizarJogador(id, dadosAtualizados);
+        if (atualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}/condicao")
+    public ResponseEntity<JogadorModel> alterarCondicao(
+            @PathVariable Integer id,
+            @RequestBody java.util.Map<String, String> body) {
+
+        String novaCondicao = body.get("condition");
+        JogadorModel atualizado = jogadorService.alterarCondicao(id, novaCondicao);
+        if (atualizado == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(atualizado);
+    }
+
 
 }

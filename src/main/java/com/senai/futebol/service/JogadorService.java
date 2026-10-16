@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -14,7 +13,7 @@ public class JogadorService {
 
     private final JogadorRepository repository;
 
-    private JogadorService(JogadorRepository repository) {
+    public JogadorService(JogadorRepository repository) {
         this.repository = repository;
     }
 
@@ -22,6 +21,7 @@ public class JogadorService {
 
         int overall = calcularOverall(jogador);
 
+        //evita problemas de compatibilidade entre null e conversão de tipos incopativeis
         int velocidade = jogador.getVelocidade() != null ? jogador.getVelocidade() : 0;
         int finalizacao = jogador.getFinalizacao() != null ? jogador.getFinalizacao() : 0;
         int passe = jogador.getPasse() != null ? jogador.getPasse() : 0;
@@ -29,48 +29,47 @@ public class JogadorService {
         int defesa = jogador.getDefesa() != null ? jogador.getDefesa() : 0;
         int fisico = jogador.getFisico() != null ? jogador.getFisico() : 0;
         int potencial = jogador.getPotencial() != null ? jogador.getPotencial() : 0;
+        int idade = jogador.getIdade() != null ? jogador.getIdade() : 0;
 
         // Validação da soma dos atributos
-
         int somaAtributos = velocidade + finalizacao + passe + drible + defesa + fisico;
         if (somaAtributos > 480) {
             throw new IllegalArgumentException("A soma dos 6 atributos técnicos não pode ultrapassar 480.");
         }
 
-        //Regra potencial não pode ser menor que o maior dos atributos
-
+        // Regra potencial não pode ser menor que o maior dos atributos
         int maiorAtributo = Math.max(Math.max(Math.max(velocidade, finalizacao), Math.max(passe, drible)), Math.max(defesa, fisico));
         if (potencial < maiorAtributo) {
             throw new IllegalArgumentException("O potencial não pode ser menor que o maior dos 6 atributos.");
         }
 
-        //cálculo da média geral
-        BigDecimal valorBase = calcularValorBase(overall, jogador.getIdade(), jogador.getPotencial());
+        // cálculo da média geral
+        BigDecimal valorBase = calcularValorBase(overall, idade, potencial);
         jogador.setValorBase(valorBase);
 
         if (jogador.getCondicao() == null) {
             jogador.setCondicao("APTO");
         }
 
-        // garantindo que não está null e evitando problema 500 no post
         Instant agora = Instant.now();
         if (jogador.getCriadoEm() == null) {
             jogador.setCriadoEm(agora);
         }
         jogador.setAtualizadoEm(agora);
-        jogador.setAtualizadoEm(Instant.now());
 
-        //1- salvar jogador
         return repository.save(jogador);
     }
 
-
-
     public int calcularOverall(JogadorModel jogador) {
-
-        //1 - definindo pesos personalizados para categorias
         int pesoVelocidade = 0, pesoFinalizacao = 0, pesoPasse = 0;
         int pesoDrible = 0, pesoDefesa = 0, pesoFisico = 0;
+
+        int vel = jogador.getVelocidade() != null ? jogador.getVelocidade() : 0;
+        int fin = jogador.getFinalizacao() != null ? jogador.getFinalizacao() : 0;
+        int pas = jogador.getPasse() != null ? jogador.getPasse() : 0;
+        int dri = jogador.getDrible() != null ? jogador.getDrible() : 0;
+        int def = jogador.getDefesa() != null ? jogador.getDefesa() : 0;
+        int fis = jogador.getFisico() != null ? jogador.getFisico() : 0;
 
         if (jogador.getPosicao() != null) {
             switch (jogador.getPosicao().toUpperCase()) {
@@ -92,14 +91,13 @@ public class JogadorService {
             }
         }
 
-        int somaProdutos = (jogador.getVelocidade() * pesoVelocidade) +
-                (jogador.getFinalizacao() * pesoFinalizacao) +
-                (jogador.getPasse() * pesoPasse) +
-                (jogador.getDrible() * pesoDrible) +
-                (jogador.getDefesa() * pesoDefesa) +
-                (jogador.getFisico() * pesoFisico);
+        int somaProdutos = (vel * pesoVelocidade) +
+                (fin * pesoFinalizacao) +
+                (pas * pesoPasse) +
+                (dri * pesoDrible) +
+                (def * pesoDefesa) +
+                (fis * pesoFisico);
 
-        // 3- arredondamento para decimal positivo
         double media = somaProdutos / 100.0;
         return (int) Math.round(media);
     }
@@ -195,6 +193,7 @@ public class JogadorService {
         jogador.setPosicao(dadosAtualizados.getPosicao());
         jogador.setAgilidade(dadosAtualizados.getAgilidade());
         jogador.setIdade(dadosAtualizados.getIdade());
+        jogador.setAtualizadoEm(Instant.now());
 
         return repository.save(jogador);
     }
@@ -207,31 +206,24 @@ public class JogadorService {
 
         String condicaoAtual = jogador.getCondicao() != null ? jogador.getCondicao() : "APTO";
 
-        //validacao:
         if (condicaoAtual.equals("DOENTE") && novaCondicao.equals("APTO")) {
             throw new IllegalArgumentException("Um jogador doente não pode ir diretamente para apto.");
         }
 
         jogador.setCondicao(novaCondicao);
+        jogador.setAtualizadoEm(Instant.now());
         return repository.save(jogador);
     }
 
-
     public boolean excluirJogador(Integer id) {
-
         JogadorModel jogador = buscarPoId(id);
         if (jogador == null) {
             return false;
         }
 
-        //Regra pendente com relação ao time, irei implementar em breve quando o modulo clubes subir.
-
         jogador.setExcluidoEm(Instant.now());
         jogador.setAtualizadoEm(Instant.now());
         repository.save(jogador);
         return true;
-
-
-    };
-
+    }
 }
