@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/mercado")
+@RequestMapping("/api/v1/mercado")
 public class MercadoController {
 
     private final MercadoService mercadoService;
