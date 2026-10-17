@@ -29,6 +29,8 @@ public class MercadoService {
     private final TransacoesRepository transacoesRepository;
     private final JogadorService jogadorService;
 
+
+
     public MercadoService(JogadorRepository jogadorRepository,
                           ClubeRepository clubeRepository,
                           ContratoRepository contratoRepository,
@@ -40,6 +42,7 @@ public class MercadoService {
         this.transacoesRepository = transacoesRepository;
         this.jogadorService = jogadorService;
     }
+
 
     @Transactional
     public void comprarJogador(Integer jogadorId, Integer clubeId) {
