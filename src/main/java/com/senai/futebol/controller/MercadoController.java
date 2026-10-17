@@ -17,7 +17,7 @@ public class MercadoController {
         this.mercadoService = mercadoService;
     }
 
-   // POST /mercado/comprar/{jogadorId}?clubeId=1
+   // /mercado/comprar/{jogadorId}?clubeId=1
     @PostMapping("/comprar/{jogadorId}")
     public ResponseEntity<Void> comprarJogador(
             @PathVariable Integer jogadorId,
@@ -26,7 +26,7 @@ public class MercadoController {
         return ResponseEntity.noContent().build();
     }
 
-    // POST /mercado/vender/{jogadorId}?clubeId=1
+    //  /mercado/vender/{jogadorId}?clubeId=1
     @PostMapping("/vender/{jogadorId}")
     public ResponseEntity<Void> venderJogador(
             @PathVariable Integer jogadorId,
@@ -36,7 +36,7 @@ public class MercadoController {
     }
 
 
-    // Exemplo: GET /mercado/transacoes/1?tipo=COMPRA&jogadorId=5
+    //  /mercado/transacoes/1?tipo=COMPRA&jogadorId=5
     @GetMapping("/transacoes/{clubeId}")
     public ResponseEntity<List<TransacoesModel>> listarTransacoes(
             @PathVariable Integer clubeId,
