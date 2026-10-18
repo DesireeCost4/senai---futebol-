@@ -71,4 +71,21 @@ export const jogadorService = {
     const response = await api.delete(`/players/${id}`);
     return response.data;
   },
+
+  async excluirJogadoresLivres() {
+    const primeiraPagina = await this.listarJogadores({ free: true, page: 1, limit: 50 });
+    const ids = new Set(primeiraPagina.data.map((jogador) => jogador.id));
+    const totalPaginas = primeiraPagina.meta?.total_pages ?? 0;
+
+    for (let pagina = 2; pagina <= totalPaginas; pagina += 1) {
+      const resultado = await this.listarJogadores({ free: true, page: pagina, limit: 50 });
+      resultado.data.forEach((jogador) => ids.add(jogador.id));
+    }
+
+    for (const id of ids) {
+      await this.excluirJogador(id);
+    }
+
+    return { deletedCount: ids.size };
+  },
 };
