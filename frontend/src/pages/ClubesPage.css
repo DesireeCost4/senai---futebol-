@@ -1,0 +1,285 @@
+.clubs-page {
+  width: min(100%, 1320px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 27px 32px 40px;
+}
+
+.clubs-page__header {
+  margin-bottom: 24px;
+}
+
+.clubs-page__breadcrumb {
+  margin-bottom: 19px;
+  color: #83909f;
+  font-size: 11px;
+}
+
+.clubs-page__breadcrumb span {
+  margin: 0 7px;
+  color: #bdc5cf;
+}
+
+.clubs-page__title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.clubs-page__icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid #dce9e1;
+  border-radius: 9px;
+  background: #f0f7f2;
+  color: #3c7c57;
+}
+
+.clubs-page__title-row h1 {
+  margin: 0 0 4px;
+  color: #263443;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.clubs-page__title-row p {
+  margin: 0;
+  color: #7d8998;
+  font-size: 11px;
+}
+
+.clubs-panel {
+  overflow: hidden;
+  border: 1px solid #e2e7ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.clubs-panel__toolbar {
+  display: flex;
+  min-height: 67px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e9edf1;
+  padding: 12px 17px;
+}
+
+.clubs-panel__toolbar h2 {
+  margin: 0 0 4px;
+  color: #344253;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.clubs-panel__toolbar p {
+  margin: 0;
+  color: #8a95a3;
+  font-size: 10px;
+}
+
+.clubs-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clubs-sort {
+  display: inline-flex;
+  min-height: 33px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  padding: 0 9px;
+  color: #7d8997;
+  font-size: 10px;
+}
+
+.clubs-sort select {
+  max-width: 190px;
+  border: 0;
+  outline: 0;
+  appearance: none;
+  background: transparent;
+  color: #4b5969;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.clubs-sort select:disabled {
+  cursor: wait;
+}
+
+.clubs-refresh {
+  display: grid;
+  width: 33px;
+  height: 33px;
+  place-items: center;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  color: #617082;
+  cursor: pointer;
+}
+
+.clubs-refresh:hover:not(:disabled) {
+  border-color: #a9c7b4;
+  color: #34764e;
+}
+
+.clubs-refresh:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.clubs-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-color: #cbd4df transparent;
+  scrollbar-width: thin;
+}
+
+.clubs-table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.clubs-table th {
+  height: 39px;
+  border-bottom: 1px solid #ebeff3;
+  background: #fbfcfd;
+  padding: 0 15px;
+  color: #83909e;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.clubs-table td {
+  height: 57px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 0 15px;
+  color: #586576;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.clubs-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.clubs-table tbody tr:hover {
+  background: #fafcfb;
+}
+
+.clubs-table td:first-child,
+.clubs-table th:first-child {
+  padding-left: 18px;
+}
+
+.clubs-table__avatar {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.clubs-table__avatar--0 { color: #a14e4e; background: #f9eded; }
+.clubs-table__avatar--1 { color: #3269a7; background: #eaf1fa; }
+.clubs-table__avatar--2 { color: #347a61; background: #e9f4ed; }
+.clubs-table__avatar--3 { color: #9a6d2d; background: #fbf2e3; }
+.clubs-table__avatar--4 { color: #6d5a92; background: #f1edf7; }
+
+.clubs-table__name {
+  display: inline-block;
+  max-width: 280px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin-left: 10px;
+  color: #344253;
+  font-size: 11px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+}
+
+.clubs-table__acronym {
+  display: inline-grid;
+  min-width: 36px;
+  min-height: 21px;
+  place-items: center;
+  border: 1px solid #e5e9ed;
+  border-radius: 4px;
+  background: #fafbfc;
+  color: #647182;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+}
+
+.clubs-table__money {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.clubs-table__net-worth {
+  color: #34764e !important;
+  font-weight: 680;
+}
+
+.clubs-panel__footer {
+  display: flex;
+  min-height: 39px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e9edf1;
+  padding: 0 16px;
+  color: #8995a2;
+  font-size: 9px;
+}
+
+@media (max-width: 600px) {
+  .clubs-page {
+    padding: 19px 12px 28px;
+  }
+
+  .clubs-page__header {
+    margin-bottom: 16px;
+  }
+
+  .clubs-panel__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .clubs-toolbar__actions,
+  .clubs-sort {
+    width: 100%;
+  }
+
+  .clubs-sort select {
+    max-width: none;
+    flex: 1;
+  }
+
+  .clubs-refresh {
+    flex: 0 0 33px;
+  }
+
+  .clubs-panel__footer {
+    padding: 0 11px;
+    font-size: 8px;
+  }
+}
