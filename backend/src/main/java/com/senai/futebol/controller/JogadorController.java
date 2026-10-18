@@ -1,22 +1,16 @@
 package com.senai.futebol.controller;
 
-import com.senai.futebol.model.JogadorModel;
+import com.senai.futebol.dto.*;
 import com.senai.futebol.service.JogadorService;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/players")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${cors.origins:http://localhost:5173,http://localhost:3000}")
 public class JogadorController {
 
     private final JogadorService jogadorService;
@@ -26,96 +20,61 @@ public class JogadorController {
     }
 
     @GetMapping
-
-    //refatoração para cumprimento de regra de filtro em buscas
-    public ResponseEntity<Map<String, Object>> listarJogadores(
+    public ResponseEntity<PaginatedResponseDTO<JogadorResponseDTO>> listarJogadores(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) String posicao,
-            @RequestParam(required = false) String condicao,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(defaultValue = "id") String sortBy) {
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) String condition,
+            @RequestParam(required = false) Boolean free,
+            @RequestParam(name = "club_id", required = false) Integer clubId,
+            @RequestParam(name = "min_age", required = false) Integer minAge,
+            @RequestParam(name = "max_age", required = false) Integer maxAge,
+            @RequestParam(name = "min_value", required = false) BigDecimal minValue,
+            @RequestParam(name = "max_value", required = false) BigDecimal maxValue,
+            @RequestParam(required = false, defaultValue = "name") String sort,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit) {
 
-        Pageable pageable = PageRequest.of(page, limit, Sort.by(sortBy));
-        Page<JogadorModel> paginaJogadores = jogadorService.listarComFiltros(search, posicao, condicao, pageable);
+        PaginatedResponseDTO<JogadorResponseDTO> resultado = jogadorService.listarComFiltrosAvancados(
+                search, position, condition, free, clubId, minAge, maxAge, minValue, maxValue, sort, page, limit
+        );
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("data", paginaJogadores.getContent());
-
-        Map<String, Object> meta = new HashMap<>();
-        meta.put("page", paginaJogadores.getNumber());
-        meta.put("limit", paginaJogadores.getSize());
-        meta.put("total_items", paginaJogadores.getTotalElements());
-        meta.put("total_pages", paginaJogadores.getTotalPages());
-        response.put("meta", meta);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(resultado);
     }
 
     @PostMapping
-    public ResponseEntity<JogadorModel> cadastrarJogador(@RequestBody JogadorModel jogador) {
-        // Refatoração adição de tratamento de erro
-
-        try {
-            JogadorModel novoJogador = jogadorService.salvarJogador(jogador);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoJogador);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+    public ResponseEntity<JogadorResponseDTO> cadastrarJogador(@RequestBody JogadorRequestDTO jogadorDto) {
+        JogadorResponseDTO novoJogador = jogadorService.cadastrar(jogadorDto);
+        URI location = URI.create("/api/v1/players/" + novoJogador.getId());
+        return ResponseEntity.created(location).body(novoJogador);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<JogadorModel> buscarPorId(@PathVariable Integer id) {
-        JogadorModel jogador = jogadorService.buscarPoId(id);
-        if (jogador == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<JogadorResponseDTO> buscarPorId(@PathVariable Integer id) {
+        JogadorResponseDTO jogador = jogadorService.buscarDtoPorId(id);
         return ResponseEntity.ok(jogador);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Integer id){
-        boolean sucesso = jogadorService.excluirJogador(id);
-        if (!sucesso) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<JogadorResponseDTO> atualizar(
+            @PathVariable Integer id,
+            @RequestBody JogadorUpdateRequestDTO dadosAtualizados) {
 
-        //garante o retorno 204 conforme regra 09
+        JogadorResponseDTO atualizado = jogadorService.atualizar(id, dadosAtualizados);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @PatchMapping("/{id}/condition")
+    public ResponseEntity<JogadorResponseDTO> alterarCondicao(
+            @PathVariable Integer id,
+            @RequestBody JogadorConditionRequestDTO body) {
+
+        JogadorResponseDTO atualizado = jogadorService.alterarCondicaoDto(id, body != null ? body.getCondition() : null);
+        return ResponseEntity.ok(atualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Integer id) {
+        jogadorService.excluir(id);
         return ResponseEntity.noContent().build();
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<JogadorModel> atualizar(
-            @PathVariable Integer id,
-            @RequestBody JogadorModel dadosAtualizados) {
-
-        //refatoração adicação de tratamento de erro
-        try {
-            JogadorModel atualizado = jogadorService.atualizarJogador(id, dadosAtualizados);
-            if (atualizado == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(atualizado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @PatchMapping("/{id}/condicao")
-    public ResponseEntity<JogadorModel> alterarCondicao(
-            @PathVariable Integer id,
-            @RequestBody java.util.Map<String, String> body) {
-
-        try {
-            String novaCondicao = body.get("condicao");
-            JogadorModel atualizado = jogadorService.alterarCondicao(id, novaCondicao);
-            if (atualizado == null) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(atualizado);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
 }

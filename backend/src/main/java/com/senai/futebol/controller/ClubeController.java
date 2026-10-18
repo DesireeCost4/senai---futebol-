@@ -1,16 +1,17 @@
 package com.senai.futebol.controller;
 
-import com.senai.futebol.model.ClubeModel;
+import com.senai.futebol.dto.ClubeRequestDTO;
+import com.senai.futebol.dto.ClubeResponseDTO;
 import com.senai.futebol.service.ClubeService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/clubs")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${cors.origins:http://localhost:5173,http://localhost:3000}")
 public class ClubeController {
 
     private final ClubeService clubeService;
@@ -20,28 +21,22 @@ public class ClubeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastrarClube(@RequestBody ClubeModel clube) {
-        try {
-            ClubeModel novoClube = clubeService.salvarClube(clube);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoClube);
-        } catch (IllegalArgumentException e) {
-            // regras de negócio quebradas retornam 409
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(java.util.Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<ClubeResponseDTO> cadastrarClube(@RequestBody ClubeRequestDTO clubeDto) {
+        ClubeResponseDTO novoClube = clubeService.cadastrar(clubeDto);
+        URI location = URI.create("/api/v1/clubs/" + novoClube.getId());
+        return ResponseEntity.created(location).body(novoClube);
     }
 
     @GetMapping
-    public ResponseEntity<List<ClubeModel>> listarClubes() {
-        List<ClubeModel> clubes = clubeService.listarClubes();
+    public ResponseEntity<List<ClubeResponseDTO>> listarClubes(
+            @RequestParam(required = false, defaultValue = "name") String sort) {
+        List<ClubeResponseDTO> clubes = clubeService.listarClubesDto(sort);
         return ResponseEntity.ok(clubes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClubeModel> buscarPorId(@PathVariable Integer id) {
-        ClubeModel clube = clubeService.buscarPorId(id);
-        if (clube == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    public ResponseEntity<ClubeResponseDTO> buscarPorId(@PathVariable Integer id) {
+        ClubeResponseDTO clube = clubeService.buscarDtoPorId(id);
         return ResponseEntity.ok(clube);
     }
 }

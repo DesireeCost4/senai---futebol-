@@ -1,15 +1,29 @@
 package com.senai.futebol;
 
 import com.senai.futebol.model.JogadorModel;
+import com.senai.futebol.repository.JogadorRepository;
 import com.senai.futebol.service.JogadorService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import java.math.BigDecimal;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
 public class JogadorServiceTest {
 
-    private final JogadorService service = new JogadorService(null);
+    private JogadorRepository repository;
+    private JogadorService service;
+
+    @BeforeEach
+    public void setUp() {
+        repository = Mockito.mock(JogadorRepository.class);
+        service = new JogadorService(repository);
+    }
 
     @Test
     public void deveCalcularValorDeMercadoCorretamenteParaMalConditionadoComAgilidade() {
@@ -34,7 +48,6 @@ public class JogadorServiceTest {
 
         BigDecimal valorMercado = service.calcularValorDeMercado(jogador);
 
-        // O valor correto calculado pela regra para estes parâmetros é 8.79
         assertEquals(new BigDecimal("8.79"), valorMercado);
     }
 
@@ -82,15 +95,12 @@ public class JogadorServiceTest {
         jogador.setId(2);
         jogador.setCondicao("DOENTE");
 
-        //PRECISO CRIAR UM CENARIO DE TENTATIVA DE "APTO"
+        when(repository.findByIdAndExcluidoEmIsNull(2)).thenReturn(Optional.of(jogador));
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            if ("DOENTE".equals(jogador.getCondicao())) {
-                throw new IllegalArgumentException("Um jogador doente não pode ir diretamente para apto.");
-            }
+            service.alterarCondicao(2, "APTO");
         });
 
         assertEquals("Um jogador doente não pode ir diretamente para apto.", exception.getMessage());
     }
-
 }

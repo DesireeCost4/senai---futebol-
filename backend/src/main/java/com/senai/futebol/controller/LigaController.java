@@ -1,7 +1,9 @@
 package com.senai.futebol.controller;
 
-import com.senai.futebol.model.PartidaModel;
-import com.senai.futebol.repository.PartidaRepository;
+import com.senai.futebol.dto.LineupRequestDTO;
+import com.senai.futebol.dto.LineupResponseDTO;
+import com.senai.futebol.dto.MatchRequestDTO;
+import com.senai.futebol.dto.PartidaResponseDTO;
 import com.senai.futebol.service.LigaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,54 +15,43 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${cors.origins:http://localhost:5173,http://localhost:3000}")
 public class LigaController {
 
     @Autowired
     private LigaService ligaService;
 
-    @Autowired
-    private PartidaRepository partidaRepository;
-
     @PutMapping("/clubs/{id}/lineup")
-    public ResponseEntity<Map<String, Object>> atualizarEscalacao(@PathVariable Long id, @RequestBody Map<String, Object> body) {
-        String formation = (String) body.get("formation");
-
-        //refatoração: houve um problema com relação a tipagem integer e long
-        List<?> rawIds = (List<?>) body.get("player_ids");
-        List<Long> playerIds = rawIds.stream()
-                .map(obj -> ((Number) obj).longValue())
-                .toList();
-
-        Map<String, Object> resp = ligaService.salvarEscalacao(id, formation, playerIds);
+    public ResponseEntity<LineupResponseDTO> atualizarEscalacao(
+            @PathVariable Integer id,
+            @RequestBody LineupRequestDTO body) {
+        LineupResponseDTO resp = ligaService.atualizarEscalacao(id, body);
         return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/clubs/{id}/lineup")
-    public ResponseEntity<Map<String, Object>> consultarEscalacao(@PathVariable Long id) {
-        Map<String, Object> resp = ligaService.consultarEscalacao(id);
+    public ResponseEntity<LineupResponseDTO> consultarEscalacao(@PathVariable Integer id) {
+        LineupResponseDTO resp = ligaService.consultarEscalacaoDto(id);
         return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/matches")
-    public ResponseEntity<PartidaModel> jogarPartida(@RequestBody Map<String, Long> body) {
-        Long homeId = body.get("home_club_id");
-        Long awayId = body.get("away_club_id");
-        PartidaModel partida = ligaService.jogarPartida(homeId, awayId);
-        return ResponseEntity.created(URI.create("/api/v1/matches/" + partida.getId())).body(partida);
+    public ResponseEntity<PartidaResponseDTO> jogarPartida(@RequestBody MatchRequestDTO body) {
+        PartidaResponseDTO partida = ligaService.jogarPartidaDto(body);
+        URI location = URI.create("/api/v1/matches/" + partida.getId());
+        return ResponseEntity.created(location).body(partida);
     }
 
     @GetMapping("/matches")
-    public ResponseEntity<List<PartidaModel>> listarPartidas(@RequestParam(required = false) Long club_id) {
-        List<PartidaModel> partidas = partidaRepository.findByClubeIdOrAll(club_id);
+    public ResponseEntity<List<PartidaResponseDTO>> listarPartidas(
+            @RequestParam(name = "club_id", required = false) Integer clubId) {
+        List<PartidaResponseDTO> partidas = ligaService.listarPartidasDto(clubId);
         return ResponseEntity.ok(partidas);
     }
 
     @GetMapping("/matches/{id}")
-    public ResponseEntity<PartidaModel> buscarPartida(@PathVariable Long id) {
-        PartidaModel p = partidaRepository.findById(id)
-                .orElseThrow(() -> new com.senai.futebol.exception.RecursoNotFoundException("Partida não encontrada"));
-
+    public ResponseEntity<PartidaResponseDTO> buscarPartida(@PathVariable Integer id) {
+        PartidaResponseDTO p = ligaService.buscarPartidaDto(id);
         return ResponseEntity.ok(p);
     }
 

@@ -31,6 +31,10 @@ public class JogadorModel {
     @Column(name = "condicao", nullable = false, length = 20)
     private String condicao;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "clube_id")
+    private ClubeModel clube;
+
     @Column(name = "velocidade", nullable = false)
     private Integer velocidade;
 
@@ -197,4 +201,11 @@ public class JogadorModel {
         this.atualizadoEm = atualizadoEm;
     }
 
+    public ClubeModel getClube() {
+        return clube;
+    }
+
+    public void setClube(ClubeModel clube) {
+        this.clube = clube;
+    }
 }

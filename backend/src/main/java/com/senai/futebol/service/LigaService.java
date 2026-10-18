@@ -1,12 +1,18 @@
 package com.senai.futebol.service;
 
+import com.senai.futebol.dto.*;
+import com.senai.futebol.exception.NegocioException;
+import com.senai.futebol.exception.RecursoNotFoundException;
+import com.senai.futebol.exception.ValidacaoException;
 import com.senai.futebol.model.*;
 import com.senai.futebol.repository.*;
+import com.senai.futebol.util.DataUtils;
+import com.senai.futebol.util.TextoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.Normalizer;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,8 +34,369 @@ public class LigaService {
     @Autowired
     private PartidaRepository partidaRepository;
 
+    @Autowired(required = false)
+    private DuelosPartidaRepository duelosPartidaRepository;
+
+    @Autowired(required = false)
+    private JogadorService jogadorService;
+
     private static final List<String> FORMATIONS_VALIDAS = List.of("3-1", "2-2", "2-1-1", "1-2-1");
 
+    @Transactional
+    public LineupResponseDTO atualizarEscalacao(Integer clubeId, LineupRequestDTO dto) {
+        if (dto == null || dto.getFormation() == null || !FORMATIONS_VALIDAS.contains(dto.getFormation())) {
+            throw new ValidacaoException("Formação inválida. Aceitas: 3-1, 2-2, 2-1-1 ou 1-2-1.");
+        }
+
+        List<Integer> playerIds = dto.getPlayerIds();
+        if (playerIds == null || playerIds.size() != 5 || new HashSet<>(playerIds).size() != 5) {
+            throw new ValidacaoException("player_ids deve conter exatamente 5 IDs distintos.");
+        }
+
+        for (Integer pid : playerIds) {
+            if (pid == null || pid <= 0) {
+                throw new ValidacaoException("Cada ID em player_ids deve ser um inteiro positivo.");
+            }
+        }
+
+        ClubeModel clube = clubeRepository.findById(clubeId)
+                .orElseThrow(() -> new RecursoNotFoundException("Clube não encontrado."));
+
+        List<JogadorModel> jogadores = jogadorRepository.findAllById(playerIds);
+        if (jogadores.size() != 5) {
+            throw new RecursoNotFoundException("Um ou mais jogadores não existem.");
+        }
+
+        for (JogadorModel j : jogadores) {
+            if (j.getExcluidoEm() != null) {
+                throw new RecursoNotFoundException("Jogador excluído não pode ser escalado: " + j.getId());
+            }
+            // RN19: Cada titular precisa ser do elenco do clube
+            Optional<ContratoModel> cOpt = contratoRepository.buscarContratoAtivoPorJogador(j.getId(), "ATIVO");
+            if (cOpt.isEmpty() || !cOpt.get().getClube().getId().equals(clubeId)) {
+                throw new NegocioException("Jogador " + j.getNome() + " não pertence ao elenco ativo deste clube.");
+            }
+            if ("DOENTE".equalsIgnoreCase(j.getCondicao())) {
+                throw new NegocioException("Jogador DOENTE não pode ser escalado: " + j.getNome());
+            }
+        }
+
+        long goleiros = 0, defesa = 0, meio = 0, ataque = 0;
+        for (JogadorModel j : jogadores) {
+            String pos = j.getPosicao().toUpperCase();
+            switch (pos) {
+                case "GOL" -> goleiros++;
+                case "ZAG", "LAT" -> defesa++;
+                case "MEI" -> meio++;
+                case "ATA" -> ataque++;
+            }
+        }
+
+        if (goleiros != 1) {
+            throw new NegocioException("A escalação precisa ter exatamente 1 goleiro (GOL).");
+        }
+
+        validarSetoresFormacao(dto.getFormation(), defesa, meio, ataque);
+
+        // Substitui a escalação inteira
+        escalacaoRepository.deleteByClubeId(clubeId.longValue());
+        clube.setFormacao(dto.getFormation());
+        clubeRepository.save(clube);
+
+        for (Integer pid : playerIds) {
+            JogadorModel jogador = jogadorRepository.findById(pid).orElseThrow();
+            EscalacoesModelId idComposto = new EscalacoesModelId();
+            idComposto.setClubeId(clubeId);
+            idComposto.setJogadorId(pid);
+
+            EscalacoesModel esc = new EscalacoesModel();
+            esc.setId(idComposto);
+            esc.setClube(clube);
+            esc.setJogador(jogador);
+            escalacaoRepository.save(esc);
+        }
+
+        return consultarEscalacaoDto(clubeId);
+    }
+
+    public LineupResponseDTO consultarEscalacaoDto(Integer clubeId) {
+        ClubeModel clube = clubeRepository.findById(clubeId)
+                .orElseThrow(() -> new RecursoNotFoundException("Clube não encontrado."));
+
+        List<EscalacoesModel> escs = escalacaoRepository.findByClubeId(clubeId.longValue());
+
+        List<JogadorModel> jogadores = escs.stream()
+                .map(EscalacoesModel::getJogador)
+                .filter(j -> j.getExcluidoEm() == null)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        // Ordena na ordem da RN11
+        jogadores.sort(Comparator
+                .comparing((JogadorModel j) -> prioridadePosicao(j.getPosicao()))
+                .thenComparing(j -> TextoUtils.normalizar(j.getNome()))
+                .thenComparing(JogadorModel::getId));
+
+        List<JogadorResponseDTO> playersDto = new ArrayList<>();
+        for (JogadorModel j : jogadores) {
+            if (jogadorService != null) {
+                playersDto.add(jogadorService.converterParaDto(j));
+            } else {
+                JogadorResponseDTO d = new JogadorResponseDTO();
+                d.setId(j.getId());
+                d.setName(j.getNome());
+                d.setPosition(j.getPosicao());
+                d.setCondition(j.getCondicao());
+                d.setDefending(j.getDefesa());
+                playersDto.add(d);
+            }
+        }
+
+        boolean complete = clube.getFormacao() != null && playersDto.size() == 5;
+
+        return new LineupResponseDTO(
+                clube.getId(),
+                clube.getFormacao(),
+                complete,
+                playersDto);
+    }
+
+    @Transactional
+    public PartidaResponseDTO jogarPartidaDto(MatchRequestDTO dto) {
+        if (dto == null || dto.getHomeClubId() == null || dto.getAwayClubId() == null) {
+            throw new ValidacaoException("home_club_id e away_club_id são obrigatórios.");
+        }
+        if (dto.getHomeClubId() <= 0 || dto.getAwayClubId() <= 0) {
+            throw new ValidacaoException("IDs dos clubes devem ser inteiros positivos.");
+        }
+        if (Objects.equals(dto.getHomeClubId(), dto.getAwayClubId())) {
+            throw new ValidacaoException("Mandante e visitante não podem ser o mesmo clube.");
+        }
+
+        ClubeModel mandante = clubeRepository.findById(dto.getHomeClubId())
+                .orElseThrow(() -> new RecursoNotFoundException("Clube mandante não encontrado."));
+        ClubeModel visitante = clubeRepository.findById(dto.getAwayClubId())
+                .orElseThrow(() -> new RecursoNotFoundException("Clube visitante não encontrado."));
+
+        LineupResponseDTO homeLineup = consultarEscalacaoDto(dto.getHomeClubId());
+        LineupResponseDTO awayLineup = consultarEscalacaoDto(dto.getAwayClubId());
+
+        if (!Boolean.TRUE.equals(homeLineup.getComplete()) || !Boolean.TRUE.equals(awayLineup.getComplete())) {
+            throw new NegocioException("Um ou ambos os clubes não possuem escalação completa (5 titulares).");
+        }
+
+        List<JogadorResponseDTO> homeTitulares = homeLineup.getPlayers();
+        List<JogadorResponseDTO> awayTitulares = awayLineup.getPlayers();
+
+        Instant playedAt = Instant.now();
+        List<DuelosPartidaModel> duelosModels = new ArrayList<>();
+        List<DueloResponseDTO> duelosDtos = new ArrayList<>();
+
+        int golsHome = 0;
+        int golsAway = 0;
+
+        // Duelos 1 a 3: Mandante ataca
+        for (int i = 1; i <= 3; i++) {
+            DueloSimulado sim = simularDuelo(i, mandante.getId(), homeTitulares, visitante.getId(), awayTitulares);
+            if (sim.gol)
+                golsHome++;
+            duelosModels.add(sim.model);
+            duelosDtos.add(sim.dto);
+        }
+
+        // Duelos 4 a 6: Visitante ataca
+        for (int i = 4; i <= 6; i++) {
+            DueloSimulado sim = simularDuelo(i, visitante.getId(), awayTitulares, mandante.getId(), homeTitulares);
+            if (sim.gol)
+                golsAway++;
+            duelosModels.add(sim.model);
+            duelosDtos.add(sim.dto);
+        }
+
+        PartidaModel partida = new PartidaModel();
+        partida.setMandante(mandante);
+        partida.setVisitante(visitante);
+        partida.setGolsMandante(golsHome);
+        partida.setGolsVisitante(golsAway);
+        partida.setFormacaoMandante(homeLineup.getFormation());
+        partida.setFormacaoVisitante(awayLineup.getFormation());
+        partida.setJogadaEm(playedAt);
+
+        PartidaModel partidaSalva = partidaRepository.save(partida);
+
+        // Salvar os 6 duelos no banco de dados
+        for (DuelosPartidaModel d : duelosModels) {
+            d.setPartida(partidaSalva);
+        }
+        if (duelosPartidaRepository != null) {
+            duelosPartidaRepository.saveAll(duelosModels);
+        }
+
+        String resultado;
+        if (golsHome > golsAway) {
+            resultado = "MANDANTE";
+        } else if (golsAway > golsHome) {
+            resultado = "VISITANTE";
+        } else {
+            resultado = "EMPATE";
+        }
+
+        PartidaResponseDTO resp = new PartidaResponseDTO();
+        resp.setId(partidaSalva.getId());
+        resp.setPlayedAt(DataUtils.formatarBrasilia(playedAt));
+        resp.setHome(
+                new PartidaClubResumoDTO(mandante.getId(), mandante.getNome(), homeLineup.getFormation(), golsHome));
+        resp.setAway(
+                new PartidaClubResumoDTO(visitante.getId(), visitante.getNome(), awayLineup.getFormation(), golsAway));
+        resp.setResult(resultado);
+        resp.setDuels(duelosDtos);
+
+        return resp;
+    }
+
+    public List<PartidaResponseDTO> listarPartidasDto(Integer clubId) {
+        List<PartidaModel> partidas = partidaRepository.findByClubeIdOrAll(clubId != null ? clubId.longValue() : null);
+
+        List<PartidaResponseDTO> lista = new ArrayList<>();
+        for (PartidaModel p : partidas) {
+            PartidaResponseDTO dto = new PartidaResponseDTO();
+            dto.setId(p.getId());
+            dto.setPlayedAt(DataUtils.formatarBrasilia(p.getJogadaEm()));
+            dto.setHome(new PartidaClubResumoDTO(p.getMandante().getId(), p.getMandante().getNome(),
+                    p.getFormacaoMandante(), p.getGolsMandante()));
+            dto.setAway(new PartidaClubResumoDTO(p.getVisitante().getId(), p.getVisitante().getNome(),
+                    p.getFormacaoVisitante(), p.getGolsVisitante()));
+
+            String res;
+            if (p.getGolsMandante() > p.getGolsVisitante())
+                res = "MANDANTE";
+            else if (p.getGolsVisitante() > p.getGolsMandante())
+                res = "VISITANTE";
+            else
+                res = "EMPATE";
+
+            dto.setResult(res);
+            lista.add(dto);
+        }
+        return lista;
+    }
+
+    public PartidaResponseDTO buscarPartidaDto(Integer id) {
+        PartidaModel p = partidaRepository.findById(id.longValue())
+                .orElseThrow(() -> new RecursoNotFoundException("Partida não encontrada."));
+
+        PartidaResponseDTO dto = new PartidaResponseDTO();
+        dto.setId(p.getId());
+        dto.setPlayedAt(DataUtils.formatarBrasilia(p.getJogadaEm()));
+        dto.setHome(new PartidaClubResumoDTO(p.getMandante().getId(), p.getMandante().getNome(),
+                p.getFormacaoMandante(), p.getGolsMandante()));
+        dto.setAway(new PartidaClubResumoDTO(p.getVisitante().getId(), p.getVisitante().getNome(),
+                p.getFormacaoVisitante(), p.getGolsVisitante()));
+
+        String res;
+        if (p.getGolsMandante() > p.getGolsVisitante())
+            res = "MANDANTE";
+        else if (p.getGolsVisitante() > p.getGolsMandante())
+            res = "VISITANTE";
+        else
+            res = "EMPATE";
+        dto.setResult(res);
+
+        if (duelosPartidaRepository != null) {
+            List<DuelosPartidaModel> duelos = duelosPartidaRepository.findByPartidaIdOrderByOrdemAsc(p.getId());
+            List<DueloResponseDTO> dDtos = duelos.stream().map(d -> new DueloResponseDTO(
+                    d.getOrdem(),
+                    d.getClubeAtacante().getId(),
+                    new DuelPlayerDTO(d.getAtacante().getId(), d.getNomeAtacante(), d.getPosicaoAtacante(),
+                            d.getCondicaoAtacante(), d.getAtributoAtaque(), d.getValorAtaque()),
+                    new DuelPlayerDTO(d.getDefensor().getId(), d.getNomeDefensor(), d.getPosicaoDefensor(),
+                            d.getCondicaoDefensor(), d.getAtributoDefesa(), d.getValorDefesa()),
+                    d.getGol())).collect(Collectors.toList());
+            dto.setDuels(dDtos);
+        }
+
+        return dto;
+    }
+
+    private static class DueloSimulado {
+        boolean gol;
+        DuelosPartidaModel model;
+        DueloResponseDTO dto;
+
+        DueloSimulado(boolean gol, DuelosPartidaModel model, DueloResponseDTO dto) {
+            this.gol = gol;
+            this.model = model;
+            this.dto = dto;
+        }
+    }
+
+    private DueloSimulado simularDuelo(int ordem, Integer atacanteClubId, List<JogadorResponseDTO> atacantesList,
+            Integer defensorClubId, List<JogadorResponseDTO> defensoresList) {
+        JogadorResponseDTO atk;
+        JogadorResponseDTO def;
+
+        if (ordem == 1 || ordem == 4) {
+            atk = atacantesList.get(4); // 4º de linha (o mais avançado)
+            def = defensoresList.get(0); // Goleiro
+        } else if (ordem == 2 || ordem == 5) {
+            atk = atacantesList.get(3); // 3º de linha
+            def = defensoresList.get(1); // 1º de linha (o mais recuado)
+        } else {
+            atk = atacantesList.get(2); // 2º de linha
+            def = defensoresList.get(2); // 2º de linha
+        }
+
+        String atkAttr = getAtributoAtacante(atk.getPosition());
+        int atkVal = getValorAtributoDto(atk, atkAttr);
+        int defVal = getValorAtributoDto(def, "defending");
+
+        boolean gol = atkVal > defVal;
+
+        DuelosPartidaModel m = new DuelosPartidaModel();
+        m.setOrdem(ordem);
+        m.setClubeAtacante(clubeRepository.findById(atacanteClubId).orElseThrow());
+        m.setAtacante(jogadorRepository.findById(atk.getId()).orElseThrow());
+        m.setDefensor(jogadorRepository.findById(def.getId()).orElseThrow());
+        m.setNomeAtacante(atk.getName());
+        m.setNomeDefensor(def.getName());
+        m.setPosicaoAtacante(atk.getPosition());
+        m.setPosicaoDefensor(def.getPosition());
+        m.setCondicaoAtacante(atk.getCondition());
+        m.setCondicaoDefensor(def.getCondition());
+        m.setAtributoAtaque(atkAttr);
+        m.setAtributoDefesa("defending");
+        m.setValorAtaque(atkVal);
+        m.setValorDefesa(defVal);
+        m.setGol(gol);
+
+        DueloResponseDTO dDto = new DueloResponseDTO(
+                ordem,
+                atacanteClubId,
+                new DuelPlayerDTO(atk.getId(), atk.getName(), atk.getPosition(), atk.getCondition(), atkAttr, atkVal),
+                new DuelPlayerDTO(def.getId(), def.getName(), def.getPosition(), def.getCondition(), "defending",
+                        defVal),
+                gol);
+
+        return new DueloSimulado(gol, m, dDto);
+    }
+
+    private int getValorAtributoDto(JogadorResponseDTO j, String atributo) {
+        int base = switch (atributo) {
+            case "shooting" -> j.getShooting() != null ? j.getShooting() : 0;
+            case "passing" -> j.getPassing() != null ? j.getPassing() : 0;
+            case "dribbling" -> j.getDribbling() != null ? j.getDribbling() : 0;
+            case "defending" -> j.getDefending() != null ? j.getDefending() : 0;
+            default -> 0;
+        };
+
+        if ("MAL_CONDICIONADO".equalsIgnoreCase(j.getCondition())) {
+            double calc = base * 0.85;
+            return (int) Math.round(calc);
+        }
+        return base;
+    }
+
+    // Métodos legados mantidos para compatibilidade com os testes unitários
+    // existentes
     @Transactional
     public Map<String, Object> salvarEscalacao(Long clubeId, String formation, List<Long> playerIds) {
         ClubeModel clube = clubeRepository.findById(clubeId.intValue())
@@ -48,13 +415,9 @@ public class LigaService {
             throw new RuntimeException("Um ou mais jogadores não existem");
         }
 
-        long goleiros = 0;
-        long defesa = 0;
-        long meio = 0;
-        long ataque = 0;
+        long goleiros = 0, defesa = 0, meio = 0, ataque = 0;
 
         for (JogadorModel jogador : jogadores) {
-            // Validar se o jogador pertence ao clube através do repositório de contratos
             boolean pertenceAoClube = contratoRepository.jogadorJaPertenceuaoClube(clubeId.intValue(), jogador.getId());
             if (!pertenceAoClube || jogador.getExcluidoEm() != null) {
                 throw new IllegalStateException("Jogador não pertence ao elenco do clube ou está excluído");
@@ -63,15 +426,14 @@ public class LigaService {
                 throw new IllegalStateException("Jogador doente não pode ser escalado");
             }
 
-            if ("GOL".equalsIgnoreCase(jogador.getPosicao())) {
+            if ("GOL".equalsIgnoreCase(jogador.getPosicao()))
                 goleiros++;
-            } else if ("ZAG".equalsIgnoreCase(jogador.getPosicao()) || "LAT".equalsIgnoreCase(jogador.getPosicao())) {
+            else if ("ZAG".equalsIgnoreCase(jogador.getPosicao()) || "LAT".equalsIgnoreCase(jogador.getPosicao()))
                 defesa++;
-            } else if ("MEI".equalsIgnoreCase(jogador.getPosicao())) {
+            else if ("MEI".equalsIgnoreCase(jogador.getPosicao()))
                 meio++;
-            } else if ("ATA".equalsIgnoreCase(jogador.getPosicao())) {
+            else if ("ATA".equalsIgnoreCase(jogador.getPosicao()))
                 ataque++;
-            }
         }
 
         if (goleiros != 1) {
@@ -80,7 +442,6 @@ public class LigaService {
 
         validarSetoresFormacao(formation, defesa, meio, ataque);
 
-        // Salvar escalação
         escalacaoRepository.deleteByClubeId(clubeId);
         clube.setFormacao(formation);
         clubeRepository.save(clube);
@@ -126,9 +487,8 @@ public class LigaService {
 
         jogadores.sort(Comparator
                 .comparing((JogadorModel j) -> prioridadePosicao(j.getPosicao()))
-                .thenComparing(j -> Normalizer.normalize(j.getNome(), Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase())
-                .thenComparing(JogadorModel::getId)
-        );
+                .thenComparing(j -> TextoUtils.normalizar(j.getNome()))
+                .thenComparing(JogadorModel::getId));
 
         boolean complete = clube.getFormacao() != null && jogadores.size() == 5;
 
@@ -141,13 +501,15 @@ public class LigaService {
     }
 
     private int prioridadePosicao(String pos) {
+        if (pos == null)
+            return 99;
         return switch (pos.toUpperCase()) {
             case "GOL" -> 1;
             case "ZAG" -> 2;
             case "LAT" -> 3;
             case "MEI" -> 4;
             case "ATA" -> 5;
-            default -> 6;
+            default -> 99;
         };
     }
 
@@ -178,14 +540,18 @@ public class LigaService {
         int golsAway = 0;
 
         for (int i = 1; i <= 3; i++) {
-            DuelosPartidaModel duelo = simularDuelo(i, mandanteClube, homeTitulares, visitanteClube, awayTitulares);
-            if (duelo.getGol()) golsHome++;
+            DuelosPartidaModel duelo = simularDueloLegado(i, mandanteClube, homeTitulares, visitanteClube,
+                    awayTitulares);
+            if (duelo.getGol())
+                golsHome++;
             duelos.add(duelo);
         }
 
         for (int i = 4; i <= 6; i++) {
-            DuelosPartidaModel duelo = simularDuelo(i, visitanteClube, awayTitulares, mandanteClube, homeTitulares);
-            if (duelo.getGol()) golsAway++;
+            DuelosPartidaModel duelo = simularDueloLegado(i, visitanteClube, awayTitulares, mandanteClube,
+                    homeTitulares);
+            if (duelo.getGol())
+                golsAway++;
             duelos.add(duelo);
         }
 
@@ -203,11 +569,15 @@ public class LigaService {
             d.setPartida(partida);
         }
 
+        if (duelosPartidaRepository != null) {
+            duelosPartidaRepository.saveAll(duelos);
+        }
+
         return partidaRepository.save(partida);
     }
 
-    private DuelosPartidaModel simularDuelo(int ordem, ClubeModel clubeAtacante, List<JogadorModel> atacantesList,
-                                            ClubeModel clubeDefensor, List<JogadorModel> defensoresList) {
+    private DuelosPartidaModel simularDueloLegado(int ordem, ClubeModel clubeAtacante, List<JogadorModel> atacantesList,
+            ClubeModel clubeDefensor, List<JogadorModel> defensoresList) {
         JogadorModel atkPlayer;
         JogadorModel defPlayer;
 
@@ -249,6 +619,8 @@ public class LigaService {
     }
 
     private String getAtributoAtacante(String pos) {
+        if (pos == null)
+            return "shooting";
         return switch (pos.toUpperCase()) {
             case "ATA" -> "shooting";
             case "MEI" -> "passing";
@@ -259,10 +631,10 @@ public class LigaService {
 
     private int getValorAtributo(JogadorModel jogador, String atributo) {
         int base = switch (atributo) {
-            case "shooting" -> jogador.getFinalizacao();
-            case "passing" -> jogador.getPasse();
-            case "dribbling" -> jogador.getDrible();
-            case "defending" -> jogador.getDefesa();
+            case "shooting" -> jogador.getFinalizacao() != null ? jogador.getFinalizacao() : 0;
+            case "passing" -> jogador.getPasse() != null ? jogador.getPasse() : 0;
+            case "dribbling" -> jogador.getDrible() != null ? jogador.getDrible() : 0;
+            case "defending" -> jogador.getDefesa() != null ? jogador.getDefesa() : 0;
             default -> 0;
         };
 
@@ -317,13 +689,16 @@ public class LigaService {
 
         List<EstatisticasClube> lista = new ArrayList<>(stats.values());
         lista.sort((a, b) -> {
-            if (b.pontos != a.pontos) return Integer.compare(b.pontos, a.pontos);
+            if (b.pontos != a.pontos)
+                return Integer.compare(b.pontos, a.pontos);
             int saldoA = a.golsFor - a.golsAgainst;
             int saldoB = b.golsFor - b.golsAgainst;
-            if (saldoB != saldoA) return Integer.compare(saldoB, saldoA);
-            if (b.golsFor != a.golsFor) return Integer.compare(b.golsFor, a.golsFor);
-            String nomeA = Normalizer.normalize(a.nome, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
-            String nomeB = Normalizer.normalize(b.nome, Normalizer.Form.NFD).replaceAll("\\p{M}", "").toLowerCase();
+            if (saldoB != saldoA)
+                return Integer.compare(saldoB, saldoA);
+            if (b.golsFor != a.golsFor)
+                return Integer.compare(b.golsFor, a.golsFor);
+            String nomeA = TextoUtils.normalizar(a.nome);
+            String nomeB = TextoUtils.normalizar(b.nome);
             return nomeA.compareTo(nomeB);
         });
 

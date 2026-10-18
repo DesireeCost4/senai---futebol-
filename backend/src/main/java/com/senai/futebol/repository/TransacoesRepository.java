@@ -21,4 +21,9 @@ public interface TransacoesRepository extends JpaRepository<TransacoesModel, Int
             @Param("jogadorId") Integer jogadorId
     );
 
+    @Query("SELECT t FROM TransacoesModel t WHERE t.clube.id = :clubeId ORDER BY t.criadoEm DESC, t.id DESC")
+    List<TransacoesModel> findByClubeIdOrderByCriadoEmDescIdDesc(@Param("clubeId") Integer clubeId);
+
+    @Query("SELECT COUNT(t) > 0 FROM TransacoesModel t WHERE t.clube.id = :clubeId AND t.jogador.id = :jogadorId AND t.tipo = 'VENDA'")
+    boolean clubeJaVendeuJogador(@Param("clubeId") Integer clubeId, @Param("jogadorId") Integer jogadorId);
 }
