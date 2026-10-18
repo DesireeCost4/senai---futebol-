@@ -67,6 +67,23 @@
   font-size: 10px;
 }
 
+.club-detail-market-link {
+  display: inline-flex;
+  min-height: 33px;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  border: 1px solid #d8e6f5;
+  border-radius: 5px;
+  background: #f6faff;
+  padding: 0 10px;
+  color: #286dbe;
+  font-size: 10px;
+  font-weight: 620;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .club-summary {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -141,7 +158,7 @@
 
 .club-squad-table {
   width: 100%;
-  min-width: 1080px;
+  min-width: 1160px;
   border-collapse: collapse;
   text-align: left;
 }
@@ -229,6 +246,141 @@
   font-weight: 620;
 }
 
+.club-squad-table__action {
+  text-align: right !important;
+}
+
+.club-sell-button {
+  min-height: 26px;
+  border: 1px solid #f0d5d6;
+  border-radius: 4px;
+  background: #fff7f7;
+  padding: 0 8px;
+  color: #a3444d;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.club-sell-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.club-sell-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(18 27 39 / 40%);
+  padding: 16px;
+}
+
+.club-sell-dialog {
+  position: relative;
+  width: min(100%, 400px);
+  border: 1px solid #e4e9ee;
+  border-radius: 9px;
+  background: #fff;
+  padding: 22px;
+  box-shadow: 0 20px 60px rgb(16 30 48 / 24%);
+}
+
+.club-sell-dialog__close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #758191;
+  cursor: pointer;
+}
+
+.club-sell-dialog__close:disabled {
+  cursor: wait;
+}
+
+.club-sell-dialog__icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 9px;
+  background: #fff4e8;
+  color: #aa6d25;
+}
+
+.club-sell-dialog h2 {
+  margin: 14px 0 6px;
+  color: #2c3948;
+  font-size: 16px;
+}
+
+.club-sell-dialog p {
+  margin: 0;
+  color: #748192;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.club-sell-dialog p strong {
+  color: #344253;
+}
+
+.club-sell-dialog__error {
+  margin-top: 12px;
+  border: 1px solid #f0d5d6;
+  border-radius: 5px;
+  background: #fff6f6;
+  padding: 9px 10px;
+  color: #9d4149;
+  font-size: 10px;
+}
+
+.club-sell-dialog footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 21px;
+}
+
+.club-sell-cancel,
+.club-sell-confirm {
+  display: inline-flex;
+  min-height: 33px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 11px;
+  color: #596677;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.club-sell-confirm {
+  border-color: #a3444d;
+  background: #a3444d;
+  color: #fff;
+}
+
+.club-sell-cancel:disabled,
+.club-sell-confirm:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 @media (max-width: 600px) {
   .club-detail-page {
     padding: 18px 12px 28px;
@@ -236,6 +388,19 @@
 
   .club-detail-header h1 {
     font-size: 18px;
+  }
+
+  .club-detail-market-link {
+    width: 34px;
+    min-width: 34px;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .club-detail-market-link svg {
+    flex: 0 0 auto;
   }
 
   .club-summary__item {

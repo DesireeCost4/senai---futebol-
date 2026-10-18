@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
-import { Building2, Check, ChevronDown, Plus, RotateCcw, X } from 'lucide-react';
+import { Building2, Check, ChevronDown, Plus, RotateCcw, ShoppingCart, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import { clubeService } from '../services/clubeService';
 import { formatCurrency } from '../utils/formatters';
@@ -122,6 +122,7 @@ export default function ClubesPage() {
             <h1>Clubes</h1>
             <p>Visão geral dos clubes da liga e de seus recursos.</p>
           </div>
+          <Link className="clubs-market-link" to="/players"><ShoppingCart size={15} />Mercado de jogadores</Link>
         </div>
       </header>
 

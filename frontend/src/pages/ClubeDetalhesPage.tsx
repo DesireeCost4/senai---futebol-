@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { ArrowLeft, Building2 } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Building2, ShoppingCart, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
+import TransactionResultDialog from '../components/TransactionResultDialog';
 import { clubeService } from '../services/clubeService';
+import { mercadoService } from '../services/mercadoService';
 import { formatCurrency, formatDateTimeBrasilia } from '../utils/formatters';
+import type { VendaResultado } from '../types/transactions';
 import './ClubeDetalhesPage.css';
 
 type JogadorDoClube = {
@@ -56,6 +59,11 @@ export default function ClubeDetalhesPage() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [jogadorVenda, setJogadorVenda] = useState<JogadorDoClube | null>(null);
+  const [erroVenda, setErroVenda] = useState('');
+  const [vendendo, setVendendo] = useState(false);
+  const [resultadoVenda, setResultadoVenda] = useState<VendaResultado | null>(null);
+  const vendaEmCurso = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,6 +92,25 @@ export default function ClubeDetalhesPage() {
     };
   }, [id, reloadKey]);
 
+  async function confirmarVenda() {
+    if (!jogadorVenda || vendaEmCurso.current) return;
+
+    vendaEmCurso.current = true;
+    setVendendo(true);
+    setErroVenda('');
+    try {
+      const resultado = (await mercadoService.venderJogador(jogadorVenda.id)) as VendaResultado;
+      setResultadoVenda(resultado);
+      setJogadorVenda(null);
+      setReloadKey((current) => current + 1);
+    } catch (requestError) {
+      setErroVenda(mensagemErro(requestError));
+    } finally {
+      vendaEmCurso.current = false;
+      setVendendo(false);
+    }
+  }
+
   return (
     <main className="club-detail-page">
       <Link className="club-detail-back" to="/clubs"><ArrowLeft size={15} />Voltar para clubes</Link>
@@ -100,6 +127,7 @@ export default function ClubeDetalhesPage() {
               <h1>{clube.name} <span>{clube.acronym}</span></h1>
               <p>Elenco e situação financeira atualizados pela API.</p>
             </div>
+            <Link className="club-detail-market-link" to="/players"><ShoppingCart size={15} />Comprar jogador livre</Link>
           </header>
 
           <section className="club-summary" aria-label="Resumo financeiro do clube">
@@ -137,6 +165,7 @@ export default function ClubeDetalhesPage() {
                     <th scope="col">Fim da fidelidade</th>
                     <th scope="col" className="club-squad-table__number">Dias restantes</th>
                     <th scope="col" className="club-squad-table__number">Multa agora</th>
+                    <th scope="col" className="club-squad-table__action">Ação</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -151,6 +180,7 @@ export default function ClubeDetalhesPage() {
                       <td>{jogador.contract?.loyalty_until ? formatDateTimeBrasilia(jogador.contract.loyalty_until) : '—'}</td>
                       <td className="club-squad-table__number">{jogador.contract?.remaining_days ?? '—'}</td>
                       <td className="club-squad-table__number">{jogador.contract ? `${jogador.contract.penalty_rate}%` : '—'}</td>
+                      <td className="club-squad-table__action"><button type="button" className="club-sell-button" disabled={Boolean(jogadorVenda) || vendendo} onClick={() => { setJogadorVenda(jogador); setErroVenda(''); }}>Vender</button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -160,6 +190,27 @@ export default function ClubeDetalhesPage() {
           </section>
         </>
       )}
+
+      {jogadorVenda && (
+        <div className="club-sell-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !vendendo) setJogadorVenda(null); }}>
+          <section className="club-sell-dialog" role="dialog" aria-modal="true" aria-labelledby="club-sell-title">
+            <button type="button" className="club-sell-dialog__close" aria-label="Fechar confirmação" disabled={vendendo} onClick={() => setJogadorVenda(null)}><X size={16} /></button>
+            <span className="club-sell-dialog__icon"><AlertTriangle size={18} /></span>
+            <h2 id="club-sell-title">Confirmar venda</h2>
+            <p>Vender <strong>{jogadorVenda.name}</strong>? A venda encerra o contrato e o jogador ficará livre.</p>
+            {erroVenda && <div className="club-sell-dialog__error" role="alert">{erroVenda}</div>}
+            <footer>
+              <button type="button" className="club-sell-cancel" disabled={vendendo} onClick={() => setJogadorVenda(null)}>Cancelar</button>
+              <button type="button" className="club-sell-confirm" disabled={vendendo} onClick={() => void confirmarVenda()}>
+                {vendendo ? <span className="club-sell-spinner" /> : null}
+                {vendendo ? 'Enviando...' : 'Confirmar venda'}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
+
+      {resultadoVenda && <TransactionResultDialog result={resultadoVenda} onClose={() => setResultadoVenda(null)} />}
     </main>
   );
 }

@@ -66,9 +66,27 @@ export function formatDateTimeBrasilia(value: DateInput): string {
   }).format(date);
 }
 
+export function formatDateTimeLocalBrasilia(value: DateInput = new Date()): string {
+  const date = parseDate(value);
+  if (!date) return '';
+
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: brasiliaTimeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(date);
+  const fields = Object.fromEntries(parts.map(({ type, value: part }) => [type, part]));
+
+  return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}`;
+}
+
 export function brasiliaDateTimeInputToIso(value: string): string | null {
   const date = parseDate(value);
-  if (!date || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?$/.test(value)) {
+  if (!date || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) {
     return null;
   }
 
@@ -79,10 +97,9 @@ export function brasiliaDateTimeInputToIso(value: string): string | null {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit',
     hourCycle: 'h23',
   }).formatToParts(date);
   const fields = Object.fromEntries(parts.map(({ type, value: part }) => [type, part]));
 
-  return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}:${fields.second}${brasiliaOffset}`;
+  return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}${brasiliaOffset}`;
 }
