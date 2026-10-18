@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/players")
+@CrossOrigin(origins = "*")
 public class JogadorController {
 
     private final JogadorService jogadorService;

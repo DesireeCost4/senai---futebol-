@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/mercado")
+@CrossOrigin(origins = "*")
 public class MercadoController {
 
     private final MercadoService mercadoService;
