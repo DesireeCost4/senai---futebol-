@@ -10,6 +10,9 @@ import java.util.List;
 @Repository
 public interface PartidaRepository extends JpaRepository<PartidaModel, Long> {
 
-    @Query("SELECT p FROM PartidaModel p WHERE :clubId IS NULL OR p.mandante = :clubId OR p.visitante = :clubId ORDER BY p.jogadaEm DESC, p.id DESC")
+    @Query("SELECT p FROM PartidaModel p WHERE :clubId IS NULL OR p.mandante.id = :clubId OR p.visitante.id = :clubId ORDER BY p.jogadaEm DESC, p.id DESC")
     List<PartidaModel> findByClubeIdOrAll(@Param("clubId") Long clubId);
+
+
+
 }

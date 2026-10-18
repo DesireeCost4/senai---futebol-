@@ -2,7 +2,6 @@ package com.senai.futebol.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-
 import java.time.Instant;
 
 @Entity
@@ -34,8 +33,19 @@ public class PartidaModel {
     private String formacaoVisitante;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "jogada_em", nullable = false)
+    @Column(name = "jogada_em", nullable = false, updatable = false)
     private Instant jogadaEm;
+
+    /**
+     * Garante o preenchimento automático obrigatório da data/hora
+     * antes de salvar o resultado da partida no banco de dados, evitando que chegue null onde é requisito.
+     */
+    @PrePersist
+    protected void onCreate() {
+        if (this.jogadaEm == null) {
+            this.jogadaEm = Instant.now();
+        }
+    }
 
     public Integer getId() {
         return id;
@@ -100,5 +110,4 @@ public class PartidaModel {
     public void setJogadaEm(Instant jogadaEm) {
         this.jogadaEm = jogadaEm;
     }
-
 }

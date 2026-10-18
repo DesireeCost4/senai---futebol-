@@ -59,7 +59,8 @@ public class LigaController {
     @GetMapping("/matches/{id}")
     public ResponseEntity<PartidaModel> buscarPartida(@PathVariable Long id) {
         PartidaModel p = partidaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Partida não encontrada"));
+                .orElseThrow(() -> new com.senai.futebol.exception.RecursoNotFoundException("Partida não encontrada"));
+
         return ResponseEntity.ok(p);
     }
 

@@ -2,7 +2,6 @@ package com.senai.futebol.model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
-
 import java.time.Instant;
 
 @Entity
@@ -22,8 +21,19 @@ public class EscalacoesModel {
     private JogadorModel jogador;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
-    @Column(name = "criado_em", nullable = false)
+    @Column(name = "criado_em", nullable = false, updatable = false)
     private Instant criadoEm;
+
+    /**
+     * Garante o preenchimento automático obrigatório da propriedade
+     * antes de o Hibernate enviar a instrução INSERT para o MySQL.
+     */
+    @PrePersist
+    protected void onCreate() {
+        if (this.criadoEm == null) {
+            this.criadoEm = Instant.now();
+        }
+    }
 
     public EscalacoesModelId getId() {
         return id;
@@ -56,5 +66,4 @@ public class EscalacoesModel {
     public void setCriadoEm(Instant criadoEm) {
         this.criadoEm = criadoEm;
     }
-
 }
