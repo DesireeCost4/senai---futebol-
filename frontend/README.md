@@ -4,7 +4,7 @@ Frontend React + TypeScript para o sistema de gerenciamento de futebol.
 
 ## Pré-requisitos
 
-- Node.js 18.19 ou superior e npm 9 ou superior.
+- Node.js 20.19 ou superior e npm 9 ou superior.
 - Backend disponível em `http://localhost:8080`.
 
 ## Instalação e execução
