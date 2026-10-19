@@ -381,6 +381,288 @@
   opacity: 0.65;
 }
 
+.transactions-panel {
+  overflow: hidden;
+  border: 1px solid #e2e7ec;
+  border-radius: 8px;
+  background: #fff;
+  margin-top: 18px;
+  box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.transactions-panel__header {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e9edf1;
+  padding: 12px 16px;
+}
+
+.transactions-panel__header h2 {
+  margin: 0 0 4px;
+  color: #344253;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.transactions-panel__header p {
+  margin: 0;
+  color: #8994a2;
+  font-size: 9px;
+}
+
+.transactions-export {
+  display: inline-flex;
+  min-height: 31px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 9px;
+  color: #516071;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.transactions-export:hover:not(:disabled) {
+  border-color: #b6cde7;
+  color: #256bc2;
+}
+
+.transactions-export:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.transactions-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #dfe7ef;
+  border-top-color: #2875d1;
+  border-radius: 50%;
+  animation: transaction-spin 0.8s linear infinite;
+}
+
+.transactions-filters {
+  display: flex;
+  min-height: 58px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 9px 15px;
+}
+
+.transactions-type-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.transactions-type-filter legend {
+  float: left;
+  margin-right: 9px;
+  color: #8591a0;
+  font-size: 9px;
+}
+
+.transactions-type-filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #596778;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.transactions-type-filter input {
+  width: 13px;
+  height: 13px;
+  accent-color: #2875d1;
+  margin: 0;
+}
+
+.transactions-player-filter {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #e0e5eb;
+  border-radius: 5px;
+  padding: 0 8px;
+  color: #8591a0;
+  font-size: 9px;
+}
+
+.transactions-player-filter select {
+  min-width: 145px;
+  max-width: min(250px, 48vw);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #4b5969;
+  font-size: 9px;
+}
+
+.transactions-clear-filter {
+  min-height: 28px;
+  border: 0;
+  background: transparent;
+  color: #3474b6;
+  font: inherit;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.transactions-clear-filter:hover {
+  text-decoration: underline;
+}
+
+.transactions-inline-error {
+  border-bottom: 1px solid #f0d5d6;
+  background: #fff6f6;
+  padding: 9px 14px;
+  color: #9d4149;
+  font-size: 10px;
+}
+
+.transactions-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-color: #cbd4df transparent;
+  scrollbar-width: thin;
+}
+
+.transactions-table {
+  width: 100%;
+  min-width: 920px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.transactions-table th {
+  height: 36px;
+  border-bottom: 1px solid #ebeff3;
+  background: #fbfcfd;
+  padding: 0 11px;
+  color: #83909e;
+  font-size: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.transactions-table td {
+  height: 42px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 0 11px;
+  color: #586576;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.transactions-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.transactions-table tbody tr:hover {
+  background: #fafcfb;
+}
+
+.transactions-table__money {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.transaction-type {
+  display: inline-grid;
+  min-width: 47px;
+  min-height: 19px;
+  place-items: center;
+  border-radius: 4px;
+  background: #fff4e8;
+  color: #a76b23;
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.transaction-type--venda {
+  background: #eaf7f0;
+  color: #34815d;
+}
+
+.transactions-cash-change--in {
+  color: #34815d !important;
+  font-weight: 650;
+}
+
+.transactions-cash-change--out {
+  color: #a3444d !important;
+  font-weight: 650;
+}
+
+.transactions-summary {
+  border-top: 1px solid #e9edf1;
+  background: #fbfcfd;
+  padding: 13px 15px 15px;
+}
+
+.transactions-summary h3 {
+  margin: 0 0 10px;
+  color: #586576;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.transactions-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.transactions-summary__grid article {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  border: 1px solid #e9edf1;
+  border-radius: 5px;
+  background: #fff;
+  padding: 10px;
+}
+
+.transactions-summary__grid article span {
+  min-height: 23px;
+  color: #8792a0;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.transactions-summary__grid article strong {
+  overflow: hidden;
+  color: #3d4b5b;
+  font-size: 11px;
+  font-weight: 680;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+}
+
+.transactions-summary__grid .transactions-summary__profit strong {
+  color: #34764e;
+}
+
+@keyframes transaction-spin {
+  to { transform: rotate(360deg); }
+}
+
 @media (max-width: 600px) {
   .club-detail-page {
     padding: 18px 12px 28px;
@@ -416,5 +698,39 @@
 
   .club-summary__item > strong {
     font-size: 12px;
+  }
+
+  .transactions-panel__header {
+    align-items: flex-start;
+  }
+
+  .transactions-panel__header p {
+    max-width: 210px;
+    line-height: 1.4;
+  }
+
+  .transactions-filters {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+    padding: 10px 12px;
+  }
+
+  .transactions-player-filter {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .transactions-player-filter select {
+    max-width: 65%;
+    flex: 1;
+  }
+
+  .transactions-summary__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transactions-summary__grid .transactions-summary__profit {
+    grid-column: 1 / -1;
   }
 }

@@ -30,3 +30,32 @@ export type VendaResultado = {
 };
 
 export type ResultadoTransacao = CompraResultado | VendaResultado;
+
+export type TipoTransacao = 'COMPRA' | 'VENDA';
+
+export type Transacao = {
+  id: number;
+  club_id: number;
+  player_id: number;
+  player_name: string;
+  type: TipoTransacao;
+  value: number | string;
+  fee: number | string;
+  penalty: number | string;
+  profit: number | string | null;
+  cash_change: number | string;
+  created_at: string;
+};
+
+export type TransacoesSummary = {
+  total_spent: number | string;
+  total_received: number | string;
+  total_fees: number | string;
+  total_penalties: number | string;
+  total_profit: number | string;
+};
+
+export type HistoricoTransacoes = {
+  data: Transacao[];
+  summary: TransacoesSummary;
+};

@@ -6,8 +6,9 @@ import { EmptyState, ErrorState, LoadingState } from '../components/RequestState
 import TransactionResultDialog from '../components/TransactionResultDialog';
 import { clubeService } from '../services/clubeService';
 import { mercadoService } from '../services/mercadoService';
+import { transacaoService } from '../services/transacaoService';
 import { formatCurrency, formatDateTimeBrasilia } from '../utils/formatters';
-import type { VendaResultado } from '../types/transactions';
+import type { HistoricoTransacoes, TipoTransacao, Transacao, TransacoesSummary, VendaResultado } from '../types/transactions';
 import './ClubeDetalhesPage.css';
 
 type JogadorDoClube = {
@@ -34,6 +35,19 @@ type ClubeDetalhe = {
   squad_value: number | string;
   net_worth: number | string;
   players: JogadorDoClube[];
+};
+
+type JogadorHistorico = {
+  id: number;
+  name: string;
+};
+
+const resumoVazio: TransacoesSummary = {
+  total_spent: 0,
+  total_received: 0,
+  total_fees: 0,
+  total_penalties: 0,
+  total_profit: 0,
 };
 
 function mensagemErro(error: unknown): string {
@@ -64,6 +78,16 @@ export default function ClubeDetalhesPage() {
   const [vendendo, setVendendo] = useState(false);
   const [resultadoVenda, setResultadoVenda] = useState<VendaResultado | null>(null);
   const vendaEmCurso = useRef(false);
+  const [historico, setHistorico] = useState<Transacao[]>([]);
+  const [summary, setSummary] = useState<TransacoesSummary>(resumoVazio);
+  const [historicoCarregando, setHistoricoCarregando] = useState(true);
+  const [historicoErro, setHistoricoErro] = useState('');
+  const [jogadoresHistorico, setJogadoresHistorico] = useState<JogadorHistorico[]>([]);
+  const [tiposSelecionados, setTiposSelecionados] = useState<TipoTransacao[]>([]);
+  const [jogadorHistoricoId, setJogadorHistoricoId] = useState('');
+  const [historicoReloadKey, setHistoricoReloadKey] = useState(0);
+  const [exportando, setExportando] = useState(false);
+  const [erroExportacao, setErroExportacao] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -92,6 +116,61 @@ export default function ClubeDetalhesPage() {
     };
   }, [id, reloadKey]);
 
+  useEffect(() => {
+    if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) return undefined;
+    let cancelled = false;
+
+    async function carregarOpcoesJogador() {
+      try {
+        const resultado = await transacaoService.listarPorClube(Number(id));
+        if (cancelled) return;
+        const unicos = new Map<number, JogadorHistorico>();
+        resultado.data.forEach((transacao) => {
+          unicos.set(transacao.player_id, { id: transacao.player_id, name: transacao.player_name });
+        });
+        setJogadoresHistorico([...unicos.values()].sort((first, second) => first.name.localeCompare(second.name, 'pt-BR')));
+      } catch {
+        if (!cancelled) setJogadoresHistorico([]);
+      }
+    }
+
+    void carregarOpcoesJogador();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, historicoReloadKey]);
+
+  useEffect(() => {
+    if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) return undefined;
+    let cancelled = false;
+
+    async function carregarHistorico() {
+      setHistoricoCarregando(true);
+      setHistoricoErro('');
+      setHistorico([]);
+      setSummary(resumoVazio);
+      try {
+        const resultado: HistoricoTransacoes = await transacaoService.listarPorClube(Number(id), {
+          types: tiposSelecionados,
+          playerId: jogadorHistoricoId ? Number(jogadorHistoricoId) : undefined,
+        });
+        if (!cancelled) {
+          setHistorico(resultado.data ?? []);
+          setSummary(resultado.summary ?? resumoVazio);
+        }
+      } catch (requestError) {
+        if (!cancelled) setHistoricoErro(mensagemErro(requestError));
+      } finally {
+        if (!cancelled) setHistoricoCarregando(false);
+      }
+    }
+
+    void carregarHistorico();
+    return () => {
+      cancelled = true;
+    };
+  }, [id, tiposSelecionados, jogadorHistoricoId, historicoReloadKey]);
+
   async function confirmarVenda() {
     if (!jogadorVenda || vendaEmCurso.current) return;
 
@@ -103,11 +182,57 @@ export default function ClubeDetalhesPage() {
       setResultadoVenda(resultado);
       setJogadorVenda(null);
       setReloadKey((current) => current + 1);
+      setHistoricoReloadKey((current) => current + 1);
     } catch (requestError) {
       setErroVenda(mensagemErro(requestError));
     } finally {
       vendaEmCurso.current = false;
       setVendendo(false);
+    }
+  }
+
+  function alternarTipo(tipo: TipoTransacao) {
+    setTiposSelecionados((current) => current.includes(tipo)
+      ? current.filter((selected) => selected !== tipo)
+      : [...current, tipo]);
+  }
+
+  function limparFiltrosHistorico() {
+    setTiposSelecionados([]);
+    setJogadorHistoricoId('');
+  }
+
+  async function exportarHistorico() {
+    if (!id || exportando) return;
+    setExportando(true);
+    setErroExportacao('');
+    try {
+      const arquivo = await transacaoService.exportarCsv(Number(id), {
+        types: tiposSelecionados,
+        playerId: jogadorHistoricoId ? Number(jogadorHistoricoId) : undefined,
+      });
+      const url = URL.createObjectURL(arquivo.blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = arquivo.filename;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (requestError) {
+      const responseData = isAxiosError(requestError) ? requestError.response?.data : undefined;
+      if (responseData instanceof Blob) {
+        try {
+          const body = JSON.parse(await responseData.text()) as { message?: string };
+          setErroExportacao(body.message || 'Não foi possível exportar o histórico.');
+        } catch {
+          setErroExportacao('Não foi possível exportar o histórico.');
+        }
+      } else {
+        setErroExportacao(mensagemErro(requestError));
+      }
+    } finally {
+      setExportando(false);
     }
   }
 
@@ -187,6 +312,88 @@ export default function ClubeDetalhesPage() {
               </table>
               {!clube.players?.length && <EmptyState message="Este clube ainda não tem jogadores no elenco." />}
             </div>
+          </section>
+
+          <section className="transactions-panel" aria-labelledby="transactions-title">
+            <header className="transactions-panel__header">
+              <div>
+                <h2 id="transactions-title">Histórico de transações</h2>
+                <p>Compras e vendas do clube, em ordem da mais recente.</p>
+              </div>
+              <button type="button" className="transactions-export" onClick={() => void exportarHistorico()} disabled={exportando || historicoCarregando}>
+                {exportando ? <span className="transactions-spinner" /> : <span aria-hidden="true">↓</span>}
+                {exportando ? 'Exportando...' : 'Exportar CSV'}
+              </button>
+            </header>
+
+            <div className="transactions-filters">
+              <fieldset className="transactions-type-filter">
+                <legend>Tipo</legend>
+                <label><input type="checkbox" checked={tiposSelecionados.includes('COMPRA')} onChange={() => alternarTipo('COMPRA')} />Compra</label>
+                <label><input type="checkbox" checked={tiposSelecionados.includes('VENDA')} onChange={() => alternarTipo('VENDA')} />Venda</label>
+              </fieldset>
+              <label className="transactions-player-filter">
+                <span>Jogador</span>
+                <select value={jogadorHistoricoId} onChange={(event) => setJogadorHistoricoId(event.target.value)}>
+                  <option value="">Todos os jogadores</option>
+                  {jogadoresHistorico.map((jogador) => <option key={jogador.id} value={jogador.id}>{jogador.name}</option>)}
+                </select>
+              </label>
+              {(tiposSelecionados.length > 0 || jogadorHistoricoId) && <button type="button" className="transactions-clear-filter" onClick={limparFiltrosHistorico}>Limpar filtros</button>}
+            </div>
+
+            {erroExportacao && <div className="transactions-inline-error" role="alert">{erroExportacao}</div>}
+            {historicoErro && <div className="transactions-inline-error" role="alert">{historicoErro}</div>}
+
+            <div className="transactions-table-wrap" role="region" aria-label="Tabela de transações" tabIndex={0}>
+              <table className="transactions-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Data e hora</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Jogador</th>
+                    <th scope="col" className="transactions-table__money">Valor</th>
+                    <th scope="col" className="transactions-table__money">Taxa / comissão</th>
+                    <th scope="col" className="transactions-table__money">Multa</th>
+                    <th scope="col" className="transactions-table__money">Lucro</th>
+                    <th scope="col" className="transactions-table__money">Variação da caixa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {!historicoCarregando && !historicoErro && historico.map((transacao) => {
+                    const variacao = Number(transacao.cash_change);
+                    const sinal = variacao < 0 ? '-' : '+';
+                    return (
+                      <tr key={transacao.id}>
+                        <td>{formatDateTimeBrasilia(transacao.created_at)}</td>
+                        <td><span className={`transaction-type transaction-type--${transacao.type.toLowerCase()}`}>{transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}</span></td>
+                        <td>{transacao.player_name}</td>
+                        <td className="transactions-table__money">{formatCurrency(transacao.value)}</td>
+                        <td className="transactions-table__money">{formatCurrency(transacao.fee)}</td>
+                        <td className="transactions-table__money">{formatCurrency(transacao.penalty)}</td>
+                        <td className="transactions-table__money">{formatCurrency(transacao.profit)}</td>
+                        <td className={`transactions-table__money transactions-cash-change ${variacao < 0 ? 'transactions-cash-change--out' : 'transactions-cash-change--in'}`}>
+                          {sinal} {formatCurrency(Math.abs(variacao))}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {historicoCarregando && <LoadingState message="Carregando transações..." />}
+              {!historicoCarregando && !historicoErro && historico.length === 0 && <EmptyState message="Nenhuma transação corresponde aos filtros." />}
+            </div>
+
+            <section className="transactions-summary" aria-label="Resumo financeiro das transações filtradas">
+              <h3>Resumo financeiro</h3>
+              <div className="transactions-summary__grid">
+                <article><span>Total pago em compras</span><strong>{formatCurrency(summary.total_spent)}</strong></article>
+                <article><span>Total recebido em vendas</span><strong>{formatCurrency(summary.total_received)}</strong></article>
+                <article><span>Taxas e comissões</span><strong>{formatCurrency(summary.total_fees)}</strong></article>
+                <article><span>Multas</span><strong>{formatCurrency(summary.total_penalties)}</strong></article>
+                <article className="transactions-summary__profit"><span>Lucro total</span><strong>{formatCurrency(summary.total_profit)}</strong></article>
+              </div>
+            </section>
           </section>
         </>
       )}
