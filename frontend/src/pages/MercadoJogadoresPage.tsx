@@ -7,7 +7,11 @@ import TransactionResultDialog from '../components/TransactionResultDialog';
 import { clubeService } from '../services/clubeService';
 import { jogadorService } from '../services/jogadorService';
 import { mercadoService } from '../services/mercadoService';
-import { brasiliaDateTimeInputToIso, formatCurrency, formatDateTimeLocalBrasilia } from '../utils/formatters';
+import {
+  brasiliaDateTimeInputToIso,
+  formatCurrency,
+  formatDateTimeLocalBrasilia,
+} from '../utils/formatters';
 import type { CompraResultado } from '../types/transactions';
 import './MercadoJogadoresPage.css';
 
@@ -52,7 +56,9 @@ export default function MercadoJogadoresPage() {
   const [reloadKey, setReloadKey] = useState(0);
   const [jogadorCompra, setJogadorCompra] = useState<JogadorLivre | null>(null);
   const [clubeId, setClubeId] = useState('');
-  const [fidelidadeAte, setFidelidadeAte] = useState(() => formatDateTimeLocalBrasilia(new Date(Date.now() + 24 * 60 * 60 * 1000)));
+  const [fidelidadeAte, setFidelidadeAte] = useState(() =>
+    formatDateTimeLocalBrasilia(new Date(Date.now() + 24 * 60 * 60 * 1000)),
+  );
   const [errosCampos, setErrosCampos] = useState<{ clubId?: string; loyaltyUntil?: string }>({});
   const [erroCompra, setErroCompra] = useState('');
   const [comprando, setComprando] = useState(false);
@@ -67,7 +73,12 @@ export default function MercadoJogadoresPage() {
       setErro('');
       try {
         const [paginaJogadores, listaClubes] = await Promise.all([
-          jogadorService.listarJogadores({ free: true, search: busca.trim() || undefined, page: pagina, limit: 10 }) as Promise<PaginaJogadores>,
+          jogadorService.listarJogadores({
+            free: true,
+            search: busca.trim() || undefined,
+            page: pagina,
+            limit: 10,
+          }) as Promise<PaginaJogadores>,
           clubeService.listarClubes('name') as Promise<ClubeOption[]>,
         ]);
         if (!cancelled) {
@@ -93,7 +104,8 @@ export default function MercadoJogadoresPage() {
     const errors: { clubId?: string; loyaltyUntil?: string } = {};
     if (!clubeId) errors.clubId = 'Selecione o clube comprador.';
     if (!fidelidadeAte) errors.loyaltyUntil = 'Informe o fim da fidelidade.';
-    else if (!brasiliaDateTimeInputToIso(fidelidadeAte)) errors.loyaltyUntil = 'Informe uma data e hora válidas.';
+    else if (!brasiliaDateTimeInputToIso(fidelidadeAte))
+      errors.loyaltyUntil = 'Informe uma data e hora válidas.';
     setErrosCampos(errors);
     return Object.keys(errors).length === 0;
   }
@@ -134,9 +146,14 @@ export default function MercadoJogadoresPage() {
 
   return (
     <main className="market-players-page">
-      <Link className="market-players-back" to="/clubs"><ArrowLeft size={15} />Voltar para clubes</Link>
+      <Link className="market-players-back" to="/clubs">
+        <ArrowLeft size={15} />
+        Voltar para clubes
+      </Link>
       <header className="market-players-header">
-        <span className="market-players-header__icon"><ShoppingCart size={19} /></span>
+        <span className="market-players-header__icon">
+          <ShoppingCart size={19} />
+        </span>
         <div>
           <div className="market-players-header__eyebrow">Mercado de transferências</div>
           <h1>Jogadores livres</h1>
@@ -153,11 +170,23 @@ export default function MercadoJogadoresPage() {
           <label className="market-players-search">
             <Search size={15} />
             <span className="sr-only">Buscar jogador livre</span>
-            <input value={busca} onChange={(event) => { setBusca(event.target.value); setPagina(1); }} placeholder="Buscar jogador..." />
+            <input
+              value={busca}
+              onChange={(event) => {
+                setBusca(event.target.value);
+                setPagina(1);
+              }}
+              placeholder="Buscar jogador..."
+            />
           </label>
         </header>
 
-        <div className="market-players-table-scroll" role="region" aria-label="Jogadores disponíveis para compra" tabIndex={0}>
+        <div
+          className="market-players-table-scroll"
+          role="region"
+          aria-label="Jogadores disponíveis para compra"
+          tabIndex={0}
+        >
           <table className="market-players-table">
             <thead>
               <tr>
@@ -166,66 +195,174 @@ export default function MercadoJogadoresPage() {
                 <th scope="col">Global</th>
                 <th scope="col">Idade</th>
                 <th scope="col">Condição</th>
-                <th scope="col" className="market-players-table__money">Valor de mercado</th>
-                <th scope="col" className="market-players-table__action">Ação</th>
+                <th scope="col" className="market-players-table__money">
+                  Valor de mercado
+                </th>
+                <th scope="col" className="market-players-table__action">
+                  Ação
+                </th>
               </tr>
             </thead>
             <tbody>
-              {!carregando && !erro && jogadores.map((jogador) => (
-                <tr key={jogador.id}>
-                  <td><strong>{jogador.name}</strong><small>#{jogador.id}</small></td>
-                  <td><span className="market-position">{jogador.position}</span></td>
-                  <td>{jogador.overall}</td>
-                  <td>{jogador.age}</td>
-                  <td>{jogador.condition === 'APTO' ? 'Apto' : jogador.condition === 'DOENTE' ? 'Doente' : 'Mal condicionado'}</td>
-                  <td className="market-players-table__money">{formatCurrency(jogador.market_value)}</td>
-                  <td className="market-players-table__action">
-                    <button className="market-buy-button" type="button" disabled={Boolean(jogadorCompra) || comprando} onClick={() => abrirCompra(jogador)}>
-                      <ShoppingCart size={14} />Comprar
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {!carregando &&
+                !erro &&
+                jogadores.map((jogador) => (
+                  <tr key={jogador.id}>
+                    <td>
+                      <strong>{jogador.name}</strong>
+                      <small>#{jogador.id}</small>
+                    </td>
+                    <td>
+                      <span className="market-position">{jogador.position}</span>
+                    </td>
+                    <td>{jogador.overall}</td>
+                    <td>{jogador.age}</td>
+                    <td>
+                      {jogador.condition === 'APTO'
+                        ? 'Apto'
+                        : jogador.condition === 'DOENTE'
+                          ? 'Doente'
+                          : 'Mal condicionado'}
+                    </td>
+                    <td className="market-players-table__money">
+                      {formatCurrency(jogador.market_value)}
+                    </td>
+                    <td className="market-players-table__action">
+                      <button
+                        className="market-buy-button"
+                        type="button"
+                        disabled={Boolean(jogadorCompra) || comprando}
+                        onClick={() => abrirCompra(jogador)}
+                      >
+                        <ShoppingCart size={14} />
+                        Comprar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
           {carregando && <LoadingState message="Carregando jogadores livres..." />}
-          {!carregando && erro && <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />}
-          {!carregando && !erro && jogadores.length === 0 && <EmptyState message="Nenhum jogador livre encontrado." />}
+          {!carregando && erro && (
+            <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
+          )}
+          {!carregando && !erro && jogadores.length === 0 && (
+            <EmptyState message="Nenhum jogador livre encontrado." />
+          )}
         </div>
 
         <footer className="market-players-footer">
-          <span>{total === 0 ? 'Nenhum resultado' : `Página ${pagina} de ${Math.max(totalPaginas, 1)} · ${total} jogadores`}</span>
+          <span>
+            {total === 0
+              ? 'Nenhum resultado'
+              : `Página ${pagina} de ${Math.max(totalPaginas, 1)} · ${total} jogadores`}
+          </span>
           <div>
-            <button type="button" aria-label="Página anterior" disabled={carregando || pagina <= 1} onClick={() => setPagina((current) => Math.max(1, current - 1))}>‹</button>
-            <button type="button" aria-label="Próxima página" disabled={carregando || pagina >= totalPaginas} onClick={() => setPagina((current) => Math.min(totalPaginas, current + 1))}>›</button>
+            <button
+              type="button"
+              aria-label="Página anterior"
+              disabled={carregando || pagina <= 1}
+              onClick={() => setPagina((current) => Math.max(1, current - 1))}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              aria-label="Próxima página"
+              disabled={carregando || pagina >= totalPaginas}
+              onClick={() => setPagina((current) => Math.min(totalPaginas, current + 1))}
+            >
+              ›
+            </button>
           </div>
         </footer>
       </section>
 
       {jogadorCompra && (
-        <div className="market-buy-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !comprando) setJogadorCompra(null); }}>
-          <section className="market-buy-dialog" role="dialog" aria-modal="true" aria-labelledby="market-buy-title">
-            <button className="market-buy-dialog__close" type="button" aria-label="Fechar compra" disabled={comprando} onClick={() => setJogadorCompra(null)}>×</button>
-            <span className="market-buy-dialog__icon"><ShoppingCart size={18} /></span>
+        <div
+          className="market-buy-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !comprando) setJogadorCompra(null);
+          }}
+        >
+          <section
+            className="market-buy-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="market-buy-title"
+          >
+            <button
+              className="market-buy-dialog__close"
+              type="button"
+              aria-label="Fechar compra"
+              disabled={comprando}
+              onClick={() => setJogadorCompra(null)}
+            >
+              ×
+            </button>
+            <span className="market-buy-dialog__icon">
+              <ShoppingCart size={18} />
+            </span>
             <h2 id="market-buy-title">Comprar jogador</h2>
-            <p className="market-buy-dialog__player">{jogadorCompra.name} · {jogadorCompra.position} · {formatCurrency(jogadorCompra.market_value)}</p>
+            <p className="market-buy-dialog__player">
+              {jogadorCompra.name} · {jogadorCompra.position} ·{' '}
+              {formatCurrency(jogadorCompra.market_value)}
+            </p>
             <form onSubmit={confirmarCompra} noValidate>
-              {erroCompra && <div className="market-buy-error" role="alert">{erroCompra}</div>}
+              {erroCompra && (
+                <div className="market-buy-error" role="alert">
+                  {erroCompra}
+                </div>
+              )}
               <label className="market-buy-field" htmlFor="buyer-club">
-                <span>Clube comprador <b>*</b></span>
-                <select id="buyer-club" value={clubeId} onChange={(event) => { setClubeId(event.target.value); setErrosCampos((current) => ({ ...current, clubId: undefined })); }} aria-invalid={Boolean(errosCampos.clubId)}>
+                <span>
+                  Clube comprador <b>*</b>
+                </span>
+                <select
+                  id="buyer-club"
+                  value={clubeId}
+                  onChange={(event) => {
+                    setClubeId(event.target.value);
+                    setErrosCampos((current) => ({ ...current, clubId: undefined }));
+                  }}
+                  aria-invalid={Boolean(errosCampos.clubId)}
+                >
                   <option value="">Selecione um clube</option>
-                  {clubes.map((clube) => <option key={clube.id} value={clube.id}>{clube.name} ({clube.acronym})</option>)}
+                  {clubes.map((clube) => (
+                    <option key={clube.id} value={clube.id}>
+                      {clube.name} ({clube.acronym})
+                    </option>
+                  ))}
                 </select>
                 {errosCampos.clubId && <small>{errosCampos.clubId}</small>}
               </label>
               <label className="market-buy-field" htmlFor="loyalty-until">
-                <span>Fim da fidelidade <b>*</b></span>
-                <input id="loyalty-until" type="datetime-local" value={fidelidadeAte} onChange={(event) => { setFidelidadeAte(event.target.value); setErrosCampos((current) => ({ ...current, loyaltyUntil: undefined })); }} aria-invalid={Boolean(errosCampos.loyaltyUntil)} />
-                <small className={errosCampos.loyaltyUntil ? 'market-buy-field__error' : ''}>{errosCampos.loyaltyUntil || 'Horário interpretado como Brasília (UTC−3).'}</small>
+                <span>
+                  Fim da fidelidade <b>*</b>
+                </span>
+                <input
+                  id="loyalty-until"
+                  type="datetime-local"
+                  value={fidelidadeAte}
+                  onChange={(event) => {
+                    setFidelidadeAte(event.target.value);
+                    setErrosCampos((current) => ({ ...current, loyaltyUntil: undefined }));
+                  }}
+                  aria-invalid={Boolean(errosCampos.loyaltyUntil)}
+                />
+                <small className={errosCampos.loyaltyUntil ? 'market-buy-field__error' : ''}>
+                  {errosCampos.loyaltyUntil || 'Horário interpretado como Brasília (UTC−3).'}
+                </small>
               </label>
               <footer className="market-buy-dialog__actions">
-                <button type="button" className="market-buy-cancel" disabled={comprando} onClick={() => setJogadorCompra(null)}>Cancelar</button>
+                <button
+                  type="button"
+                  className="market-buy-cancel"
+                  disabled={comprando}
+                  onClick={() => setJogadorCompra(null)}
+                >
+                  Cancelar
+                </button>
                 <button type="submit" className="market-buy-confirm" disabled={comprando}>
                   {comprando ? <span className="market-spinner" /> : <ShoppingCart size={15} />}
                   {comprando ? 'Enviando...' : 'Confirmar compra'}
@@ -236,7 +373,9 @@ export default function MercadoJogadoresPage() {
         </div>
       )}
 
-      {resultado && <TransactionResultDialog result={resultado} onClose={() => setResultado(null)} />}
+      {resultado && (
+        <TransactionResultDialog result={resultado} onClose={() => setResultado(null)} />
+      )}
     </main>
   );
 }

@@ -3,12 +3,7 @@ import { isAxiosError } from 'axios';
 import { jogadorService } from '../services/jogadorService';
 
 export type OrdenacaoJogadores =
-  | 'name'
-  | 'value_asc'
-  | 'value_desc'
-  | 'age_asc'
-  | 'age_desc'
-  | 'position';
+  'name' | 'value_asc' | 'value_desc' | 'age_asc' | 'age_desc' | 'position';
 
 export type FiltrosJogadores = {
   search: string;
@@ -61,7 +56,9 @@ const pageSize = 10;
 
 function getErrorMessage(error: unknown): string {
   if (isAxiosError<{ message?: string }>(error)) {
-    return error.response?.data?.message || error.message || 'Não foi possível carregar os jogadores.';
+    return (
+      error.response?.data?.message || error.message || 'Não foi possível carregar os jogadores.'
+    );
   }
   if (error instanceof Error) return error.message;
   return 'Não foi possível carregar os jogadores.';
@@ -105,7 +102,12 @@ export function useJogadores() {
         if (!cancelled) {
           setResultado({
             data: response.data ?? [],
-            meta: response.meta ?? { page: pagina, limit: pageSize, total_items: 0, total_pages: 0 },
+            meta: response.meta ?? {
+              page: pagina,
+              limit: pageSize,
+              total_items: 0,
+              total_pages: 0,
+            },
           });
         }
       } catch (requestError) {
@@ -121,7 +123,10 @@ export function useJogadores() {
     };
   }, [filtros, ordenacao, pagina, reloadKey]);
 
-  function atualizarFiltro<Key extends keyof FiltrosJogadores>(chave: Key, valor: FiltrosJogadores[Key]) {
+  function atualizarFiltro<Key extends keyof FiltrosJogadores>(
+    chave: Key,
+    valor: FiltrosJogadores[Key],
+  ) {
     setFiltros((atuais) => ({ ...atuais, [chave]: valor }));
     setPagina(1);
   }

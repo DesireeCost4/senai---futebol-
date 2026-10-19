@@ -19,7 +19,10 @@ function montarParametros(filtros: FiltrosTransacoes = {}) {
 }
 
 export const transacaoService = {
-  async listarPorClube(clubId: number, filtros: FiltrosTransacoes = {}): Promise<HistoricoTransacoes> {
+  async listarPorClube(
+    clubId: number,
+    filtros: FiltrosTransacoes = {},
+  ): Promise<HistoricoTransacoes> {
     const response = await api.get<HistoricoTransacoes>(`/clubs/${clubId}/transactions`, {
       params: montarParametros(filtros),
     });
@@ -32,8 +35,8 @@ export const transacaoService = {
       responseType: 'blob',
     });
     const contentDisposition = response.headers['content-disposition'] as string | undefined;
-    const filename = contentDisposition?.match(/filename="?([^";]+)"?/i)?.[1]
-      ?? `transacoes_clube_${clubId}.csv`;
+    const filename =
+      contentDisposition?.match(/filename="?([^";]+)"?/i)?.[1] ?? `transacoes_clube_${clubId}.csv`;
 
     return { blob: response.data, filename };
   },

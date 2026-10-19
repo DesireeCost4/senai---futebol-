@@ -100,6 +100,9 @@ export function brasiliaDateTimeInputToIso(value: string): string | null {
     hourCycle: 'h23',
   }).formatToParts(date);
   const fields = Object.fromEntries(parts.map(({ type, value: part }) => [type, part]));
+  const normalizedValue = `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}`;
 
-  return `${fields.year}-${fields.month}-${fields.day}T${fields.hour}:${fields.minute}${brasiliaOffset}`;
+  if (normalizedValue !== value) return null;
+
+  return `${normalizedValue}${brasiliaOffset}`;
 }

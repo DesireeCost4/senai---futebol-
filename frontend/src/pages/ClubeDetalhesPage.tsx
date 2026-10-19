@@ -9,7 +9,13 @@ import { clubeService } from '../services/clubeService';
 import { mercadoService } from '../services/mercadoService';
 import { transacaoService } from '../services/transacaoService';
 import { formatCurrency, formatDateTimeBrasilia } from '../utils/formatters';
-import type { HistoricoTransacoes, TipoTransacao, Transacao, TransacoesSummary, VendaResultado } from '../types/transactions';
+import type {
+  HistoricoTransacoes,
+  TipoTransacao,
+  Transacao,
+  TransacoesSummary,
+  VendaResultado,
+} from '../types/transactions';
 import './ClubeDetalhesPage.css';
 
 type JogadorDoClube = {
@@ -53,7 +59,11 @@ const resumoVazio: TransacoesSummary = {
 
 function mensagemErro(error: unknown): string {
   if (isAxiosError<{ message?: string }>(error)) {
-    return error.response?.data?.message || error.message || 'Não foi possível carregar os detalhes do clube.';
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      'Não foi possível carregar os detalhes do clube.'
+    );
   }
   if (error instanceof Error) return error.message;
   return 'Não foi possível carregar os detalhes do clube.';
@@ -130,7 +140,11 @@ export default function ClubeDetalhesPage() {
         resultado.data.forEach((transacao) => {
           unicos.set(transacao.player_id, { id: transacao.player_id, name: transacao.player_name });
         });
-        setJogadoresHistorico([...unicos.values()].sort((first, second) => first.name.localeCompare(second.name, 'pt-BR')));
+        setJogadoresHistorico(
+          [...unicos.values()].sort((first, second) =>
+            first.name.localeCompare(second.name, 'pt-BR'),
+          ),
+        );
       } catch {
         if (!cancelled) setJogadoresHistorico([]);
       }
@@ -194,9 +208,9 @@ export default function ClubeDetalhesPage() {
   }
 
   function alternarTipo(tipo: TipoTransacao) {
-    setTiposSelecionados((current) => current.includes(tipo)
-      ? current.filter((selected) => selected !== tipo)
-      : [...current, tipo]);
+    setTiposSelecionados((current) =>
+      current.includes(tipo) ? current.filter((selected) => selected !== tipo) : [...current, tipo],
+    );
   }
 
   function limparFiltrosHistorico() {
@@ -242,22 +256,34 @@ export default function ClubeDetalhesPage() {
 
   return (
     <main className="club-detail-page">
-      <Link className="club-detail-back" to="/clubs"><ArrowLeft size={15} />Voltar para clubes</Link>
+      <Link className="club-detail-back" to="/clubs">
+        <ArrowLeft size={15} />
+        Voltar para clubes
+      </Link>
       <LeagueNavigation clubId={id ? Number(id) : undefined} />
 
       {carregando && <LoadingState message="Carregando detalhes do clube..." />}
-      {!carregando && erro && <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />}
+      {!carregando && erro && (
+        <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
+      )}
 
       {!carregando && !erro && clube && (
         <>
           <header className="club-detail-header">
-            <span className="club-detail-header__icon"><Building2 size={21} /></span>
+            <span className="club-detail-header__icon">
+              <Building2 size={21} />
+            </span>
             <div>
               <div className="club-detail-header__eyebrow">Detalhes do clube</div>
-              <h1>{clube.name} <span>{clube.acronym}</span></h1>
+              <h1>
+                {clube.name} <span>{clube.acronym}</span>
+              </h1>
               <p>Elenco e situação financeira atualizados pela API.</p>
             </div>
-            <Link className="club-detail-market-link" to="/players"><ShoppingCart size={15} />Comprar jogador livre</Link>
+            <Link className="club-detail-market-link" to="/players">
+              <ShoppingCart size={15} />
+              Comprar jogador livre
+            </Link>
           </header>
 
           <section className="club-summary" aria-label="Resumo financeiro do clube">
@@ -282,7 +308,12 @@ export default function ClubeDetalhesPage() {
                 <p>{clube.players?.length ?? 0} jogadores · ordem por posição e nome</p>
               </div>
             </header>
-            <div className="club-squad-table-wrap" role="region" aria-label="Elenco e contratos" tabIndex={0}>
+            <div
+              className="club-squad-table-wrap"
+              role="region"
+              aria-label="Elenco e contratos"
+              tabIndex={0}
+            >
               <table className="club-squad-table">
                 <thead>
                   <tr>
@@ -291,31 +322,74 @@ export default function ClubeDetalhesPage() {
                     <th scope="col">Global</th>
                     <th scope="col">Idade</th>
                     <th scope="col">Condição</th>
-                    <th scope="col" className="club-squad-table__money">Valor de mercado</th>
+                    <th scope="col" className="club-squad-table__money">
+                      Valor de mercado
+                    </th>
                     <th scope="col">Fim da fidelidade</th>
-                    <th scope="col" className="club-squad-table__number">Dias restantes</th>
-                    <th scope="col" className="club-squad-table__number">Multa agora</th>
-                    <th scope="col" className="club-squad-table__action">Ação</th>
+                    <th scope="col" className="club-squad-table__number">
+                      Dias restantes
+                    </th>
+                    <th scope="col" className="club-squad-table__number">
+                      Multa agora
+                    </th>
+                    <th scope="col" className="club-squad-table__action">
+                      Ação
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {clube.players?.map((jogador) => (
                     <tr key={jogador.id}>
-                      <td><strong>{jogador.name}</strong><small>#{jogador.id}</small></td>
-                      <td><span className="club-position">{jogador.position}</span></td>
+                      <td>
+                        <strong>{jogador.name}</strong>
+                        <small>#{jogador.id}</small>
+                      </td>
+                      <td>
+                        <span className="club-position">{jogador.position}</span>
+                      </td>
                       <td className="club-squad-table__number">{jogador.overall}</td>
                       <td className="club-squad-table__number">{jogador.age}</td>
-                      <td><span className={`club-condition club-condition--${jogador.condition.toLowerCase()}`}>{conditionLabel(jogador.condition)}</span></td>
-                      <td className="club-squad-table__money">{formatCurrency(jogador.market_value)}</td>
-                      <td>{jogador.contract?.loyalty_until ? formatDateTimeBrasilia(jogador.contract.loyalty_until) : '—'}</td>
-                      <td className="club-squad-table__number">{jogador.contract?.remaining_days ?? '—'}</td>
-                      <td className="club-squad-table__number">{jogador.contract ? `${jogador.contract.penalty_rate}%` : '—'}</td>
-                      <td className="club-squad-table__action"><button type="button" className="club-sell-button" disabled={Boolean(jogadorVenda) || vendendo} onClick={() => { setJogadorVenda(jogador); setErroVenda(''); }}>Vender</button></td>
+                      <td>
+                        <span
+                          className={`club-condition club-condition--${jogador.condition.toLowerCase()}`}
+                        >
+                          {conditionLabel(jogador.condition)}
+                        </span>
+                      </td>
+                      <td className="club-squad-table__money">
+                        {formatCurrency(jogador.market_value)}
+                      </td>
+                      <td>
+                        {jogador.contract?.loyalty_until
+                          ? formatDateTimeBrasilia(jogador.contract.loyalty_until)
+                          : '—'}
+                      </td>
+                      <td className="club-squad-table__number">
+                        {jogador.contract?.remaining_days ?? '—'}
+                      </td>
+                      <td className="club-squad-table__number">
+                        {jogador.contract ? `${jogador.contract.penalty_rate}%` : '—'}
+                      </td>
+                      <td className="club-squad-table__action">
+                        <button
+                          type="button"
+                          className="club-sell-button"
+                          disabled={Boolean(jogadorVenda) || vendendo}
+                          onClick={() => {
+                            setJogadorVenda(jogador);
+                            setErroVenda('');
+                          }}
+                        >
+                          Vender
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {!clube.players?.length && <EmptyState message="Este clube ainda não tem jogadores no elenco." />}
+              {!clube.players?.length && (
+                <EmptyState message="Este clube ainda não tem jogadores no elenco." />
+              )}
             </div>
           </section>
 
@@ -325,8 +399,17 @@ export default function ClubeDetalhesPage() {
                 <h2 id="transactions-title">Histórico de transações</h2>
                 <p>Compras e vendas do clube, em ordem da mais recente.</p>
               </div>
-              <button type="button" className="transactions-export" onClick={() => void exportarHistorico()} disabled={exportando || historicoCarregando}>
-                {exportando ? <span className="transactions-spinner" /> : <span aria-hidden="true">↓</span>}
+              <button
+                type="button"
+                className="transactions-export"
+                onClick={() => void exportarHistorico()}
+                disabled={exportando || historicoCarregando}
+              >
+                {exportando ? (
+                  <span className="transactions-spinner" />
+                ) : (
+                  <span aria-hidden="true">↓</span>
+                )}
                 {exportando ? 'Exportando...' : 'Exportar CSV'}
               </button>
             </header>
@@ -334,69 +417,159 @@ export default function ClubeDetalhesPage() {
             <div className="transactions-filters">
               <fieldset className="transactions-type-filter">
                 <legend>Tipo</legend>
-                <label><input type="checkbox" checked={tiposSelecionados.includes('COMPRA')} onChange={() => alternarTipo('COMPRA')} />Compra</label>
-                <label><input type="checkbox" checked={tiposSelecionados.includes('VENDA')} onChange={() => alternarTipo('VENDA')} />Venda</label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={tiposSelecionados.includes('COMPRA')}
+                    onChange={() => alternarTipo('COMPRA')}
+                  />
+                  Compra
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={tiposSelecionados.includes('VENDA')}
+                    onChange={() => alternarTipo('VENDA')}
+                  />
+                  Venda
+                </label>
               </fieldset>
               <label className="transactions-player-filter">
                 <span>Jogador</span>
-                <select value={jogadorHistoricoId} onChange={(event) => setJogadorHistoricoId(event.target.value)}>
+                <select
+                  value={jogadorHistoricoId}
+                  onChange={(event) => setJogadorHistoricoId(event.target.value)}
+                >
                   <option value="">Todos os jogadores</option>
-                  {jogadoresHistorico.map((jogador) => <option key={jogador.id} value={jogador.id}>{jogador.name}</option>)}
+                  {jogadoresHistorico.map((jogador) => (
+                    <option key={jogador.id} value={jogador.id}>
+                      {jogador.name}
+                    </option>
+                  ))}
                 </select>
               </label>
-              {(tiposSelecionados.length > 0 || jogadorHistoricoId) && <button type="button" className="transactions-clear-filter" onClick={limparFiltrosHistorico}>Limpar filtros</button>}
+              {(tiposSelecionados.length > 0 || jogadorHistoricoId) && (
+                <button
+                  type="button"
+                  className="transactions-clear-filter"
+                  onClick={limparFiltrosHistorico}
+                >
+                  Limpar filtros
+                </button>
+              )}
             </div>
 
-            {erroExportacao && <div className="transactions-inline-error" role="alert">{erroExportacao}</div>}
-            {historicoErro && <div className="transactions-inline-error" role="alert">{historicoErro}</div>}
+            {erroExportacao && (
+              <div className="transactions-inline-error" role="alert">
+                {erroExportacao}
+              </div>
+            )}
+            {historicoErro && (
+              <div className="transactions-inline-error" role="alert">
+                {historicoErro}
+              </div>
+            )}
 
-            <div className="transactions-table-wrap" role="region" aria-label="Tabela de transações" tabIndex={0}>
+            <div
+              className="transactions-table-wrap"
+              role="region"
+              aria-label="Tabela de transações"
+              tabIndex={0}
+            >
               <table className="transactions-table">
                 <thead>
                   <tr>
                     <th scope="col">Data e hora</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Jogador</th>
-                    <th scope="col" className="transactions-table__money">Valor</th>
-                    <th scope="col" className="transactions-table__money">Taxa / comissão</th>
-                    <th scope="col" className="transactions-table__money">Multa</th>
-                    <th scope="col" className="transactions-table__money">Lucro</th>
-                    <th scope="col" className="transactions-table__money">Variação da caixa</th>
+                    <th scope="col" className="transactions-table__money">
+                      Valor
+                    </th>
+                    <th scope="col" className="transactions-table__money">
+                      Taxa / comissão
+                    </th>
+                    <th scope="col" className="transactions-table__money">
+                      Multa
+                    </th>
+                    <th scope="col" className="transactions-table__money">
+                      Lucro
+                    </th>
+                    <th scope="col" className="transactions-table__money">
+                      Variação da caixa
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {!historicoCarregando && !historicoErro && historico.map((transacao) => {
-                    const variacao = Number(transacao.cash_change);
-                    const sinal = variacao < 0 ? '-' : '+';
-                    return (
-                      <tr key={transacao.id}>
-                        <td>{formatDateTimeBrasilia(transacao.created_at)}</td>
-                        <td><span className={`transaction-type transaction-type--${transacao.type.toLowerCase()}`}>{transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}</span></td>
-                        <td>{transacao.player_name}</td>
-                        <td className="transactions-table__money">{formatCurrency(transacao.value)}</td>
-                        <td className="transactions-table__money">{formatCurrency(transacao.fee)}</td>
-                        <td className="transactions-table__money">{formatCurrency(transacao.penalty)}</td>
-                        <td className="transactions-table__money">{formatCurrency(transacao.profit)}</td>
-                        <td className={`transactions-table__money transactions-cash-change ${variacao < 0 ? 'transactions-cash-change--out' : 'transactions-cash-change--in'}`}>
-                          {sinal} {formatCurrency(Math.abs(variacao))}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {!historicoCarregando &&
+                    !historicoErro &&
+                    historico.map((transacao) => {
+                      const variacao = Number(transacao.cash_change);
+                      const sinal = variacao < 0 ? '-' : '+';
+                      return (
+                        <tr key={transacao.id}>
+                          <td>{formatDateTimeBrasilia(transacao.created_at)}</td>
+                          <td>
+                            <span
+                              className={`transaction-type transaction-type--${transacao.type.toLowerCase()}`}
+                            >
+                              {transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}
+                            </span>
+                          </td>
+                          <td>{transacao.player_name}</td>
+                          <td className="transactions-table__money">
+                            {formatCurrency(transacao.value)}
+                          </td>
+                          <td className="transactions-table__money">
+                            {formatCurrency(transacao.fee)}
+                          </td>
+                          <td className="transactions-table__money">
+                            {formatCurrency(transacao.penalty)}
+                          </td>
+                          <td className="transactions-table__money">
+                            {formatCurrency(transacao.profit)}
+                          </td>
+                          <td
+                            className={`transactions-table__money transactions-cash-change ${variacao < 0 ? 'transactions-cash-change--out' : 'transactions-cash-change--in'}`}
+                          >
+                            {sinal} {formatCurrency(Math.abs(variacao))}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
               {historicoCarregando && <LoadingState message="Carregando transações..." />}
-              {!historicoCarregando && !historicoErro && historico.length === 0 && <EmptyState message="Nenhuma transação corresponde aos filtros." />}
+              {!historicoCarregando && !historicoErro && historico.length === 0 && (
+                <EmptyState message="Nenhuma transação corresponde aos filtros." />
+              )}
             </div>
 
-            <section className="transactions-summary" aria-label="Resumo financeiro das transações filtradas">
+            <section
+              className="transactions-summary"
+              aria-label="Resumo financeiro das transações filtradas"
+            >
               <h3>Resumo financeiro</h3>
               <div className="transactions-summary__grid">
-                <article><span>Total pago em compras</span><strong>{formatCurrency(summary.total_spent)}</strong></article>
-                <article><span>Total recebido em vendas</span><strong>{formatCurrency(summary.total_received)}</strong></article>
-                <article><span>Taxas e comissões</span><strong>{formatCurrency(summary.total_fees)}</strong></article>
-                <article><span>Multas</span><strong>{formatCurrency(summary.total_penalties)}</strong></article>
-                <article className="transactions-summary__profit"><span>Lucro total</span><strong>{formatCurrency(summary.total_profit)}</strong></article>
+                <article>
+                  <span>Total pago em compras</span>
+                  <strong>{formatCurrency(summary.total_spent)}</strong>
+                </article>
+                <article>
+                  <span>Total recebido em vendas</span>
+                  <strong>{formatCurrency(summary.total_received)}</strong>
+                </article>
+                <article>
+                  <span>Taxas e comissões</span>
+                  <strong>{formatCurrency(summary.total_fees)}</strong>
+                </article>
+                <article>
+                  <span>Multas</span>
+                  <strong>{formatCurrency(summary.total_penalties)}</strong>
+                </article>
+                <article className="transactions-summary__profit">
+                  <span>Lucro total</span>
+                  <strong>{formatCurrency(summary.total_profit)}</strong>
+                </article>
               </div>
             </section>
           </section>
@@ -404,16 +577,55 @@ export default function ClubeDetalhesPage() {
       )}
 
       {jogadorVenda && (
-        <div className="club-sell-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !vendendo) setJogadorVenda(null); }}>
-          <section className="club-sell-dialog" role="dialog" aria-modal="true" aria-labelledby="club-sell-title">
-            <button type="button" className="club-sell-dialog__close" aria-label="Fechar confirmação" disabled={vendendo} onClick={() => setJogadorVenda(null)}><X size={16} /></button>
-            <span className="club-sell-dialog__icon"><AlertTriangle size={18} /></span>
+        <div
+          className="club-sell-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !vendendo) setJogadorVenda(null);
+          }}
+        >
+          <section
+            className="club-sell-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="club-sell-title"
+          >
+            <button
+              type="button"
+              className="club-sell-dialog__close"
+              aria-label="Fechar confirmação"
+              disabled={vendendo}
+              onClick={() => setJogadorVenda(null)}
+            >
+              <X size={16} />
+            </button>
+            <span className="club-sell-dialog__icon">
+              <AlertTriangle size={18} />
+            </span>
             <h2 id="club-sell-title">Confirmar venda</h2>
-            <p>Vender <strong>{jogadorVenda.name}</strong>? A venda encerra o contrato e o jogador ficará livre.</p>
-            {erroVenda && <div className="club-sell-dialog__error" role="alert">{erroVenda}</div>}
+            <p>
+              Vender <strong>{jogadorVenda.name}</strong>? A venda encerra o contrato e o jogador
+              ficará livre.
+            </p>
+            {erroVenda && (
+              <div className="club-sell-dialog__error" role="alert">
+                {erroVenda}
+              </div>
+            )}
             <footer>
-              <button type="button" className="club-sell-cancel" disabled={vendendo} onClick={() => setJogadorVenda(null)}>Cancelar</button>
-              <button type="button" className="club-sell-confirm" disabled={vendendo} onClick={() => void confirmarVenda()}>
+              <button
+                type="button"
+                className="club-sell-cancel"
+                disabled={vendendo}
+                onClick={() => setJogadorVenda(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="club-sell-confirm"
+                disabled={vendendo}
+                onClick={() => void confirmarVenda()}
+              >
                 {vendendo ? <span className="club-sell-spinner" /> : null}
                 {vendendo ? 'Enviando...' : 'Confirmar venda'}
               </button>
@@ -422,7 +634,9 @@ export default function ClubeDetalhesPage() {
         </div>
       )}
 
-      {resultadoVenda && <TransactionResultDialog result={resultadoVenda} onClose={() => setResultadoVenda(null)} />}
+      {resultadoVenda && (
+        <TransactionResultDialog result={resultadoVenda} onClose={() => setResultadoVenda(null)} />
+      )}
     </main>
   );
 }
