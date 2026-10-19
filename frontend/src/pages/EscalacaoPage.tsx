@@ -1,17 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { ArrowLeft, Check, Shield, UsersRound } from 'lucide-react';
+import { Check, Shield, UsersRound } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
-import LeagueNavigation from '../components/LeagueNavigation';
+import ClubTabs from '../components/ClubTabs';
 import { clubeService } from '../services/clubeService';
 import { ligaService } from '../services/ligaService';
+import { formatCurrency } from '../utils/formatters';
 import type { Lineup, Player } from '../types/league';
 import './EscalacaoPage.css';
 
 type Setor = 'GOL' | 'DEF' | 'MEI' | 'ATA';
 type Slot = { key: string; label: string; sector: Setor };
-type ClubeElenco = { id: number; name: string; acronym: string; players: Player[] };
+type ClubeElenco = {
+  id: number;
+  name: string;
+  acronym: string;
+  cash: number | string;
+  squad_value: number | string;
+  net_worth: number | string;
+  players: Player[];
+};
 
 const formations = ['3-1', '2-2', '2-1-1', '1-2-1'];
 
@@ -187,21 +196,44 @@ export default function EscalacaoPage() {
 
   return (
     <main className="lineup-page">
-      <Link className="lineup-back" to={`/clubs/${clubId}`}>
-        <ArrowLeft size={15} />
-        Voltar para {club?.name ?? 'clube'}
-      </Link>
-      <LeagueNavigation clubId={clubId} active="lineup" />
       <header className="lineup-header">
         <span className="lineup-header__icon">
           <Shield size={20} />
         </span>
         <div>
-          <div className="lineup-header__eyebrow">{club?.acronym} · Liga</div>
-          <h1>Escalação</h1>
-          <p>Escolha uma formação e os cinco titulares do clube.</p>
+          <div className="lineup-header__eyebrow">Detalhes do clube</div>
+          <h1>{club?.name} <span>{club?.acronym}</span></h1>
+          <p>Elenco e situação financeira atualizados pela API.</p>
         </div>
       </header>
+
+      {club && (
+        <>
+          <section className="club-summary lineup-summary" aria-label="Resumo financeiro do clube">
+            <article className="club-summary__item">
+              <span>Caixa</span>
+              <strong>{formatCurrency(club.cash)}</strong>
+              <small>Só muda por compras e vendas</small>
+            </article>
+            <article className="club-summary__item">
+              <span>Valor do elenco</span>
+              <strong>{formatCurrency(club.squad_value)}</strong>
+              <small>Soma dos valores de mercado</small>
+            </article>
+            <article className="club-summary__item club-summary__item--net-worth">
+              <span>Patrimônio</span>
+              <strong>{formatCurrency(club.net_worth)}</strong>
+              <small>Caixa + valor do elenco</small>
+            </article>
+            <article className="club-summary__item club-summary__item--squad-count">
+              <span>Elenco</span>
+              <strong>{club.players.length} <small>de 12</small></strong>
+              <small>Limite da liga</small>
+            </article>
+          </section>
+          <ClubTabs clubId={club.id} active="lineup" squadCount={club.players.length} />
+        </>
+      )}
 
       <section className="lineup-panel" aria-labelledby="lineup-formation-title">
         <header className="lineup-panel__header">

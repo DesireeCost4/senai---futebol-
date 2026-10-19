@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { Link } from 'react-router-dom';
 import { CalendarDays, CircleHelp } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
 import DuelsDialog from '../components/DuelsDialog';
-import LeagueNavigation from '../components/LeagueNavigation';
 import { ligaService } from '../services/ligaService';
 import type { ClubeLiga, Match } from '../types/league';
 import './PartidasPage.css';
@@ -71,10 +69,6 @@ export default function PartidasPage() {
 
   return (
     <main className="matches-page">
-      <Link className="matches-page__back" to="/clubs">
-        Voltar para clubes
-      </Link>
-      <LeagueNavigation active="matches" />
       <header className="matches-page__header">
         <span>
           <CalendarDays size={20} />

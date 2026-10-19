@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { Link } from 'react-router-dom';
 import { CalendarDays, Eye } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
 import DuelsDialog from '../components/DuelsDialog';
-import LeagueNavigation from '../components/LeagueNavigation';
 import { ligaService } from '../services/ligaService';
 import { formatDateTimeBrasilia } from '../utils/formatters';
 import type { ClubeLiga, Match } from '../types/league';
@@ -83,10 +81,6 @@ export default function HistoricoPartidasPage() {
 
   return (
     <main className="match-history-page">
-      <Link className="match-history-back" to="/clubs">
-        Voltar para clubes
-      </Link>
-      <LeagueNavigation active="history" />
       <header className="match-history-header">
         <span>
           <CalendarDays size={20} />

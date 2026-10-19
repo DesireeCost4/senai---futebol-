@@ -3,7 +3,6 @@ import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import { Trophy } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
-import LeagueNavigation from '../components/LeagueNavigation';
 import { ligaService } from '../services/ligaService';
 import type { Standing } from '../types/league';
 import './ClassificacaoPage.css';
@@ -46,10 +45,6 @@ export default function ClassificacaoPage() {
 
   return (
     <main className="standings-page">
-      <Link className="standings-page__back" to="/clubs">
-        Voltar para clubes
-      </Link>
-      <LeagueNavigation active="standings" />
       <header className="standings-header">
         <span>
           <Trophy size={20} />

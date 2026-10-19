@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { AlertTriangle, ArrowLeft, Building2, ShoppingCart, X } from 'lucide-react';
+import { AlertTriangle, Building2, ShoppingCart, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
-import LeagueNavigation from '../components/LeagueNavigation';
+import ClubTabs from '../components/ClubTabs';
 import TransactionResultDialog from '../components/TransactionResultDialog';
 import { clubeService } from '../services/clubeService';
 import { mercadoService } from '../services/mercadoService';
@@ -49,6 +49,8 @@ type JogadorHistorico = {
   name: string;
 };
 
+type AbaClube = 'elenco' | 'historico';
+
 const resumoVazio: TransacoesSummary = {
   total_spent: 0,
   total_received: 0,
@@ -80,6 +82,7 @@ function conditionLabel(condition: string): string {
 
 export default function ClubeDetalhesPage() {
   const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [clube, setClube] = useState<ClubeDetalhe | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -100,6 +103,7 @@ export default function ClubeDetalhesPage() {
   const [exportando, setExportando] = useState(false);
   const [erroExportacao, setErroExportacao] = useState('');
   const exportInProgress = useRef(false);
+  const abaAtiva: AbaClube = searchParams.get('tab') === 'history' ? 'historico' : 'elenco';
 
   useEffect(() => {
     let cancelled = false;
@@ -256,12 +260,6 @@ export default function ClubeDetalhesPage() {
 
   return (
     <main className="club-detail-page">
-      <Link className="club-detail-back" to="/clubs">
-        <ArrowLeft size={15} />
-        Voltar para clubes
-      </Link>
-      <LeagueNavigation clubId={id ? Number(id) : undefined} />
-
       {carregando && <LoadingState message="Carregando detalhes do clube..." />}
       {!carregando && erro && (
         <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
@@ -299,9 +297,21 @@ export default function ClubeDetalhesPage() {
               <span>Patrimônio</span>
               <strong>{formatCurrency(clube.net_worth)}</strong>
             </article>
+            <article className="club-summary__item club-summary__item--squad-count">
+              <span>Elenco</span>
+              <strong>{clube.players?.length ?? 0} <small>de 12</small></strong>
+              <small>Limite da liga</small>
+            </article>
           </section>
 
-          <section className="club-squad-panel" aria-labelledby="club-squad-title">
+          <ClubTabs
+            clubId={clube.id}
+            active={abaAtiva === 'historico' ? 'history' : 'elenco'}
+            squadCount={clube.players?.length ?? 0}
+            historyCount={historico.length}
+          />
+
+          {abaAtiva === 'elenco' && <section className="club-squad-panel" aria-labelledby="club-squad-title">
             <header className="club-squad-panel__header">
               <div>
                 <h2 id="club-squad-title">Elenco</h2>
@@ -391,9 +401,9 @@ export default function ClubeDetalhesPage() {
                 <EmptyState message="Este clube ainda não tem jogadores no elenco." />
               )}
             </div>
-          </section>
+          </section>}
 
-          <section className="transactions-panel" aria-labelledby="transactions-title">
+          {abaAtiva === 'historico' && <section className="transactions-panel" aria-labelledby="transactions-title">
             <header className="transactions-panel__header">
               <div>
                 <h2 id="transactions-title">Histórico de transações</h2>
@@ -572,7 +582,7 @@ export default function ClubeDetalhesPage() {
                 </article>
               </div>
             </section>
-          </section>
+          </section>}
         </>
       )}
 

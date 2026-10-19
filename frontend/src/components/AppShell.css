@@ -1,0 +1,367 @@
+.app-frame {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 196px minmax(0, 1fr);
+  background: #f7f8fa;
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+  min-height: 620px;
+  flex-direction: column;
+  border-right: 1px solid #e3e8ee;
+  background: #fff;
+  padding: 13px 9px 11px;
+}
+
+.app-brand {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  margin: 0 4px 21px;
+  color: #252e3b;
+  text-decoration: none;
+}
+
+.app-brand__mark {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 6px;
+  background: #2769f5;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.app-brand__name {
+  display: grid;
+  gap: 1px;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.app-brand__name small {
+  color: #8b95a2;
+  font-size: 7px;
+  font-weight: 450;
+}
+
+.app-sidebar__nav {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.app-sidebar__group {
+  border-bottom: 1px solid #edf0f3;
+  margin-bottom: 10px;
+  padding: 0 0 10px;
+}
+
+.app-sidebar__label {
+  margin: 0 8px 5px;
+  color: #8a95a2;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.app-sidebar__link {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  margin: 1px 0;
+  padding: 0 7px;
+  color: #4d5a69;
+  font-size: 9px;
+  text-decoration: none;
+}
+
+.app-sidebar__link svg {
+  flex: 0 0 auto;
+  color: #738091;
+}
+
+.app-sidebar__link:hover,
+.app-sidebar__club:hover {
+  background: #f5f8fc;
+}
+
+.app-sidebar__link--active {
+  border-color: #d5e3ff;
+  background: #f1f6ff;
+  color: #245ce0;
+  font-weight: 650;
+}
+
+.app-sidebar__link--active svg {
+  color: #245ce0;
+}
+
+.app-sidebar__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 8px;
+}
+
+.app-sidebar__label-row > span {
+  color: #9aa4b1;
+  font-size: 8px;
+}
+
+.app-sidebar__clubs {
+  border-bottom: 0;
+}
+
+.app-sidebar__club {
+  display: flex;
+  min-height: 24px;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  border-radius: 4px;
+  padding: 0 6px;
+  color: #586576;
+  font-size: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-sidebar__club > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-sidebar__club--active {
+  background: #f1f6ff;
+  color: #245ce0;
+  font-weight: 650;
+}
+
+.app-sidebar__club-mark {
+  display: grid;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 4px;
+  background: #edf2fa;
+  color: #596c8a;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.app-sidebar__club-mark--0 { background: #edf3ff; color: #406bb2; }
+.app-sidebar__club-mark--1 { background: #f4eef9; color: #77579c; }
+.app-sidebar__club-mark--2 { background: #eaf6f0; color: #357a60; }
+.app-sidebar__club-mark--3 { background: #fff4e7; color: #9b6b2a; }
+.app-sidebar__club-mark--4 { background: #fceced; color: #a14d53; }
+
+.app-sidebar__footer {
+  display: grid;
+  gap: 5px;
+  border-top: 1px solid #edf0f3;
+  padding: 10px 5px 0;
+  color: #586576;
+  font-size: 8px;
+}
+
+.app-sidebar__footer > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-sidebar__online {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #36a77e;
+}
+
+.app-sidebar__footer small {
+  color: #929ca8;
+  font-size: 7px;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.app-topbar {
+  position: sticky;
+  z-index: 5;
+  top: 0;
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid #e7ebef;
+  background: rgb(255 255 255 / 96%);
+  padding: 0 18px;
+  backdrop-filter: blur(8px);
+}
+
+.app-topbar__breadcrumb,
+.app-topbar__breadcrumb > span,
+.app-topbar__time {
+  display: flex;
+  align-items: center;
+}
+
+.app-topbar__breadcrumb {
+  min-width: 0;
+  gap: 6px;
+  color: #8b95a2;
+  font-size: 8px;
+}
+
+.app-topbar__breadcrumb > span {
+  gap: 5px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.app-topbar__breadcrumb svg {
+  color: #b0b8c2;
+}
+
+.app-topbar__current {
+  overflow: hidden;
+  color: #4d5a69 !important;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.app-topbar__time {
+  flex: 0 0 auto;
+  gap: 5px;
+  color: #929ca8;
+  font-size: 7px;
+}
+
+.app-content {
+  min-width: 0;
+}
+
+@media (max-width: 760px) {
+  .app-frame {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-sidebar {
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid #e3e8ee;
+    padding: 6px 8px;
+  }
+
+  .app-brand {
+    flex: 0 0 auto;
+    margin: 0 4px 0 0;
+  }
+
+  .app-sidebar__nav {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 4px;
+    overflow: visible;
+  }
+
+  .app-sidebar__group {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 2px;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .app-sidebar__label,
+  .app-sidebar__label-row,
+  .app-sidebar__clubs,
+  .app-sidebar__footer {
+    display: none;
+  }
+
+  .app-sidebar__link {
+    min-height: 28px;
+    gap: 5px;
+    padding: 0 6px;
+    font-size: 8px;
+  }
+
+  .app-sidebar__link svg {
+    width: 13px;
+  }
+
+  .app-topbar {
+    min-height: 30px;
+    padding: 0 10px;
+  }
+
+  .app-topbar__time {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-sidebar {
+    gap: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .app-brand {
+    gap: 5px;
+    margin-right: 1px;
+  }
+
+  .app-brand__mark {
+    width: 22px;
+    height: 22px;
+  }
+
+  .app-brand__name {
+    font-size: 9px;
+  }
+
+  .app-sidebar__nav {
+    gap: 0;
+  }
+
+  .app-sidebar__group {
+    gap: 0;
+  }
+
+  .app-sidebar__link {
+    gap: 3px;
+    padding: 0 4px;
+    font-size: 7px;
+  }
+}
