@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import { Building2, Check, ChevronDown, Plus, RotateCcw, ShoppingCart, X } from 'lucide-react';
@@ -46,6 +46,7 @@ export default function ClubesPage() {
   const [erroCriacao, setErroCriacao] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [salvando, setSalvando] = useState(false);
+  const createInProgress = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,8 +87,9 @@ export default function ClubesPage() {
 
   async function criarClube(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (salvando || !validarFormulario()) return;
+    if (createInProgress.current || !validarFormulario()) return;
 
+    createInProgress.current = true;
     setSalvando(true);
     setErroCriacao('');
     setSucesso('');
@@ -102,6 +104,7 @@ export default function ClubesPage() {
     } catch (requestError) {
       setErroCriacao(mensagemErro(requestError));
     } finally {
+      createInProgress.current = false;
       setSalvando(false);
     }
   }

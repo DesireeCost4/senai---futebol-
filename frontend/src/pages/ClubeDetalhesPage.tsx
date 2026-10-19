@@ -89,6 +89,7 @@ export default function ClubeDetalhesPage() {
   const [historicoReloadKey, setHistoricoReloadKey] = useState(0);
   const [exportando, setExportando] = useState(false);
   const [erroExportacao, setErroExportacao] = useState('');
+  const exportInProgress = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -204,7 +205,8 @@ export default function ClubeDetalhesPage() {
   }
 
   async function exportarHistorico() {
-    if (!id || exportando) return;
+    if (!id || exportInProgress.current) return;
+    exportInProgress.current = true;
     setExportando(true);
     setErroExportacao('');
     try {
@@ -233,6 +235,7 @@ export default function ClubeDetalhesPage() {
         setErroExportacao(mensagemErro(requestError));
       }
     } finally {
+      exportInProgress.current = false;
       setExportando(false);
     }
   }

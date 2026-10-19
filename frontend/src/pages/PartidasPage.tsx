@@ -24,6 +24,7 @@ export default function PartidasPage() {
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ homeClubId?: string; awayClubId?: string }>({});
   const [result, setResult] = useState<Match | null>(null);
   const playInProgress = useRef(false);
 
@@ -45,7 +46,13 @@ export default function PartidasPage() {
   }, []);
 
   async function playMatch() {
-    if (playInProgress.current || !homeClubId || !awayClubId) return;
+    if (playInProgress.current) return;
+    const errors: { homeClubId?: string; awayClubId?: string } = {};
+    if (!homeClubId) errors.homeClubId = 'Selecione o clube mandante.';
+    if (!awayClubId) errors.awayClubId = 'Selecione o clube visitante.';
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     playInProgress.current = true;
     setPlaying(true);
     setError('');
@@ -83,24 +90,26 @@ export default function PartidasPage() {
           <div className="match-selectors">
             <label>
               <span>Mandante <b>*</b></span>
-              <select value={homeClubId} onChange={(event) => setHomeClubId(event.target.value)} disabled={playing}>
+              <select id="home-club" value={homeClubId} aria-invalid={Boolean(fieldErrors.homeClubId)} aria-describedby={fieldErrors.homeClubId ? 'home-club-error' : undefined} onChange={(event) => { setHomeClubId(event.target.value); setFieldErrors((current) => ({ ...current, homeClubId: undefined })); }} disabled={playing}>
                 <option value="">Selecione o mandante</option>
                 {clubs.map((club) => <option key={club.id} value={club.id}>{club.name} ({club.acronym})</option>)}
               </select>
+              {fieldErrors.homeClubId && <small className="match-field-error" id="home-club-error">{fieldErrors.homeClubId}</small>}
             </label>
             <span className="match-versus">×</span>
             <label>
               <span>Visitante <b>*</b></span>
-              <select value={awayClubId} onChange={(event) => setAwayClubId(event.target.value)} disabled={playing}>
+              <select id="away-club" value={awayClubId} aria-invalid={Boolean(fieldErrors.awayClubId)} aria-describedby={fieldErrors.awayClubId ? 'away-club-error' : undefined} onChange={(event) => { setAwayClubId(event.target.value); setFieldErrors((current) => ({ ...current, awayClubId: undefined })); }} disabled={playing}>
                 <option value="">Selecione o visitante</option>
                 {clubs.map((club) => <option key={club.id} value={club.id}>{club.name} ({club.acronym})</option>)}
               </select>
+              {fieldErrors.awayClubId && <small className="match-field-error" id="away-club-error">{fieldErrors.awayClubId}</small>}
             </label>
           </div>
         )}
         <footer className="match-create-panel__footer">
           <p><CircleHelp size={14} />Clubes sem escalação completa receberão a mensagem da API.</p>
-          <button type="button" className="play-match-button" onClick={() => void playMatch()} disabled={loading || playing || !homeClubId || !awayClubId}>
+          <button type="button" className="play-match-button" onClick={() => void playMatch()} disabled={loading || playing || clubs.length === 0}>
             {playing ? <span className="match-spinner" /> : <CalendarDays size={15} />}
             {playing ? 'Jogando...' : 'Jogar partida'}
           </button>

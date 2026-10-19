@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { ArrowLeft, Check, Shield, UsersRound } from 'lucide-react';
@@ -75,6 +75,8 @@ export default function EscalacaoPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [validationAttempted, setValidationAttempted] = useState(false);
+  const saveInProgress = useRef(false);
 
   const slots = useMemo(() => makeSlots(formation), [formation]);
   const availablePlayers = useMemo(() => (club?.players ?? []).filter((player) => player.condition !== 'DOENTE'), [club]);
@@ -120,10 +122,18 @@ export default function EscalacaoPage() {
     setFormation(nextFormation);
     setSelections({});
     setSuccess('');
+    setValidationAttempted(false);
   }
 
   async function saveLineup() {
-    if (saving || !isCompleteSelection || !clubId) return;
+    if (saveInProgress.current || !clubId) return;
+    setValidationAttempted(true);
+    if (!isCompleteSelection) {
+      setError('Preencha todas as posições obrigatórias para salvar a escalação.');
+      return;
+    }
+
+    saveInProgress.current = true;
     setSaving(true);
     setError('');
     setSuccess('');
@@ -135,6 +145,7 @@ export default function EscalacaoPage() {
     } catch (requestError) {
       setError(mensagemErro(requestError));
     } finally {
+      saveInProgress.current = false;
       setSaving(false);
     }
   }
@@ -179,10 +190,11 @@ export default function EscalacaoPage() {
               return (
                 <label className="lineup-slot" key={slot.key}>
                   <span>{slot.label} <b>*</b></span>
-                  <select value={selections[slot.key] ?? ''} onChange={(event) => setSelections((current) => ({ ...current, [slot.key]: event.target.value }))} disabled={saving}>
+                  <select value={selections[slot.key] ?? ''} aria-invalid={validationAttempted && !selections[slot.key]} aria-describedby={validationAttempted && !selections[slot.key] ? `${slot.key}-error` : undefined} onChange={(event) => { setSelections((current) => ({ ...current, [slot.key]: event.target.value })); setError(''); }} disabled={saving}>
                     <option value="">Selecione um jogador</option>
                     {candidates.map((player) => <option key={player.id} value={player.id}>{player.name} · {player.position} · G{player.overall ?? '—'}</option>)}
                   </select>
+                  {validationAttempted && !selections[slot.key] && <small className="lineup-slot__error" id={`${slot.key}-error`}>Selecione um titular para esta posição.</small>}
                 </label>
               );
             })}
@@ -194,7 +206,7 @@ export default function EscalacaoPage() {
             <span className="lineup-status__dot" />
             {lineup?.complete && isCompleteSelection ? 'Clube pode jogar' : 'Escalação incompleta: clube não pode jogar'}
           </div>
-          <button className="lineup-save-button" type="button" onClick={() => void saveLineup()} disabled={saving || !isCompleteSelection || availablePlayers.length < 5}>
+          <button className="lineup-save-button" type="button" onClick={() => void saveLineup()} disabled={saving || availablePlayers.length === 0}>
             {saving ? 'Salvando...' : 'Salvar escalação'}
           </button>
         </footer>
