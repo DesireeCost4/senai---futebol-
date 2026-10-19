@@ -3,6 +3,7 @@ import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import { Building2, Check, ChevronDown, Plus, RotateCcw, ShoppingCart, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
+import LeagueNavigation from '../components/LeagueNavigation';
 import { clubeService } from '../services/clubeService';
 import { formatCurrency } from '../utils/formatters';
 import './ClubesPage.css';
@@ -125,6 +126,8 @@ export default function ClubesPage() {
           <Link className="clubs-market-link" to="/players"><ShoppingCart size={15} />Mercado de jogadores</Link>
         </div>
       </header>
+
+      <LeagueNavigation />
 
       <section className="clubs-panel" aria-labelledby="clubs-list-title">
         <div className="clubs-panel__toolbar">

@@ -1,0 +1,155 @@
+.duels-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  background: rgb(18 27 39 / 43%);
+  padding: 16px;
+}
+
+.duels-dialog {
+  position: relative;
+  width: min(100%, 690px);
+  max-height: 92vh;
+  overflow-y: auto;
+  border: 1px solid #e2e8ed;
+  border-radius: 9px;
+  background: #fff;
+  padding: 21px;
+  box-shadow: 0 20px 60px rgb(16 30 48 / 25%);
+}
+
+.duels-dialog__close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: #758191;
+  cursor: pointer;
+}
+
+.duels-dialog__eyebrow {
+  margin: 0 36px 6px 0;
+  color: #8793a1;
+  font-size: 9px;
+}
+
+.duels-dialog h2 {
+  margin: 0;
+  color: #344253;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.duels-dialog h2 strong {
+  margin: 0 5px;
+  color: #263343;
+  white-space: nowrap;
+}
+
+.duels-dialog__formations {
+  margin: 5px 0 16px;
+  color: #8b96a3;
+  font-size: 9px;
+}
+
+.duels-list {
+  display: grid;
+  gap: 7px;
+}
+
+.duel {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e9edf1;
+  border-radius: 6px;
+  padding: 9px 10px;
+}
+
+.duel--goal {
+  border-color: #cce7d8;
+  background: #f5fbf7;
+}
+
+.duel__order {
+  display: grid;
+  width: 21px;
+  height: 21px;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef2f6;
+  color: #677486;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.duel__player {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.duel__player strong {
+  overflow: hidden;
+  color: #364454;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duel__player span,
+.duel__player small {
+  color: #84909e;
+  font-size: 8px;
+}
+
+.duel__player small b {
+  margin-left: 3px;
+  color: #4c5b6c;
+  font-size: 9px;
+}
+
+.duel__versus {
+  color: #9ba5b0;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.duel--goal .duel__versus {
+  color: #31835c;
+  font-size: 8px;
+}
+
+.duels-empty {
+  margin: 20px 0 4px;
+  color: #84909e;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .duels-dialog {
+    padding: 16px 12px;
+  }
+
+  .duel {
+    grid-template-columns: 21px minmax(0, 1fr) 27px minmax(0, 1fr);
+    gap: 5px;
+    padding: 8px 6px;
+  }
+
+  .duel__player strong {
+    font-size: 9px;
+  }
+}

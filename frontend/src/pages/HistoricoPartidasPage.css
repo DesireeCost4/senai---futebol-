@@ -1,0 +1,235 @@
+.match-history-page {
+  width: min(100%, 1240px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 30px 40px;
+}
+
+.match-history-back {
+  display: inline-flex;
+  margin-bottom: 15px;
+  color: #687688;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.match-history-back:hover {
+  color: #286dbe;
+}
+
+.match-history-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0 22px;
+}
+
+.match-history-header > span {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  place-items: center;
+  border: 1px solid #dce9e1;
+  border-radius: 9px;
+  background: #f0f7f2;
+  color: #3c7c57;
+}
+
+.match-history-header div div {
+  margin-bottom: 3px;
+  color: #8994a2;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.match-history-header h1 {
+  margin: 0;
+  color: #263443;
+  font-size: 20px;
+}
+
+.match-history-header p {
+  margin: 4px 0 0;
+  color: #7d8998;
+  font-size: 10px;
+}
+
+.match-history-panel {
+  overflow: hidden;
+  border: 1px solid #e2e7ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.match-history-panel__header {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid #e9edf1;
+  padding: 11px 16px;
+}
+
+.match-history-panel__header h2 {
+  margin: 0 0 4px;
+  color: #344253;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.match-history-panel__header p {
+  margin: 0;
+  color: #8994a2;
+  font-size: 9px;
+}
+
+.match-history-filter {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  padding: 0 9px;
+  color: #8591a0;
+  font-size: 9px;
+}
+
+.match-history-filter select {
+  max-width: 240px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #4b5969;
+  font-size: 9px;
+}
+
+.match-history-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-color: #cbd4df transparent;
+  scrollbar-width: thin;
+}
+
+.match-history-table {
+  width: 100%;
+  min-width: 690px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.match-history-table th {
+  height: 38px;
+  border-bottom: 1px solid #ebeff3;
+  background: #fbfcfd;
+  padding: 0 13px;
+  color: #83909e;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.match-history-table td {
+  height: 48px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 0 13px;
+  color: #586576;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.match-history-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.match-history-table__home {
+  text-align: right;
+}
+
+.match-score {
+  color: #344253;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.view-duels-button {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #dfe5eb;
+  border-radius: 4px;
+  background: #fff;
+  padding: 0 8px;
+  color: #536274;
+  font: inherit;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.view-duels-button:hover:not(:disabled) {
+  border-color: #b6cde7;
+  color: #286dbe;
+}
+
+.view-duels-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.match-history-error {
+  border-bottom: 1px solid #f0d5d6;
+  background: #fff6f6;
+  padding: 9px 14px;
+  color: #9d4149;
+  font-size: 10px;
+}
+
+.match-history-error--duel {
+  position: fixed;
+  z-index: 60;
+  right: 16px;
+  bottom: 16px;
+  max-width: calc(100vw - 32px);
+  border: 1px solid #f0d5d6;
+  border-radius: 5px;
+  box-shadow: 0 4px 16px rgb(24 36 50 / 10%);
+}
+
+.duels-loading {
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(18 27 39 / 18%);
+  color: #344253;
+  font-size: 11px;
+}
+
+@media (max-width: 600px) {
+  .match-history-page {
+    padding: 18px 12px 28px;
+  }
+
+  .match-history-panel__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .match-history-filter {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .match-history-filter select {
+    flex: 1;
+    max-width: 62%;
+  }
+}

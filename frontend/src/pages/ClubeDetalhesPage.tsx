@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { AlertTriangle, ArrowLeft, Building2, ShoppingCart, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
+import LeagueNavigation from '../components/LeagueNavigation';
 import TransactionResultDialog from '../components/TransactionResultDialog';
 import { clubeService } from '../services/clubeService';
 import { mercadoService } from '../services/mercadoService';
@@ -239,6 +240,7 @@ export default function ClubeDetalhesPage() {
   return (
     <main className="club-detail-page">
       <Link className="club-detail-back" to="/clubs"><ArrowLeft size={15} />Voltar para clubes</Link>
+      <LeagueNavigation clubId={id ? Number(id) : undefined} />
 
       {carregando && <LoadingState message="Carregando detalhes do clube..." />}
       {!carregando && erro && <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />}

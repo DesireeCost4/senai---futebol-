@@ -1,0 +1,47 @@
+.league-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 18px;
+  border-bottom: 1px solid #e6ebf0;
+  padding-bottom: 9px;
+}
+
+.league-navigation__link {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 0 9px;
+  color: #687688;
+  font-size: 10px;
+  font-weight: 560;
+  text-decoration: none;
+}
+
+.league-navigation__link:hover {
+  background: #f0f5fa;
+  color: #286dbe;
+}
+
+.league-navigation__link--active {
+  border-color: #d8e6f5;
+  background: #f2f7fd;
+  color: #286dbe;
+  font-weight: 650;
+}
+
+@media (max-width: 420px) {
+  .league-navigation {
+    gap: 2px;
+  }
+
+  .league-navigation__link {
+    gap: 4px;
+    padding: 0 6px;
+    font-size: 9px;
+  }
+}
