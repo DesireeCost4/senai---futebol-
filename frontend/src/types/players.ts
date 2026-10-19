@@ -33,7 +33,7 @@ export type Jogador = {
   physical?: number;
   potential?: number;
   overall: number;
-  club_id: number | null;
+  club_id?: number | null;
 };
 
 export type PaginaJogadores = {

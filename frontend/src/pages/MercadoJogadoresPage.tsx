@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import {
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Eye,
   MoreHorizontal,
   Plus,
   RotateCcw,
@@ -224,6 +226,8 @@ export default function MercadoJogadoresPage() {
   const [cadastrando, setCadastrando] = useState(false);
   const [cadastroTentado, setCadastroTentado] = useState(false);
   const [cadastroSucesso, setCadastroSucesso] = useState('');
+  const [cadastroResultado, setCadastroResultado] = useState<Jogador | null>(null);
+  const [mostrarDetalhesCadastro, setMostrarDetalhesCadastro] = useState(false);
   const compraEmCurso = useRef(false);
   const cadastroEmCurso = useRef(false);
   const errosCadastro = useMemo(() => validarCadastro(formJogador), [formJogador]);
@@ -468,7 +472,7 @@ export default function MercadoJogadoresPage() {
     setCadastrando(true);
     setErroCadastro('');
     try {
-      await jogadorService.cadastrarJogador({
+      const jogadorCadastrado = await jogadorService.cadastrarJogador({
         ...formJogador,
         name: formJogador.name.trim(),
       });
@@ -476,6 +480,8 @@ export default function MercadoJogadoresPage() {
       setFormJogador(emptyPlayerForm);
       setCadastroTentado(false);
       setCadastroSucesso('Jogador cadastrado com sucesso.');
+      setCadastroResultado(jogadorCadastrado);
+      setMostrarDetalhesCadastro(false);
       setAba('todos');
       setPagina(1);
       setReloadKey((current) => current + 1);
@@ -517,6 +523,8 @@ export default function MercadoJogadoresPage() {
             onClick={() => {
               setCadastroSucesso('');
               setErroCadastro('');
+              setCadastroResultado(null);
+              setMostrarDetalhesCadastro(false);
               setFormJogador(emptyPlayerForm);
               setCadastroTentado(false);
               setFormularioAberto(true);
@@ -893,7 +901,7 @@ export default function MercadoJogadoresPage() {
                         )}
                       </td>
                       <td className="market-players-table__action">
-                        {jogador.club_id === null ? (
+                        {jogador.club_id === null || jogador.club_id === undefined ? (
                           <button
                             className="market-buy-button"
                             type="button"
@@ -1102,9 +1110,14 @@ export default function MercadoJogadoresPage() {
             <header className="market-create-dialog__header">
               <div>
                 <h2 id="market-create-title">Novo jogador</h2>
-                <p>
-                  Preencha os dados e os indicadores técnicos. O valor base, o overall e o valor de
-                  mercado são calculados ao salvar.
+                <p
+                  role={
+                    cadastroTentado && Object.keys(errosCadastro).length > 0 ? 'alert' : undefined
+                  }
+                >
+                  {cadastroTentado && Object.keys(errosCadastro).length > 0
+                    ? 'Corrija os campos destacados para salvar.'
+                    : 'Preencha os dados e os indicadores técnicos. O valor base, o overall e o valor de mercado são calculados ao salvar.'}
                 </p>
               </div>
             </header>
@@ -1140,7 +1153,18 @@ export default function MercadoJogadoresPage() {
                 </small>
               </label>
 
-              <fieldset className="market-position-picker">
+              <fieldset
+                className={
+                  cadastroTentado && errosCadastro.position
+                    ? 'market-position-picker market-position-picker--invalid'
+                    : 'market-position-picker'
+                }
+                aria-describedby={
+                  cadastroTentado && errosCadastro.position
+                    ? 'new-player-position-error'
+                    : undefined
+                }
+              >
                 <legend>Posição</legend>
                 <div className="market-position-picker__options">
                   {positions.map((position) => (
@@ -1157,6 +1181,7 @@ export default function MercadoJogadoresPage() {
                         name="new-player-position"
                         value={position.value}
                         checked={formJogador.position === position.value}
+                        aria-invalid={Boolean(cadastroTentado && errosCadastro.position)}
                         onChange={() =>
                           setFormJogador((current) => ({
                             ...current,
@@ -1170,7 +1195,9 @@ export default function MercadoJogadoresPage() {
                   ))}
                 </div>
                 {cadastroTentado && errosCadastro.position && (
-                  <small className="market-create-field__error">{errosCadastro.position}</small>
+                  <small id="new-player-position-error" className="market-create-field__error">
+                    {errosCadastro.position}
+                  </small>
                 )}
               </fieldset>
 
@@ -1258,6 +1285,11 @@ export default function MercadoJogadoresPage() {
                           max={99}
                           value={formJogador[key] || ''}
                           aria-invalid={Boolean(cadastroTentado && errosCadastro[key])}
+                          aria-describedby={
+                            cadastroTentado && errosCadastro[key]
+                              ? `new-player-${key}-error`
+                              : undefined
+                          }
                           onChange={(event) =>
                             setFormJogador((current) => ({
                               ...current,
@@ -1267,7 +1299,12 @@ export default function MercadoJogadoresPage() {
                           placeholder="—"
                         />
                         {cadastroTentado && errosCadastro[key] && (
-                          <small className="market-create-field__error">{errosCadastro[key]}</small>
+                          <small
+                            id={`new-player-${key}-error`}
+                            className="market-create-field__error"
+                          >
+                            {errosCadastro[key]}
+                          </small>
                         )}
                       </label>
                     ))}
@@ -1352,6 +1389,95 @@ export default function MercadoJogadoresPage() {
 
       {resultado && (
         <TransactionResultDialog result={resultado} onClose={() => setResultado(null)} />
+      )}
+      {cadastroResultado && (
+        <div
+          className="market-create-result-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setCadastroResultado(null);
+          }}
+        >
+          <section
+            className="market-create-result"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="market-create-result-title"
+          >
+            <span className="market-create-result__icon" aria-hidden="true">
+              <Check size={18} />
+            </span>
+            <h2 id="market-create-result-title">Jogador cadastrado</h2>
+            <p className="market-create-result__summary">
+              {cadastroResultado.name} entrou{' '}
+              {cadastroResultado.club_id === null || cadastroResultado.club_id === undefined
+                ? 'livre'
+                : 'em um clube'}{' '}
+              e {conditionLabel(cadastroResultado.condition)}. Valores em moedas, calculados pela
+              API ao salvar.
+            </p>
+            <dl className="market-create-result__values">
+              <div>
+                <dt>Valor base</dt>
+                <dd>{formatAmount(cadastroResultado.base_value)}</dd>
+                <small>Calculado no cadastro; não muda depois.</small>
+              </div>
+              <div>
+                <dt>Valor de mercado</dt>
+                <dd>{formatAmount(cadastroResultado.market_value)}</dd>
+                <small>Com condição, agilidade e idade.</small>
+              </div>
+              <div>
+                <dt>Overall</dt>
+                <dd>{cadastroResultado.overall}</dd>
+                <small>Calculado pela posição e pelos indicadores.</small>
+              </div>
+            </dl>
+            {mostrarDetalhesCadastro && (
+              <dl className="market-create-result__details">
+                <div>
+                  <dt>Posição</dt>
+                  <dd>{positionName(cadastroResultado.position)}</dd>
+                </div>
+                <div>
+                  <dt>Idade</dt>
+                  <dd>{cadastroResultado.age} anos</dd>
+                </div>
+                <div>
+                  <dt>Agilidade</dt>
+                  <dd>{cadastroResultado.agility}</dd>
+                </div>
+                {technicalAttributes.map(({ key, label }) => (
+                  <div key={key}>
+                    <dt>{label}</dt>
+                    <dd>{cadastroResultado[key] ?? '—'}</dd>
+                  </div>
+                ))}
+                <div>
+                  <dt>Potencial</dt>
+                  <dd>{cadastroResultado.potential ?? '—'}</dd>
+                </div>
+              </dl>
+            )}
+            <footer className="market-create-result__actions">
+              <button
+                type="button"
+                className="market-create-result__details-button"
+                aria-expanded={mostrarDetalhesCadastro}
+                onClick={() => setMostrarDetalhesCadastro((visible) => !visible)}
+              >
+                <Eye size={14} />
+                {mostrarDetalhesCadastro ? 'Ocultar detalhes' : 'Ver detalhes'}
+              </button>
+              <button
+                type="button"
+                className="market-create-result__close"
+                onClick={() => setCadastroResultado(null)}
+              >
+                Fechar
+              </button>
+            </footer>
+          </section>
+        </div>
       )}
     </main>
   );

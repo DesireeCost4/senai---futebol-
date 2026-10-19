@@ -27,7 +27,7 @@ export type Jogador = {
   condition: string;
   base_value: number | string;
   market_value: number | string;
-  club_id: number | null;
+  club_id?: number | null;
 };
 
 export type PaginaJogadores = {
