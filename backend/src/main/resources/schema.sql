@@ -14,7 +14,8 @@ CREATE TABLE clubes (
     sigla CHAR(3) NOT NULL UNIQUE,
     caixa DECIMAL(10,2) NOT NULL DEFAULT 300.00,
     formacao VARCHAR(5),
-    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_clubes_caixa CHECK (caixa >= 0)
 );
 
 CREATE TABLE jogadores (
@@ -36,6 +37,29 @@ CREATE TABLE jogadores (
     excluido_em TIMESTAMP NULL,
     criado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_jogadores_posicao CHECK (posicao IN ('GOL', 'ZAG', 'LAT', 'MEI', 'ATA')),
+    CONSTRAINT chk_jogadores_idade CHECK (idade BETWEEN 16 AND 45),
+    CONSTRAINT chk_jogadores_agilidade CHECK (agilidade BETWEEN 1 AND 100),
+    CONSTRAINT chk_jogadores_atributos CHECK (
+        velocidade BETWEEN 1 AND 99
+        AND finalizacao BETWEEN 1 AND 99
+        AND passe BETWEEN 1 AND 99
+        AND drible BETWEEN 1 AND 99
+        AND defesa BETWEEN 1 AND 99
+        AND fisico BETWEEN 1 AND 99
+    ),
+    CONSTRAINT chk_jogadores_soma_atributos CHECK (
+        velocidade + finalizacao + passe + drible + defesa + fisico <= 480
+    ),
+    CONSTRAINT chk_jogadores_potencial CHECK (
+        potencial BETWEEN 1 AND 99
+        AND (
+            (idade < 33 AND potencial >= GREATEST(velocidade, finalizacao, passe, drible, defesa, fisico))
+            OR (idade >= 33 AND potencial = GREATEST(velocidade, finalizacao, passe, drible, defesa, fisico))
+        )
+    ),
+    CONSTRAINT chk_jogadores_condicao CHECK (condicao IN ('APTO', 'MAL_CONDICIONADO', 'DOENTE')),
+    CONSTRAINT chk_jogadores_valor_base CHECK (valor_base >= 0),
     FOREIGN KEY (clube_id) REFERENCES clubes(id)
 );
 

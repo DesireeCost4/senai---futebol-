@@ -10,50 +10,80 @@ escalações, partidas e classificação de uma liga fictícia.
 - **Infraestrutura:** Docker Compose com MySQL, API e frontend.
 - **Documentação da API:** Swagger UI em `/swagger-ui.html`.
 
-## Executar tudo com Docker
+## Passo a passo para subir o projeto
 
-Pré-requisitos: Docker com Compose V2.
+### Opção recomendada: Docker Compose
 
-1. (Opcional) copie as configurações de exemplo:
+Pré-requisitos: Docker Engine e Docker Compose V2.
+
+1. Clone o repositório e entre na pasta do projeto:
+
+   ```bash
+   git clone <URL_DO_REPOSITORIO>
+   cd senai---futebol--main
+   ```
+
+2. (Opcional) crie um arquivo `.env` a partir do modelo. Os valores padrão do
+   Compose já permitem executar o projeto sem esse arquivo:
 
    ```bash
    cp .env.example .env
    ```
 
-2. Suba banco, backend e frontend:
+3. Construa as imagens e suba MySQL, backend e frontend:
 
    ```bash
    docker compose up --build
    ```
 
-3. Acesse:
+4. Aguarde o healthcheck do MySQL e acesse:
 
    - Interface: <http://localhost:5173>
    - API: <http://localhost:8080/api/v1>
    - Swagger: <http://localhost:8080/swagger-ui.html>
 
+5. Para parar os containers, use `Ctrl+C` ou, em outro terminal:
+
+   ```bash
+   docker compose down
+   ```
+
+6. Para recriar o banco e reaplicar `schema.sql` e `data.sql`:
+
+   ```bash
+   docker compose down -v
+   docker compose up --build
+   ```
+
+O volume do MySQL é inicializado apenas na primeira criação. Não use
+`docker compose down -v` se quiser preservar os dados locais.
+
 O backend inicializa `schema.sql` e `data.sql` automaticamente quando o banco
-está vazio. Para recriar o banco do zero:
-
-```bash
-docker compose down -v
-docker compose up --build
-```
-
-As portas, credenciais e URL da API podem ser alteradas no `.env`, usando
+está vazio. As portas, credenciais e URL da API podem ser alteradas no `.env`, usando
 [.env.example](./.env.example) como referência. O `.env` local não deve ser
 versionado.
 
-## Executar sem Docker
+### Opção alternativa: execução manual
 
 ### Banco
 
-É necessário um MySQL com o banco `db_senaiFut`, usuário `senai` e senha
-`12345`, ou as credenciais equivalentes definidas por variáveis de ambiente.
+1. Instale e inicie um MySQL. Crie o banco `db_senaiFut` e um usuário com
+   permissão de acesso, ou use as credenciais equivalentes nas variáveis de
+   ambiente.
 
-### Backend
+2. Aplique os scripts de estrutura e dados:
+
+   ```bash
+   mysql -u senai -p db_senaiFut < backend/src/main/resources/schema.sql
+   mysql -u senai -p db_senaiFut < backend/src/main/resources/data.sql
+   ```
+
+3. Em um terminal, configure o banco e inicie o backend:
 
 ```bash
+export SPRING_DATASOURCE_URL='jdbc:mysql://localhost:3306/db_senaiFut'
+export SPRING_DATASOURCE_USERNAME='senai'
+export SPRING_DATASOURCE_PASSWORD='12345'
 cd backend
 ./mvnw spring-boot:run
 ```
@@ -66,9 +96,7 @@ Variáveis aceitas pelo backend:
 - `SPRING_DATASOURCE_PASSWORD`
 - `CORS_ORIGINS`
 
-### Frontend
-
-Em outro terminal:
+4. Em outro terminal, instale as dependências e inicie o frontend:
 
 ```bash
 cd frontend
@@ -76,12 +104,12 @@ npm ci
 npm run dev
 ```
 
-Para apontar para outra API, defina `VITE_API_BASE_URL` antes do comando de
-desenvolvimento.
+Por padrão, o frontend usa `http://localhost:8080/api/v1`. Para apontar para
+outra API, defina `VITE_API_BASE_URL` antes de `npm run dev`.
 
 ## Verificações
 
-Frontend:
+Frontend (na pasta `frontend`):
 
 ```bash
 cd frontend
@@ -93,13 +121,23 @@ npm test
 npm run build
 ```
 
-Backend:
+Backend (na pasta `backend`):
 
 ```bash
 cd backend
 ./mvnw test
 ./mvnw checkstyle:check
 ```
+
+Validação adicional da configuração Docker:
+
+```bash
+docker compose config
+```
+
+O teste de componente de `HomePage` é executado junto com `npm test`, além dos
+testes de formatação. O schema SQL também aplica restrições de domínio para
+evitar registros inválidos mesmo quando a inserção não passa pela API.
 
 Os testes são executados uma vez e terminam sem modo de observação. A suíte
 backend inclui testes do cálculo do valor de mercado e das regras de mercado.
