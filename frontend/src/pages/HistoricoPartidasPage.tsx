@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { CalendarDays, Eye } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
@@ -21,6 +22,7 @@ function mensagemErro(error: unknown): string {
 }
 
 export default function HistoricoPartidasPage() {
+  const navigate = useNavigate();
   const [clubs, setClubs] = useState<ClubeLiga[]>([]);
   const [clubId, setClubId] = useState('');
   const [matches, setMatches] = useState<Match[]>([]);
@@ -67,16 +69,7 @@ export default function HistoricoPartidasPage() {
   }, [clubId]);
 
   async function openMatch(match: Match) {
-    setLoadingDuels(true);
-    setDuelError('');
-    try {
-      const response = await ligaService.buscarPartida(match.id);
-      setSelectedMatch(response);
-    } catch (requestError) {
-      setDuelError(mensagemErro(requestError));
-    } finally {
-      setLoadingDuels(false);
-    }
+    navigate(`/matches/${match.id}`);
   }
 
   return (

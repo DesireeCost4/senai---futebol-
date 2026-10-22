@@ -1,8 +1,10 @@
 .matches-page {
-  width: min(100%, 1180px);
+  width: 100%;
+  max-width: 1240px;
+  box-sizing: border-box;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 24px 30px 40px;
+  padding: 24px clamp(24px, 4vw, 48px) 40px;
 }
 
 .matches-page__back {
@@ -22,6 +24,14 @@
   align-items: center;
   gap: 12px;
   margin: 2px 0 22px;
+}
+
+.matches-page__header .matches-new-button {
+  margin-left: auto;
+}
+
+.matches-new-button {
+  min-height: 31px;
 }
 
 .matches-page__header > span {
@@ -62,6 +72,198 @@
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.latest-match-card,
+.match-history-inline {
+  overflow: hidden;
+  border: 1px solid #e2e7ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.latest-match-card {
+  display: flex;
+  min-height: 82px;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+  padding: 12px 17px;
+}
+
+.latest-match-card__label {
+  position: absolute;
+  margin-top: -64px;
+  color: #586576;
+  font-size: 9px;
+}
+
+.latest-match-card__teams {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 14px;
+}
+
+.latest-match-card__teams strong {
+  display: grid;
+  gap: 2px;
+  color: #344253;
+  font-size: 10px;
+  text-align: center;
+}
+
+.latest-match-card__teams strong small {
+  color: #8994a2;
+  font-size: 7px;
+  font-weight: 400;
+}
+
+.latest-match-card__club {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border-radius: 7px;
+  background: #f1f2f4;
+  color: #596677;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.latest-match-card__teams > b {
+  border-radius: 5px;
+  background: #f5f6f8;
+  padding: 7px 10px;
+  color: #263443;
+  font-size: 13px;
+}
+
+.match-history-inline {
+  margin-top: 14px;
+}
+
+.match-history-inline > header {
+  display: flex;
+  min-height: 55px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e9edf1;
+  padding: 10px 16px;
+}
+
+.match-history-inline h2 {
+  margin: 0 0 3px;
+  color: #344253;
+  font-size: 12px;
+}
+
+.match-history-inline header p,
+.matches-footnote {
+  margin: 0;
+  color: #8994a2;
+  font-size: 8px;
+}
+
+.match-history-inline > header select {
+  min-height: 29px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 8px;
+  color: #536274;
+  font-size: 8px;
+}
+
+.match-history-inline__row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 70px 1fr 90px;
+  min-height: 39px;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 0 11px;
+  color: #586576;
+  font-size: 8px;
+}
+
+.match-history-inline__row > b {
+  justify-self: center;
+  border-radius: 4px;
+  background: #f5f6f8;
+  padding: 4px 7px;
+  color: #344253;
+}
+
+.match-history-inline__row > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #344253;
+  font: inherit;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.matches-footnote {
+  display: block;
+  padding: 10px 11px;
+}
+
+.match-rules {
+  margin: 0 18px 4px;
+  border: 1px solid #e7ebf0;
+  border-radius: 6px;
+  background: #fafbfd;
+  padding: 9px;
+  color: #748192;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.match-rules strong {
+  color: #344253;
+}
+
+.match-rules p {
+  margin: 4px 0 0;
+}
+
+.match-modal-backdrop {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(18 27 39 / 43%);
+  padding: 16px;
+}
+
+.match-create-modal {
+  position: relative;
+  width: min(100%, 430px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.match-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #758191;
+  cursor: pointer;
 }
 
 .match-create-panel > header {
@@ -218,5 +420,33 @@
 
   .play-match-button {
     width: 100%;
+  }
+
+  .matches-page__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .matches-page__header .matches-new-button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .latest-match-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .latest-match-card__label {
+    position: static;
+    margin: 0;
+  }
+
+  .latest-match-card__teams {
+    padding-top: 0;
+  }
+
+  .match-history-inline__row {
+    min-width: 600px;
   }
 }

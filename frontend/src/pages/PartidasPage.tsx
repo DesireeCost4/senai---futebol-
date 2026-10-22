@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { CalendarDays, CircleHelp } from 'lucide-react';
+import { CalendarDays, CircleHelp, Eye, X } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
 import DuelsDialog from '../components/DuelsDialog';
 import { ligaService } from '../services/ligaService';
@@ -16,6 +17,7 @@ function mensagemErro(error: unknown): string {
 }
 
 export default function PartidasPage() {
+  const navigate = useNavigate();
   const [clubs, setClubs] = useState<ClubeLiga[]>([]);
   const [homeClubId, setHomeClubId] = useState('');
   const [awayClubId, setAwayClubId] = useState('');
@@ -24,6 +26,9 @@ export default function PartidasPage() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ homeClubId?: string; awayClubId?: string }>({});
   const [result, setResult] = useState<Match | null>(null);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [showNewMatch, setShowNewMatch] = useState(false);
+  const [loadingMatchId, setLoadingMatchId] = useState<number | null>(null);
   const playInProgress = useRef(false);
 
   useEffect(() => {
@@ -45,6 +50,22 @@ export default function PartidasPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadMatches() {
+      try {
+        const response = await ligaService.listarPartidas();
+        if (!cancelled) setMatches(response);
+      } catch {
+        if (!cancelled) setMatches([]);
+      }
+    }
+    void loadMatches();
+    return () => {
+      cancelled = true;
+    };
+  }, [result]);
+
   async function playMatch() {
     if (playInProgress.current) return;
     const errors: { homeClubId?: string; awayClubId?: string } = {};
@@ -59,12 +80,19 @@ export default function PartidasPage() {
     try {
       const response = await ligaService.jogarPartida(Number(homeClubId), Number(awayClubId));
       setResult(response);
+      setShowNewMatch(false);
+      navigate(`/matches/${response.id}`);
     } catch (requestError) {
       setError(mensagemErro(requestError));
     } finally {
       playInProgress.current = false;
       setPlaying(false);
     }
+
+  }
+
+  async function openMatch(match: Match) {
+    navigate(`/matches/${match.id}`);
   }
 
   return (
@@ -76,11 +104,60 @@ export default function PartidasPage() {
         <div>
           <div>Competição · Liga</div>
           <h1>Partidas</h1>
-          <p>Escolha os clubes e dispute uma partida da liga.</p>
+          <p>Jogue partidas entre clubes com os 5 titulares escalados e acompanhe o histórico.</p>
         </div>
+        <button type="button" className="play-match-button matches-new-button" onClick={() => setShowNewMatch(true)}>
+          + &nbsp; Nova partida
+        </button>
       </header>
 
-      <section className="match-create-panel" aria-labelledby="match-create-title">
+      {matches[0] && (
+        <section className="latest-match-card" aria-label="Última partida">
+          <span className="latest-match-card__label">Última partida</span>
+          <div className="latest-match-card__teams">
+            <strong>{matches[0].home.club_name}<small>Mandante</small></strong>
+            <span className="latest-match-card__club">{matches[0].home.club_name.slice(0, 3).toUpperCase()}</span>
+            <b>{matches[0].home.goals} × {matches[0].away.goals}</b>
+            <span className="latest-match-card__club">{matches[0].away.club_name.slice(0, 3).toUpperCase()}</span>
+            <strong>{matches[0].away.club_name}<small>Visitante</small></strong>
+          </div>
+          <button type="button" className="view-duels-button" onClick={() => void openMatch(matches[0])} disabled={loadingMatchId === matches[0].id}>
+            {loadingMatchId === matches[0].id ? 'Carregando...' : 'Ver duelos'} <Eye size={13} />
+          </button>
+        </section>
+      )}
+      <section className="match-history-inline" aria-labelledby="match-history-inline-title">
+        <header>
+          <div>
+            <h2 id="match-history-inline-title">Histórico de partidas</h2>
+            <p>Da mais recente para a mais antiga.</p>
+          </div>
+          <select aria-label="Filtrar partidas por clube">
+            <option>Clube: todos</option>
+          </select>
+        </header>
+        <div className="match-history-inline__table">
+          {matches.slice(0, 8).map((match) => (
+            <div className="match-history-inline__row" key={match.id}>
+              <span>{new Date(match.played_at).toLocaleDateString('pt-BR')} &nbsp; {new Date(match.played_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+              <strong>{match.home.club_name}</strong>
+              <b>{match.home.goals} × {match.away.goals}</b>
+              <strong>{match.away.club_name}</strong>
+              <button type="button" onClick={() => void openMatch(match)} disabled={loadingMatchId === match.id}>
+                {loadingMatchId === match.id ? 'Carregando...' : 'Ver duelos'} <Eye size={12} />
+              </button>
+            </div>
+          ))}
+          {!matches.length && <EmptyState message="Nenhuma partida encontrada." />}
+        </div>
+        <small className="matches-footnote">{matches.length} {matches.length === 1 ? 'partida' : 'partidas'}</small>
+      </section>
+
+      {showNewMatch && <div className="match-modal-backdrop" onMouseDown={(event) => {
+        if (event.target === event.currentTarget && !playing) setShowNewMatch(false);
+      }}>
+      <section className="match-create-panel match-create-modal" aria-labelledby="match-create-title">
+        <button type="button" className="match-modal-close" onClick={() => setShowNewMatch(false)} disabled={playing}><X size={15} /></button>
         <header>
           <h2 id="match-create-title">Nova partida</h2>
           <p>O resultado e os duelos serão retornados pela API.</p>
@@ -155,6 +232,10 @@ export default function PartidasPage() {
             </label>
           </div>
         )}
+        <div className="match-rules">
+          <strong>ⓘ &nbsp; Como sai o placar</strong>
+          <p>Cada time faz 3 ataques. Pela ordem do elenco, os jogadores de linha vão do 1º ao 5º ataque. O goleiro defende o gol. O vencedor é quem fizer mais gols. Os dois clubes precisam ter os 5 titulares escalados.</p>
+        </div>
         <footer className="match-create-panel__footer">
           <p>
             <CircleHelp size={14} />
@@ -171,6 +252,7 @@ export default function PartidasPage() {
           </button>
         </footer>
       </section>
+      </div>}
 
       {result && <DuelsDialog match={result} onClose={() => setResult(null)} />}
     </main>

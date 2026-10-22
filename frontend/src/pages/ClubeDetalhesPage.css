@@ -640,7 +640,7 @@
   min-height: 58px;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
   border-bottom: 1px solid #edf0f3;
   padding: 9px 15px;
 }
@@ -648,7 +648,7 @@
 .transactions-type-filter {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
   border: 0;
   margin: 0;
   padding: 0;
@@ -656,7 +656,7 @@
 
 .transactions-type-filter legend {
   float: left;
-  margin-right: 9px;
+  margin-right: 2px;
   color: #8591a0;
   font-size: 9px;
 }
@@ -664,17 +664,28 @@
 .transactions-type-filter label {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
+  min-height: 26px;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 8px;
   color: #596778;
-  font-size: 9px;
+  font-size: 8px;
   cursor: pointer;
 }
 
 .transactions-type-filter input {
-  width: 13px;
-  height: 13px;
+  width: 11px;
+  height: 11px;
   accent-color: #2875d1;
   margin: 0;
+}
+
+.transactions-type-filter label:has(input:checked) {
+  border-color: #2875d1;
+  background: #edf5ff;
+  color: #2166c1;
 }
 
 .transactions-player-filter {
@@ -719,6 +730,97 @@
   padding: 9px 14px;
   color: #9d4149;
   font-size: 10px;
+  font-size: 8px;
+}
+
+.transactions-inline-error strong,
+.transactions-inline-error span {
+  display: block;
+}
+
+.transactions-inline-error strong {
+  margin-bottom: 2px;
+  font-size: 8px;
+}
+
+.transactions-inline-error span {
+  font-size: 7px;
+}
+
+.transactions-inline-error--filter {
+  margin: 8px 14px;
+  border: 1px solid #f0c9cc;
+  border-radius: 6px;
+}
+
+.transaction-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.transaction-player__avatar {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8eef8;
+  color: #45628c;
+  font-size: 6px;
+  font-weight: 700;
+}
+
+.transaction-player__avatar--0,
+.transaction-player__avatar--3 {
+  background: #f0eaff;
+  color: #7659d5;
+}
+
+.transaction-player__avatar--1,
+.transaction-player__avatar--4 {
+  background: #dff8f2;
+  color: #278b78;
+}
+
+.transaction-player__avatar--2,
+.transaction-player__avatar--5 {
+  background: #ffe7ed;
+  color: #b65a75;
+}
+
+.transactions-empty {
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  color: #7b8796;
+  text-align: center;
+}
+
+.transactions-empty__icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 8px;
+  background: #f1f3f5;
+  color: #8c98a6;
+  font-size: 17px;
+}
+
+.transactions-empty strong {
+  color: #344253;
+  font-size: 9px;
+}
+
+.transactions-empty p {
+  max-width: 260px;
+  margin: 0;
+  color: #8994a2;
+  font-size: 8px;
+  line-height: 1.4;
 }
 
 .transactions-table-wrap {
@@ -798,7 +900,7 @@
 .transactions-summary {
   border-top: 1px solid #e9edf1;
   background: #fbfcfd;
-  padding: 13px 15px 15px;
+  padding: 0 15px 11px;
 }
 
 .transactions-summary h3 {
@@ -817,27 +919,76 @@
 .transactions-summary__grid article {
   display: grid;
   min-width: 0;
-  gap: 6px;
+  gap: 4px;
   border: 1px solid #e9edf1;
   border-radius: 5px;
   background: #fff;
-  padding: 10px;
+  border-width: 0 1px 0 0;
+  border-radius: 0;
+  padding: 8px 9px;
 }
 
 .transactions-summary__grid article span {
-  min-height: 23px;
+  min-height: 19px;
   color: #8792a0;
-  font-size: 8px;
+  font-size: 7px;
   line-height: 1.35;
 }
 
 .transactions-summary__grid article strong {
   overflow: hidden;
   color: #3d4b5b;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 680;
   font-variant-numeric: tabular-nums;
   text-overflow: ellipsis;
+}
+
+.transactions-summary__grid article small {
+  color: #9aa4b0;
+  font-size: 6px;
+}
+
+.transactions-summary__note {
+  margin: 8px 0 0;
+  color: #8994a2;
+  font-size: 7px;
+}
+
+.transactions-export-toast {
+  position: fixed;
+  z-index: 50;
+  right: 26px;
+  bottom: 20px;
+  display: grid;
+  width: min(320px, calc(100vw - 32px));
+  gap: 4px;
+  border: 1px solid #e2e7ec;
+  border-radius: 7px;
+  background: #fff;
+  padding: 12px 30px 12px 13px;
+  box-shadow: 0 8px 24px rgb(20 35 50 / 18%);
+}
+
+.transactions-export-toast strong {
+  color: #278251;
+  font-size: 9px;
+}
+
+.transactions-export-toast span {
+  color: #596778;
+  font-size: 8px;
+}
+
+.transactions-export-toast button {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  border: 0;
+  background: transparent;
+  color: #7b8796;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .transactions-summary__grid .transactions-summary__profit strong {

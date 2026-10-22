@@ -112,6 +112,8 @@ export default function ClubeDetalhesPage() {
   const [historicoReloadKey, setHistoricoReloadKey] = useState(0);
   const [exportando, setExportando] = useState(false);
   const [erroExportacao, setErroExportacao] = useState('');
+  const [csvExportado, setCsvExportado] = useState(false);
+  const [csvNome, setCsvNome] = useState('');
   const exportInProgress = useRef(false);
   const abaAtiva: AbaClube = searchParams.get('tab') === 'history' ? 'historico' : 'elenco';
   const clubeCriado = Boolean((location.state as { clubeCriado?: boolean } | null)?.clubeCriado);
@@ -251,6 +253,9 @@ export default function ClubeDetalhesPage() {
       link.click();
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setCsvNome(arquivo.filename);
+      setCsvExportado(true);
+      window.setTimeout(() => setCsvExportado(false), 4500);
     } catch (requestError) {
       const responseData = isAxiosError(requestError) ? requestError.response?.data : undefined;
       if (responseData instanceof Blob) {
@@ -432,7 +437,7 @@ export default function ClubeDetalhesPage() {
             <header className="transactions-panel__header">
               <div>
                 <h2 id="transactions-title">Histórico de transações</h2>
-                <p>Compras e vendas do clube, em ordem da mais recente.</p>
+                <p>Da mais recente para a mais antiga, com o nome e os valores do momento de cada operação.</p>
               </div>
               <button
                 type="button"
@@ -496,12 +501,17 @@ export default function ClubeDetalhesPage() {
 
             {erroExportacao && (
               <div className="transactions-inline-error" role="alert">
-                {erroExportacao}
+                <strong>Não foi possível exportar o histórico</strong>
+                <span>{erroExportacao}</span>
               </div>
             )}
             {historicoErro && (
-              <div className="transactions-inline-error" role="alert">
-                {historicoErro}
+              <div
+                className={`transactions-inline-error${jogadorHistoricoId ? ' transactions-inline-error--filter' : ''}`}
+                role="alert"
+              >
+                <strong>{jogadorHistoricoId ? 'O filtro foi recusado' : 'Não foi possível carregar o histórico'}</strong>
+                <span>{jogadorHistoricoId ? 'Jogador não encontrado.' : historicoErro}</span>
               </div>
             )}
 
@@ -550,7 +560,14 @@ export default function ClubeDetalhesPage() {
                               {transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}
                             </span>
                           </td>
-                          <td>{transacao.player_name}</td>
+                          <td>
+                            <span className="transaction-player">
+                              <span className={`transaction-player__avatar transaction-player__avatar--${transacao.player_id % 6}`}>
+                                {initials(transacao.player_name)}
+                              </span>
+                              <span>{transacao.player_name}</span>
+                            </span>
+                          </td>
                           <td className="transactions-table__money">
                             {formatCurrency(transacao.value)}
                           </td>
@@ -575,7 +592,11 @@ export default function ClubeDetalhesPage() {
               </table>
               {historicoCarregando && <LoadingState message="Carregando transações..." />}
               {!historicoCarregando && !historicoErro && historico.length === 0 && (
-                <EmptyState message="Nenhuma transação corresponde aos filtros." />
+                <div className="transactions-empty">
+                  <span className="transactions-empty__icon" aria-hidden="true">↶</span>
+                  <strong>Nenhuma transação ainda</strong>
+                  <p>As compras e vendas do clube aparecem aqui, com os totais logo abaixo.</p>
+                </div>
               )}
             </div>
 
@@ -583,29 +604,38 @@ export default function ClubeDetalhesPage() {
               className="transactions-summary"
               aria-label="Resumo financeiro das transações filtradas"
             >
-              <h3>Resumo financeiro</h3>
               <div className="transactions-summary__grid">
                 <article>
-                  <span>Total pago em compras</span>
+                  <span>🛒 &nbsp;Total pago em compras</span>
                   <strong>{formatCurrency(summary.total_spent)}</strong>
+                  <small>Valor + taxa</small>
                 </article>
                 <article>
-                  <span>Total recebido em vendas</span>
+                  <span>⌁ &nbsp;Total recebido em vendas</span>
                   <strong>{formatCurrency(summary.total_received)}</strong>
+                  <small>Crédito líquido</small>
                 </article>
                 <article>
-                  <span>Taxas e comissões</span>
+                  <span>⊗ &nbsp;Taxas e comissões</span>
                   <strong>{formatCurrency(summary.total_fees)}</strong>
+                  <small>Somadas</small>
                 </article>
                 <article>
-                  <span>Multas</span>
+                  <span>⚠ &nbsp;Multas</span>
                   <strong>{formatCurrency(summary.total_penalties)}</strong>
+                  <small>Por fidelidade</small>
                 </article>
                 <article className="transactions-summary__profit">
-                  <span>Lucro total</span>
+                  <span>⌁ &nbsp;Lucro total</span>
                   <strong>{formatCurrency(summary.total_profit)}</strong>
+                  <small>Soma dos lucros, com sinal</small>
                 </article>
               </div>
+              <p className="transactions-summary__note">
+                {historico.length
+                  ? `Os totais respeitam os filtros. ${jogadorHistoricoId ? 'Os valores consideram apenas o jogador selecionado.' : 'A soma das variações é o caixa atual.'}`
+                  : 'Sem transações, os totais ficam zerados. O botão Exportar CSV continua disponível e baixa só a linha de cabeçalho.'}
+              </p>
             </section>
           </section>}
         </>
@@ -743,6 +773,13 @@ export default function ClubeDetalhesPage() {
 
       {resultadoVenda && (
         <TransactionResultDialog result={resultadoVenda} onClose={() => setResultadoVenda(null)} />
+      )}
+      {csvExportado && (
+        <div className="transactions-export-toast" role="status">
+          <strong>✓ &nbsp;CSV baixado</strong>
+          <span>{csvNome}, com os filtros da tela aplicados.</span>
+          <button type="button" aria-label="Fechar aviso" onClick={() => setCsvExportado(false)}>×</button>
+        </div>
       )}
     </main>
   );

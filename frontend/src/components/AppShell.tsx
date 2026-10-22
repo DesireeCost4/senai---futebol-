@@ -27,6 +27,9 @@ function breadcrumb(pathname: string, clubs: Clube[]): string[] {
       : ['Mercado', 'Clubes', clubName];
   }
   if (pathname === '/matches/history') return ['Liga', 'Partidas', 'Histórico'];
+  if (pathname.startsWith('/matches/')) {
+    return ['Liga', 'Partidas', 'Detalhes da partida'];
+  }
   if (pathname === '/matches') return ['Liga', 'Partidas'];
   if (pathname === '/standings') return ['Liga', 'Classificação'];
   return ['Mercado', 'Clubes'];
@@ -76,7 +79,7 @@ export default function AppShell({ children }: Props) {
 
           <section className="app-sidebar__group" aria-label="Liga">
             <p className="app-sidebar__label">Liga</p>
-            <Link className={pathname === '/matches' ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/matches">
+            <Link className={pathname.startsWith('/matches') ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/matches">
               <CalendarDays size={15} />Partidas
             </Link>
             <Link className={pathname === '/standings' ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/standings">

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
-import { Trophy } from 'lucide-react';
+import { Trophy, Plus } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
 import { ligaService } from '../services/ligaService';
-import type { Standing } from '../types/league';
+import type { Match, Standing } from '../types/league';
 import './ClassificacaoPage.css';
 
 function mensagemErro(error: unknown): string {
@@ -22,6 +22,7 @@ export default function ClassificacaoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [matches, setMatches] = useState<Match[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +44,10 @@ export default function ClassificacaoPage() {
     };
   }, [reloadKey]);
 
+  useEffect(() => {
+    void ligaService.listarPartidas().then(setMatches).catch(() => setMatches([]));
+  }, [reloadKey]);
+
   return (
     <main className="standings-page">
       <header className="standings-header">
@@ -52,10 +57,12 @@ export default function ClassificacaoPage() {
         <div>
           <div>Competição · Liga</div>
           <h1>Classificação</h1>
-          <p>Tabela oficial da liga.</p>
+          <p>Todos os clubes, com 3 pontos por vitória e 1 por empate.</p>
         </div>
+        <button type="button" className="standings-new-match"><Plus size={12} /> Nova partida</button>
       </header>
 
+      <div className="standings-layout">
       <section className="standings-panel" aria-labelledby="standings-title">
         <header className="standings-panel__header">
           <div>
@@ -140,7 +147,27 @@ export default function ClassificacaoPage() {
             <EmptyState message="A classificação ainda não tem clubes." />
           )}
         </div>
+        <p className="standings-note">J: jogos · V: vitórias · E: empates · D: derrotas · GP: gols marcados · GC: gols sofridos · SG: saldo de gols · Pts: pontos</p>
       </section>
+      <aside className="standings-sidebar">
+        <section>
+          <h2>Últimas partidas</h2>
+          <p>Da mais recente para a mais antiga.</p>
+          {matches.slice(0, 2).map((match) => (
+            <div className="standings-match" key={match.id}>
+              <small>{new Date(match.played_at).toLocaleDateString('pt-BR')}</small>
+              <strong>{match.home.club_name} <b>{match.home.goals} × {match.away.goals}</b> {match.away.club_name}</strong>
+            </div>
+          ))}
+          <a href="/matches">Ver todas as partidas →</a>
+        </section>
+        <section>
+          <h2>Ordem da tabela</h2>
+          <p>Critérios de classificação, nesta ordem.</p>
+          <ol><li>Mais pontos</li><li>Maior saldo de gols</li><li>Mais gols marcados</li><li>Nome do clube, de A a Z</li></ol>
+        </section>
+      </aside>
+      </div>
     </main>
   );
 }

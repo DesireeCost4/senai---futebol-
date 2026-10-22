@@ -1,0 +1,23 @@
+.duels-field-page { border: 1px solid #e2e7ec; border-radius: 8px; background: #fff; padding: 10px; }
+.duels-field-page > header, .duels-table > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 2px 8px; }
+.duels-field-page h2 { margin: 0; color: #344253; font-size: 10px; }
+.duels-field-page header p, .duels-field-page header span, .duels-table header p { margin: 3px 0 0; color: #8994a2; font-size: 7px; }
+.duels-field-page__legend { white-space: nowrap; }.duels-field-page__legend b { color: #b27722; }.duels-field-page__legend b:last-of-type { color: #278251; }
+.duels-field { position: relative; min-height: 315px; overflow: hidden; border: 1px solid rgb(255 255 255 / 50%); border-radius: 5px; background: repeating-linear-gradient(90deg, rgb(255 255 255 / 4%) 0 8%, transparent 8% 16%), #106238; }
+.duels-field::before { position: absolute; top: 8px; bottom: 8px; left: 50%; border-left: 1px solid rgb(255 255 255 / 42%); content: ''; }
+.duels-field__half { position: absolute; top: 50%; left: 0; width: 100%; border-top: 1px solid rgb(255 255 255 / 42%); }
+.duels-field__circle { position: absolute; top: 50%; left: 50%; width: 82px; height: 82px; border: 1px solid rgb(255 255 255 / 42%); border-radius: 50%; transform: translate(-50%, -50%); }
+.duels-field__goal { position: absolute; top: 50%; width: 22px; height: 75px; border: 1px solid rgb(255 255 255 / 55%); transform: translateY(-50%); }
+.duels-field__goal--left { left: 0; border-left: 0; }.duels-field__goal--right { right: 0; border-right: 0; }
+.duels-field__team { position: absolute; z-index: 3; top: 7px; border-radius: 4px; background: rgb(0 0 0 / 22%); padding: 4px 6px; color: #fff; font-size: 6px; }.duels-field__team--home { left: 8px; }.duels-field__team--away { right: 8px; }
+.field-player { position: absolute; z-index: 2; display: grid; width: 58px; justify-items: center; gap: 2px; color: #fff; text-align: center; transform: translate(-50%, -50%); }
+.field-player i { display: grid; width: 28px; height: 28px; place-items: center; border: 2px solid #fff; border-radius: 50%; background: #286dbe; box-shadow: 0 2px 5px rgb(0 0 0 / 25%); font-size: 7px; font-style: normal; font-weight: 700; }
+.field-player--away i { background: #d06b4b; }.field-player b { max-width: 64px; overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }.field-player small { color: rgb(255 255 255 / 75%); font-size: 6px; }
+.field-player--1 { top: 17%; }.field-player--2 { top: 34%; }.field-player--3 { top: 52%; }.field-player--4 { top: 70%; }.field-player--5 { top: 84%; }.field-player--6 { top: 43%; }
+.field-player--home { left: 19%; }.field-player--home.field-player--2 { left: 31%; }.field-player--home.field-player--3 { left: 17%; }.field-player--home.field-player--4 { left: 31%; }.field-player--home.field-player--5 { left: 17%; }.field-player--home.field-player--6 { left: 31%; }
+.field-player--away { left: 81%; }.field-player--away.field-player--2 { left: 69%; }.field-player--away.field-player--3 { left: 83%; }.field-player--away.field-player--4 { left: 69%; }.field-player--away.field-player--5 { left: 83%; }.field-player--away.field-player--6 { left: 69%; }
+.duels-field > p { position: absolute; top: 50%; left: 50%; color: #fff; font-size: 9px; transform: translate(-50%, -50%); white-space: nowrap; }
+.duels-table { margin-top: 16px; border: 1px solid #e7ebef; border-radius: 6px; overflow: hidden; }.duels-table > header { display: block; background: #fbfcfd; border-bottom: 1px solid #e7ebef; padding: 9px; }.duels-table header p { margin-top: 3px; }
+.duels-table__columns, .duels-table__row { display: grid; grid-template-columns: 35px 1.1fr .8fr 1.1fr .8fr 58px; align-items: center; gap: 8px; padding: 0 9px; }.duels-table__columns { min-height: 25px; border-bottom: 1px solid #edf0f3; background: #fbfcfd; color: #8994a2; font-size: 7px; }.duels-table__row { min-height: 38px; border-bottom: 1px solid #edf0f3; color: #586576; font-size: 8px; }.duels-table__row:last-child { border-bottom: 0; }.duels-table__row > span { color: #586576; }.duels-table__row strong { display: grid; gap: 2px; color: #344253; font-size: 8px; }.duels-table__row strong small { color: #8994a2; font-size: 6px; font-weight: 400; }.duels-table__row > b { border-radius: 4px; background: #eaf7f0; padding: 3px 4px; color: #278251; font-size: 6px; text-align: center; }
+.duels-field-page__note { margin: 10px 2px 0; color: #8994a2; font-size: 7px; line-height: 1.4; }
+@media (max-width: 600px) { .duels-field { min-height: 235px; }.duels-table { overflow-x: auto; }.duels-table__row { min-width: 600px; } }

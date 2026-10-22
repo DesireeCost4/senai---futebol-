@@ -1,5 +1,7 @@
 .match-history-page {
-  width: min(100%, 1240px);
+  width: 100%;
+  max-width: 1240px;
+  box-sizing: border-box;
   min-height: 100vh;
   margin: 0 auto;
   padding: 24px 30px 40px;

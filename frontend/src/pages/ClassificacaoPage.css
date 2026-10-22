@@ -1,5 +1,7 @@
 .standings-page {
-  width: min(100%, 1180px);
+  width: 100%;
+  max-width: 1240px;
+  box-sizing: border-box;
   min-height: 100vh;
   margin: 0 auto;
   padding: 24px 30px 40px;
@@ -22,6 +24,28 @@
   align-items: center;
   gap: 12px;
   margin: 2px 0 22px;
+}
+
+.standings-header .standings-new-match {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  border: 1px solid #dfe5eb;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 9px;
+  color: #536274;
+  font: inherit;
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.standings-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 12px;
 }
 
 .standings-header > span {
@@ -62,6 +86,77 @@
   border-radius: 8px;
   background: #fff;
   box-shadow: 0 2px 8px rgb(28 43 57 / 3%);
+}
+
+.standings-note {
+  margin: 0;
+  border-top: 1px solid #e9edf1;
+  padding: 8px 12px;
+  color: #8994a2;
+  font-size: 7px;
+}
+
+.standings-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.standings-sidebar section {
+  border: 1px solid #e2e7ec;
+  border-radius: 8px;
+  background: #fff;
+  padding: 11px;
+}
+
+.standings-sidebar h2 {
+  margin: 0 0 3px;
+  color: #344253;
+  font-size: 9px;
+}
+
+.standings-sidebar p {
+  margin: 0 0 9px;
+  color: #8994a2;
+  font-size: 7px;
+}
+
+.standings-match {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid #edf0f3;
+  padding: 8px 0;
+}
+
+.standings-match small {
+  color: #8994a2;
+  font-size: 7px;
+}
+
+.standings-match strong {
+  color: #586576;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.standings-match b {
+  margin: 0 3px;
+  color: #344253;
+}
+
+.standings-sidebar a {
+  color: #286dbe;
+  font-size: 7px;
+  text-decoration: none;
+}
+
+.standings-sidebar ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 22px;
+  color: #586576;
+  font-size: 7px;
 }
 
 .standings-panel__header {
@@ -194,5 +289,18 @@
 @media (max-width: 600px) {
   .standings-page {
     padding: 18px 12px 28px;
+  }
+
+  .standings-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .standings-header .standings-new-match {
+    margin-left: 51px;
+  }
+
+  .standings-layout {
+    grid-template-columns: 1fr;
   }
 }
