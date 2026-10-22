@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { AlertCircle, Check, ChevronDown, Plus, Shield, SlidersHorizontal, X } from 'lucide-react';
-import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
+import { ErrorState, LoadingState } from '../components/RequestState';
 import { clubeService } from '../services/clubeService';
 import { formatCurrency } from '../utils/formatters';
 import './ClubesPage.css';
@@ -42,7 +42,11 @@ export default function ClubesPage() {
   const [nome, setNome] = useState('');
   const [sigla, setSigla] = useState('');
   const [checkboxChecked, setCheckboxChecked] = useState(false);
-  const [errosCampos, setErrosCampos] = useState<{ name?: string; acronym?: string; checkbox?: string }>({});
+  const [errosCampos, setErrosCampos] = useState<{
+    name?: string;
+    acronym?: string;
+    checkbox?: string;
+  }>({});
   const [erroCriacao, setErroCriacao] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [salvando, setSalvando] = useState(false);
@@ -84,7 +88,9 @@ export default function ClubesPage() {
     else if (!/^[A-Z]{3}$/.test(siglaLimpa))
       novosErros.acronym = 'A sigla deve ter exatamente 3 letras maiúsculas.';
 
-    if (!checkboxChecked) novosErros.checkbox = 'Você deve confirmar que o clube começa com 300,00 em caixa e sem jogadores.';
+    if (!checkboxChecked)
+      novosErros.checkbox =
+        'Você deve confirmar que o clube começa com 300,00 em caixa e sem jogadores.';
 
     setErrosCampos(novosErros);
     return Object.keys(novosErros).length === 0;
@@ -99,7 +105,10 @@ export default function ClubesPage() {
     setErroCriacao('');
     setSucesso('');
     try {
-      const clubeCriado = await clubeService.criarClube({ name: nome.trim(), acronym: sigla.trim() });
+      const clubeCriado = await clubeService.criarClube({
+        name: nome.trim(),
+        acronym: sigla.trim(),
+      });
       setFormularioAberto(false);
       setNome('');
       setSigla('');
@@ -131,12 +140,19 @@ export default function ClubesPage() {
           </span>
           <div>
             <h1>Clubes</h1>
-            <p>Cada clube começa com 300,00 em caixa e sem jogadores. A liga aceita no máximo 20 clubes.</p>
+            <p>
+              Cada clube começa com 300,00 em caixa e sem jogadores. A liga aceita no máximo 20
+              clubes.
+            </p>
           </div>
-          <button className="clubs-create-button" type="button" onClick={() => {
-            setFormularioAberto(true);
-            setSucesso('');
-          }}>
+          <button
+            className="clubs-create-button"
+            type="button"
+            onClick={() => {
+              setFormularioAberto(true);
+              setSucesso('');
+            }}
+          >
             <Plus size={15} /> Novo clube
           </button>
         </div>
@@ -216,7 +232,9 @@ export default function ClubesPage() {
                       {formatCurrency(clube.net_worth)}
                     </td>
                     <td className="clubs-table__action">
-                      <Link to={`/clubs/${clube.id}`}>Ver clube <span aria-hidden="true">›</span></Link>
+                      <Link to={`/clubs/${clube.id}`}>
+                        Ver clube <span aria-hidden="true">›</span>
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -228,16 +246,25 @@ export default function ClubesPage() {
           )}
           {!carregando && !erro && clubes.length === 0 && (
             <div className="clubs-empty-state">
-              <span className="clubs-empty-state__icon"><Shield size={18} /></span>
+              <span className="clubs-empty-state__icon">
+                <Shield size={18} />
+              </span>
               <strong>Nenhum clube cadastrado</strong>
-              <p>Crie o primeiro clube com nome e sigla. Ele começa com 300,00<br />em caixa e sem jogadores.</p>
+              <p>
+                Crie o primeiro clube com nome e sigla. Ele começa com 300,00
+                <br />
+                em caixa e sem jogadores.
+              </p>
               <button type="button" onClick={() => setFormularioAberto(true)}>
                 <Plus size={12} /> Novo clube
               </button>
             </div>
           )}
         </div>
-        <p className="clubs-page__hint">Clubes pelo nome por padrão ou pelo patrimônio, do maior para o menor, com empate desfeito pelo nome.</p>
+        <p className="clubs-page__hint">
+          Clubes pelo nome por padrão ou pelo patrimônio, do maior para o menor, com empate desfeito
+          pelo nome.
+        </p>
       </section>
       {sucesso && (
         <div className="clubs-toast clubs-toast--success" role="status">
@@ -279,7 +306,9 @@ export default function ClubesPage() {
             <form onSubmit={criarClube} noValidate>
               {erroCriacao && (
                 <div className="clubs-form__error" role="alert">
-                  <strong><AlertCircle size={11} /> Não foi possível criar o clube</strong>
+                  <strong>
+                    <AlertCircle size={11} /> Não foi possível criar o clube
+                  </strong>
                   <span>{erroCriacao}</span>
                 </div>
               )}
@@ -303,7 +332,11 @@ export default function ClubesPage() {
                     {errosCampos.name}
                   </small>
                 ) : (
-                  <small id="club-name-help">De 3 a 60 caracteres e de 2 a 5 palavras; só letras, espaços, hífen e ponto.<br />Não pode repetir outro clube.</small>
+                  <small id="club-name-help">
+                    De 3 a 60 caracteres e de 2 a 5 palavras; só letras, espaços, hífen e ponto.
+                    <br />
+                    Não pode repetir outro clube.
+                  </small>
                 )}
               </label>
               <label className="clubs-field" htmlFor="club-acronym">
@@ -328,7 +361,10 @@ export default function ClubesPage() {
                     {errosCampos.acronym}
                   </small>
                 ) : (
-                  <small id="club-acronym-help">3 letras de A a Z, maiúsculas, que aparecerão no nome nessa ordem; a primeira é a primeira letra do nome.</small>
+                  <small id="club-acronym-help">
+                    3 letras de A a Z, maiúsculas, que aparecerão no nome nessa ordem; a primeira é
+                    a primeira letra do nome.
+                  </small>
                 )}
               </label>
               <label className="clubs-checkbox-field">

@@ -14,7 +14,8 @@ npm ci
 npm run dev
 ```
 
-A interface fica disponível em `http://localhost:5173`. A API base é `http://localhost:8080/api/v1`.
+A interface fica disponível em `http://localhost:5173`. A API base padrão é
+`http://localhost:8080/api/v1`; altere `VITE_API_BASE_URL` para usar outra origem.
 
 ## Verificações
 

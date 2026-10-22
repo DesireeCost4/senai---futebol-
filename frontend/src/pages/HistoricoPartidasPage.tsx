@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { CalendarDays, Eye } from 'lucide-react';
 import { EmptyState, LoadingState } from '../components/RequestState';
-import DuelsDialog from '../components/DuelsDialog';
 import { ligaService } from '../services/ligaService';
 import { formatDateTimeBrasilia } from '../utils/formatters';
 import type { ClubeLiga, Match } from '../types/league';
@@ -28,9 +27,6 @@ export default function HistoricoPartidasPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [loadingDuels, setLoadingDuels] = useState(false);
-  const [duelError, setDuelError] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -147,7 +143,6 @@ export default function HistoricoPartidasPage() {
                         type="button"
                         className="view-duels-button"
                         onClick={() => void openMatch(match)}
-                        disabled={loadingDuels}
                       >
                         <Eye size={14} />
                         Ver duelos
@@ -163,19 +158,6 @@ export default function HistoricoPartidasPage() {
           )}
         </div>
       </section>
-      {duelError && (
-        <div className="match-history-error match-history-error--duel" role="alert">
-          {duelError}
-        </div>
-      )}
-      {loadingDuels && (
-        <div className="duels-loading" role="status">
-          Carregando duelos...
-        </div>
-      )}
-      {selectedMatch && (
-        <DuelsDialog match={selectedMatch} onClose={() => setSelectedMatch(null)} />
-      )}
     </main>
   );
 }

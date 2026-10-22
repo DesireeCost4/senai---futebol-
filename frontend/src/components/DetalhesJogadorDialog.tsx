@@ -1,6 +1,6 @@
-import { X, Check, Pencil, HeartPulse, ShoppingCart, HelpCircle } from 'lucide-react';
+import { X, Pencil, HeartPulse, ShoppingCart, HelpCircle } from 'lucide-react';
 import './DetalhesJogadorDialog.css';
-import type { Jogador, CondicaoJogador } from '../types/players';
+import type { Jogador } from '../types/players';
 
 type Props = {
   player: Jogador;
@@ -45,19 +45,8 @@ export default function DetalhesJogadorDialog({
     return 'Apto';
   };
 
-  const positionName = (pos: string) => {
-    const map: Record<string, string> = {
-      GOL: 'Goleiro',
-      ZAG: 'Zagueiro',
-      LAT: 'Lateral',
-      MEI: 'Meio-campo',
-      ATA: 'Atacante',
-    };
-    return map[pos] ?? pos;
-  };
-
   const clubName = player.club_id
-    ? clubes.find((c) => c.id === player.club_id)?.name ?? 'Clube'
+    ? (clubes.find((c) => c.id === player.club_id)?.name ?? 'Clube')
     : 'Livre';
 
   const technicalAttributes = [
@@ -160,7 +149,8 @@ export default function DetalhesJogadorDialog({
           ))}
           <div className="attributes-legend">
             <span className="legend-dot" /> Valor do atributo{' '}
-            <span className="legend-dot legend-dot--potential" /> Até o potencial ({player.potential ?? 86}), que nenhum atributo passa
+            <span className="legend-dot legend-dot--potential" /> Até o potencial (
+            {player.potential ?? 86}), que nenhum atributo passa
           </div>
         </div>
 

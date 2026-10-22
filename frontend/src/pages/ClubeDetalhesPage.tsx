@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { AlertTriangle, BadgeDollarSign, FileQuestion, Landmark, RefreshCw, ShoppingCart, Shirt, WalletCards, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  BadgeDollarSign,
+  FileQuestion,
+  Landmark,
+  RefreshCw,
+  ShoppingCart,
+  Shirt,
+  WalletCards,
+  X,
+} from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import ClubTabs from '../components/ClubTabs';
 import TransactionResultDialog from '../components/TransactionResultDialog';
@@ -131,7 +141,9 @@ export default function ClubeDetalhesPage() {
         if (!cancelled) setClube(resultado);
       } catch (requestError) {
         if (!cancelled) {
-          setClubeNaoEncontrado(isAxiosError(requestError) && requestError.response?.status === 404);
+          setClubeNaoEncontrado(
+            isAxiosError(requestError) && requestError.response?.status === 404,
+          );
           setErro(mensagemErro(requestError));
         }
       } finally {
@@ -289,7 +301,9 @@ export default function ClubeDetalhesPage() {
             description="Clube não encontrado. O endereço pode estar errado ou o clube não existe."
             icon={<FileQuestion size={16} />}
           />
-          <Link to="/clubs" className="club-not-found-state__back">← &nbsp;Voltar para clubes</Link>
+          <Link to="/clubs" className="club-not-found-state__back">
+            ← &nbsp;Voltar para clubes
+          </Link>
         </section>
       )}
       {!carregando && erro && !clubeNaoEncontrado && (
@@ -304,16 +318,16 @@ export default function ClubeDetalhesPage() {
       {!carregando && !erro && clube && (
         <>
           <header className="club-detail-header">
-            <span className="club-detail-header__icon">
-              {clube.acronym.slice(0, 3)}
-            </span>
+            <span className="club-detail-header__icon">{clube.acronym.slice(0, 3)}</span>
             <div>
               <h1>
                 {clube.name} <span>{clube.acronym}</span>
               </h1>
               <div className="club-detail-header__badges">
                 <span>Sigla {clube.acronym}</span>
-                <span><Shirt size={10} /> {clube.players?.length ?? 0} de 12 jogadores</span>
+                <span>
+                  <Shirt size={10} /> {clube.players?.length ?? 0} de 12 jogadores
+                </span>
               </div>
             </div>
             <Link className="club-detail-market-link" to="/players">
@@ -324,26 +338,36 @@ export default function ClubeDetalhesPage() {
 
           <section className="club-summary" aria-label="Resumo financeiro do clube">
             <article className="club-summary__item">
-              <span>Caixa <WalletCards size={12} /></span>
+              <span>
+                Caixa <WalletCards size={12} />
+              </span>
               <strong>{formatCurrency(clube.cash)}</strong>
               <small>moedas</small>
               <em>Só muda por compras e vendas</em>
             </article>
             <article className="club-summary__item">
-              <span>Valor do elenco <BadgeDollarSign size={12} /></span>
+              <span>
+                Valor do elenco <BadgeDollarSign size={12} />
+              </span>
               <strong>{formatCurrency(clube.squad_value)}</strong>
               <small>moedas</small>
               <em>Soma dos valores de mercado</em>
             </article>
             <article className="club-summary__item club-summary__item--net-worth">
-              <span>Patrimônio <Landmark size={12} /></span>
+              <span>
+                Patrimônio <Landmark size={12} />
+              </span>
               <strong>{formatCurrency(clube.net_worth)}</strong>
               <small>moedas</small>
               <em>Caixa + valor do elenco</em>
             </article>
             <article className="club-summary__item club-summary__item--squad-count">
-              <span>Elenco <Shirt size={12} /></span>
-              <strong>{clube.players?.length ?? 0} <small>de 12</small></strong>
+              <span>
+                Elenco <Shirt size={12} />
+              </span>
+              <strong>
+                {clube.players?.length ?? 0} <small>de 12</small>
+              </strong>
               <em>Limite de 12 jogadores</em>
             </article>
           </section>
@@ -355,320 +379,344 @@ export default function ClubeDetalhesPage() {
             historyCount={historico.length}
           />
 
-          {abaAtiva === 'elenco' && <section className="club-squad-panel" aria-labelledby="club-squad-title">
-            <header className="club-squad-panel__header">
-              <div>
-                <h2 id="club-squad-title">Elenco</h2>
-                <p>{clube.players?.length ?? 0} jogadores · ordem por posição e nome</p>
-              </div>
-            </header>
-            <div
-              className="club-squad-table-wrap"
-              role="region"
-              aria-label="Elenco e contratos"
-              tabIndex={0}
-            >
-              <table className="club-squad-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Jogador</th>
-                    <th scope="col">Posição</th>
-                    <th scope="col">Global</th>
-                    <th scope="col">Idade</th>
-                    <th scope="col">Condição</th>
-                    <th scope="col" className="club-squad-table__money">
-                      Valor de mercado
-                    </th>
-                    <th scope="col">Fim da fidelidade</th>
-                    <th scope="col" className="club-squad-table__number">
-                      Dias restantes
-                    </th>
-                    <th scope="col" className="club-squad-table__number">
-                      Multa agora
-                    </th>
-                    <th scope="col" className="club-squad-table__action">
-                      Ação
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clube.players?.map((jogador) => (
-                    <tr key={jogador.id}>
-                      <td>
-                        <strong>{jogador.name}</strong>
-                        <small>#{jogador.id}</small>
-                      </td>
-                      <td>
-                        <span className="club-position">{jogador.position}</span>
-                      </td>
-                      <td className="club-squad-table__number">{jogador.overall}</td>
-                      <td className="club-squad-table__number">{jogador.age}</td>
-                      <td>
-                        <span
-                          className={`club-condition club-condition--${jogador.condition.toLowerCase()}`}
-                        >
-                          <span aria-hidden="true" />
-                          {conditionLabel(jogador.condition)}
-                        </span>
-                      </td>
-                      <td className="club-squad-table__money">
-                        {formatCurrency(jogador.market_value)}
-                      </td>
-                      <td>
-                        {jogador.contract?.loyalty_until
-                          ? formatDateTimeBrasilia(jogador.contract.loyalty_until)
-                          : '—'}
-                      </td>
-                      <td className="club-squad-table__number">
-                        {jogador.contract?.remaining_days ?? '—'}
-                      </td>
-                      <td className="club-squad-table__number">
-                        {jogador.contract ? `${jogador.contract.penalty_rate}%` : '—'}
-                      </td>
-                      <td className="club-squad-table__action">
-                        <button
-                          type="button"
-                          className="club-sell-button"
-                          disabled={Boolean(jogadorVenda) || vendendo}
-                          onClick={() => {
-                            setJogadorVenda(jogador);
-                            setErroVenda('');
-                          }}
-                        >
-                          Vender
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {!clube.players?.length && (
-                <div className="club-squad-empty">
-                  <span className="club-squad-empty__icon"><Shirt size={18} /></span>
-                  <strong>Nenhum jogador no elenco</strong>
-                  <p>Compre jogadores livres para montar o elenco. O limite é de 12<br />jogadores, e o custo de cada compra não pode passar de 50% do<br />caixa.</p>
-                  <Link to="/players"><Shirt size={10} /> Ver jogadores livres</Link>
+          {abaAtiva === 'elenco' && (
+            <section className="club-squad-panel" aria-labelledby="club-squad-title">
+              <header className="club-squad-panel__header">
+                <div>
+                  <h2 id="club-squad-title">Elenco</h2>
+                  <p>{clube.players?.length ?? 0} jogadores · ordem por posição e nome</p>
                 </div>
-              )}
-            </div>
-          </section>}
-
-          {abaAtiva === 'historico' && <section className="transactions-panel" aria-labelledby="transactions-title">
-            <header className="transactions-panel__header">
-              <div>
-                <h2 id="transactions-title">Histórico de transações</h2>
-                <p>Da mais recente para a mais antiga, com o nome e os valores do momento de cada operação.</p>
-              </div>
-              <button
-                type="button"
-                className="transactions-export"
-                onClick={() => void exportarHistorico()}
-                disabled={exportando || historicoCarregando}
+              </header>
+              <div
+                className="club-squad-table-wrap"
+                role="region"
+                aria-label="Elenco e contratos"
+                tabIndex={0}
               >
-                {exportando ? (
-                  <span className="transactions-spinner" />
-                ) : (
-                  <span aria-hidden="true">↓</span>
+                <table className="club-squad-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Jogador</th>
+                      <th scope="col">Posição</th>
+                      <th scope="col">Global</th>
+                      <th scope="col">Idade</th>
+                      <th scope="col">Condição</th>
+                      <th scope="col" className="club-squad-table__money">
+                        Valor de mercado
+                      </th>
+                      <th scope="col">Fim da fidelidade</th>
+                      <th scope="col" className="club-squad-table__number">
+                        Dias restantes
+                      </th>
+                      <th scope="col" className="club-squad-table__number">
+                        Multa agora
+                      </th>
+                      <th scope="col" className="club-squad-table__action">
+                        Ação
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {clube.players?.map((jogador) => (
+                      <tr key={jogador.id}>
+                        <td>
+                          <strong>{jogador.name}</strong>
+                          <small>#{jogador.id}</small>
+                        </td>
+                        <td>
+                          <span className="club-position">{jogador.position}</span>
+                        </td>
+                        <td className="club-squad-table__number">{jogador.overall}</td>
+                        <td className="club-squad-table__number">{jogador.age}</td>
+                        <td>
+                          <span
+                            className={`club-condition club-condition--${jogador.condition.toLowerCase()}`}
+                          >
+                            <span aria-hidden="true" />
+                            {conditionLabel(jogador.condition)}
+                          </span>
+                        </td>
+                        <td className="club-squad-table__money">
+                          {formatCurrency(jogador.market_value)}
+                        </td>
+                        <td>
+                          {jogador.contract?.loyalty_until
+                            ? formatDateTimeBrasilia(jogador.contract.loyalty_until)
+                            : '—'}
+                        </td>
+                        <td className="club-squad-table__number">
+                          {jogador.contract?.remaining_days ?? '—'}
+                        </td>
+                        <td className="club-squad-table__number">
+                          {jogador.contract ? `${jogador.contract.penalty_rate}%` : '—'}
+                        </td>
+                        <td className="club-squad-table__action">
+                          <button
+                            type="button"
+                            className="club-sell-button"
+                            disabled={Boolean(jogadorVenda) || vendendo}
+                            onClick={() => {
+                              setJogadorVenda(jogador);
+                              setErroVenda('');
+                            }}
+                          >
+                            Vender
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!clube.players?.length && (
+                  <div className="club-squad-empty">
+                    <span className="club-squad-empty__icon">
+                      <Shirt size={18} />
+                    </span>
+                    <strong>Nenhum jogador no elenco</strong>
+                    <p>
+                      Compre jogadores livres para montar o elenco. O limite é de 12
+                      <br />
+                      jogadores, e o custo de cada compra não pode passar de 50% do
+                      <br />
+                      caixa.
+                    </p>
+                    <Link to="/players">
+                      <Shirt size={10} /> Ver jogadores livres
+                    </Link>
+                  </div>
                 )}
-                {exportando ? 'Exportando...' : 'Exportar CSV'}
-              </button>
-            </header>
+              </div>
+            </section>
+          )}
 
-            <div className="transactions-filters">
-              <fieldset className="transactions-type-filter">
-                <legend>Tipo</legend>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={tiposSelecionados.includes('COMPRA')}
-                    onChange={() => alternarTipo('COMPRA')}
-                  />
-                  Compra
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={tiposSelecionados.includes('VENDA')}
-                    onChange={() => alternarTipo('VENDA')}
-                  />
-                  Venda
-                </label>
-              </fieldset>
-              <label className="transactions-player-filter">
-                <span>Jogador</span>
-                <select
-                  value={jogadorHistoricoId}
-                  onChange={(event) => setJogadorHistoricoId(event.target.value)}
-                >
-                  <option value="">Todos os jogadores</option>
-                  {jogadoresHistorico.map((jogador) => (
-                    <option key={jogador.id} value={jogador.id}>
-                      {jogador.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {(tiposSelecionados.length > 0 || jogadorHistoricoId) && (
+          {abaAtiva === 'historico' && (
+            <section className="transactions-panel" aria-labelledby="transactions-title">
+              <header className="transactions-panel__header">
+                <div>
+                  <h2 id="transactions-title">Histórico de transações</h2>
+                  <p>
+                    Da mais recente para a mais antiga, com o nome e os valores do momento de cada
+                    operação.
+                  </p>
+                </div>
                 <button
                   type="button"
-                  className="transactions-clear-filter"
-                  onClick={limparFiltrosHistorico}
+                  className="transactions-export"
+                  onClick={() => void exportarHistorico()}
+                  disabled={exportando || historicoCarregando}
                 >
-                  Limpar filtros
+                  {exportando ? (
+                    <span className="transactions-spinner" />
+                  ) : (
+                    <span aria-hidden="true">↓</span>
+                  )}
+                  {exportando ? 'Exportando...' : 'Exportar CSV'}
                 </button>
-              )}
-            </div>
+              </header>
 
-            {erroExportacao && (
-              <div className="transactions-inline-error" role="alert">
-                <strong>Não foi possível exportar o histórico</strong>
-                <span>{erroExportacao}</span>
+              <div className="transactions-filters">
+                <fieldset className="transactions-type-filter">
+                  <legend>Tipo</legend>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={tiposSelecionados.includes('COMPRA')}
+                      onChange={() => alternarTipo('COMPRA')}
+                    />
+                    Compra
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={tiposSelecionados.includes('VENDA')}
+                      onChange={() => alternarTipo('VENDA')}
+                    />
+                    Venda
+                  </label>
+                </fieldset>
+                <label className="transactions-player-filter">
+                  <span>Jogador</span>
+                  <select
+                    value={jogadorHistoricoId}
+                    onChange={(event) => setJogadorHistoricoId(event.target.value)}
+                  >
+                    <option value="">Todos os jogadores</option>
+                    {jogadoresHistorico.map((jogador) => (
+                      <option key={jogador.id} value={jogador.id}>
+                        {jogador.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {(tiposSelecionados.length > 0 || jogadorHistoricoId) && (
+                  <button
+                    type="button"
+                    className="transactions-clear-filter"
+                    onClick={limparFiltrosHistorico}
+                  >
+                    Limpar filtros
+                  </button>
+                )}
               </div>
-            )}
-            <div
-              className="transactions-table-wrap"
-              role="region"
-              aria-label="Tabela de transações"
-              tabIndex={0}
-            >
-              <table className="transactions-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Data e hora</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Jogador</th>
-                    <th scope="col" className="transactions-table__money">
-                      Valor
-                    </th>
-                    <th scope="col" className="transactions-table__money">
-                      Taxa / comissão
-                    </th>
-                    <th scope="col" className="transactions-table__money">
-                      Multa
-                    </th>
-                    <th scope="col" className="transactions-table__money">
-                      Lucro
-                    </th>
-                    <th scope="col" className="transactions-table__money">
-                      Variação da caixa
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!historicoCarregando &&
-                    !historicoErro &&
-                    historico.map((transacao) => {
-                      const variacao = Number(transacao.cash_change);
-                      const sinal = variacao < 0 ? '-' : '+';
-                      return (
-                        <tr key={transacao.id}>
-                          <td>{formatDateTimeBrasilia(transacao.created_at)}</td>
-                          <td>
-                            <span
-                              className={`transaction-type transaction-type--${transacao.type.toLowerCase()}`}
-                            >
-                              {transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}
-                            </span>
-                          </td>
-                          <td>
-                            <span className="transaction-player">
-                              <span className={`transaction-player__avatar transaction-player__avatar--${transacao.player_id % 6}`}>
-                                {initials(transacao.player_name)}
+
+              {erroExportacao && (
+                <div className="transactions-inline-error" role="alert">
+                  <strong>Não foi possível exportar o histórico</strong>
+                  <span>{erroExportacao}</span>
+                </div>
+              )}
+              <div
+                className="transactions-table-wrap"
+                role="region"
+                aria-label="Tabela de transações"
+                tabIndex={0}
+              >
+                <table className="transactions-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Data e hora</th>
+                      <th scope="col">Tipo</th>
+                      <th scope="col">Jogador</th>
+                      <th scope="col" className="transactions-table__money">
+                        Valor
+                      </th>
+                      <th scope="col" className="transactions-table__money">
+                        Taxa / comissão
+                      </th>
+                      <th scope="col" className="transactions-table__money">
+                        Multa
+                      </th>
+                      <th scope="col" className="transactions-table__money">
+                        Lucro
+                      </th>
+                      <th scope="col" className="transactions-table__money">
+                        Variação da caixa
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!historicoCarregando &&
+                      !historicoErro &&
+                      historico.map((transacao) => {
+                        const variacao = Number(transacao.cash_change);
+                        const sinal = variacao < 0 ? '-' : '+';
+                        return (
+                          <tr key={transacao.id}>
+                            <td>{formatDateTimeBrasilia(transacao.created_at)}</td>
+                            <td>
+                              <span
+                                className={`transaction-type transaction-type--${transacao.type.toLowerCase()}`}
+                              >
+                                {transacao.type === 'COMPRA' ? 'Compra' : 'Venda'}
                               </span>
-                              <span>{transacao.player_name}</span>
-                            </span>
-                          </td>
-                          <td className="transactions-table__money">
-                            {formatCurrency(transacao.value)}
-                          </td>
-                          <td className="transactions-table__money">
-                            {formatCurrency(transacao.fee)}
-                          </td>
-                          <td className="transactions-table__money">
-                            {formatCurrency(transacao.penalty)}
-                          </td>
-                          <td className="transactions-table__money">
-                            {formatCurrency(transacao.profit)}
-                          </td>
-                          <td
-                            className={`transactions-table__money transactions-cash-change ${variacao < 0 ? 'transactions-cash-change--out' : 'transactions-cash-change--in'}`}
-                          >
-                            {sinal} {formatCurrency(Math.abs(variacao))}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-              {historicoCarregando && (
-                <LoadingState
-                  skeleton
-                  title="Carregando histórico"
-                  description="Carregando..."
-                />
-              )}
-              {!historicoCarregando && historicoErro && (
-                <ErrorState
-                  title="Não foi possível carregar o histórico"
-                  description="Não foi possível carregar o histórico. Os totais e a exportação ficam indisponíveis até a tentativa funcionar."
-                  icon={<RefreshCw size={16} />}
-                  onRetry={() => setHistoricoReloadKey((current) => current + 1)}
-                />
-              )}
-              {!historicoCarregando && !historicoErro && historico.length === 0 && (
-                <EmptyState
-                  title="Nenhuma compra ou venda"
-                  description="As compras e vendas do clube aparecem aqui, com os totais logo abaixo."
-                  icon={<ShoppingCart size={16} />}
-                />
-              )}
-            </div>
-
-            <section
-              className="transactions-summary"
-              aria-label="Resumo financeiro das transações filtradas"
-            >
-              <div className="transactions-summary__grid">
-                <article>
-                  <span>🛒 &nbsp;Total pago em compras</span>
-                  <strong>{formatCurrency(summary.total_spent)}</strong>
-                  <small>Valor + taxa</small>
-                </article>
-                <article>
-                  <span>⌁ &nbsp;Total recebido em vendas</span>
-                  <strong>{formatCurrency(summary.total_received)}</strong>
-                  <small>Crédito líquido</small>
-                </article>
-                <article>
-                  <span>⊗ &nbsp;Taxas e comissões</span>
-                  <strong>{formatCurrency(summary.total_fees)}</strong>
-                  <small>Somadas</small>
-                </article>
-                <article>
-                  <span>⚠ &nbsp;Multas</span>
-                  <strong>{formatCurrency(summary.total_penalties)}</strong>
-                  <small>Por fidelidade</small>
-                </article>
-                <article className="transactions-summary__profit">
-                  <span>⌁ &nbsp;Lucro total</span>
-                  <strong>{formatCurrency(summary.total_profit)}</strong>
-                  <small>Soma dos lucros, com sinal</small>
-                </article>
+                            </td>
+                            <td>
+                              <span className="transaction-player">
+                                <span
+                                  className={`transaction-player__avatar transaction-player__avatar--${transacao.player_id % 6}`}
+                                >
+                                  {initials(transacao.player_name)}
+                                </span>
+                                <span>{transacao.player_name}</span>
+                              </span>
+                            </td>
+                            <td className="transactions-table__money">
+                              {formatCurrency(transacao.value)}
+                            </td>
+                            <td className="transactions-table__money">
+                              {formatCurrency(transacao.fee)}
+                            </td>
+                            <td className="transactions-table__money">
+                              {formatCurrency(transacao.penalty)}
+                            </td>
+                            <td className="transactions-table__money">
+                              {formatCurrency(transacao.profit)}
+                            </td>
+                            <td
+                              className={`transactions-table__money transactions-cash-change ${variacao < 0 ? 'transactions-cash-change--out' : 'transactions-cash-change--in'}`}
+                            >
+                              {sinal} {formatCurrency(Math.abs(variacao))}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+                {historicoCarregando && (
+                  <LoadingState skeleton title="Carregando histórico" description="Carregando..." />
+                )}
+                {!historicoCarregando && historicoErro && (
+                  <ErrorState
+                    title="Não foi possível carregar o histórico"
+                    description="Não foi possível carregar o histórico. Os totais e a exportação ficam indisponíveis até a tentativa funcionar."
+                    icon={<RefreshCw size={16} />}
+                    onRetry={() => setHistoricoReloadKey((current) => current + 1)}
+                  />
+                )}
+                {!historicoCarregando && !historicoErro && historico.length === 0 && (
+                  <EmptyState
+                    title="Nenhuma compra ou venda"
+                    description="As compras e vendas do clube aparecem aqui, com os totais logo abaixo."
+                    icon={<ShoppingCart size={16} />}
+                  />
+                )}
               </div>
-              <p className="transactions-summary__note">
-                {historico.length
-                  ? `Os totais respeitam os filtros. ${jogadorHistoricoId ? 'Os valores consideram apenas o jogador selecionado.' : 'A soma das variações é o caixa atual.'}`
-                  : 'Sem transações, os totais ficam zerados. O botão Exportar CSV continua disponível e baixa só a linha de cabeçalho.'}
-              </p>
+
+              <section
+                className="transactions-summary"
+                aria-label="Resumo financeiro das transações filtradas"
+              >
+                <div className="transactions-summary__grid">
+                  <article>
+                    <span>🛒 &nbsp;Total pago em compras</span>
+                    <strong>{formatCurrency(summary.total_spent)}</strong>
+                    <small>Valor + taxa</small>
+                  </article>
+                  <article>
+                    <span>⌁ &nbsp;Total recebido em vendas</span>
+                    <strong>{formatCurrency(summary.total_received)}</strong>
+                    <small>Crédito líquido</small>
+                  </article>
+                  <article>
+                    <span>⊗ &nbsp;Taxas e comissões</span>
+                    <strong>{formatCurrency(summary.total_fees)}</strong>
+                    <small>Somadas</small>
+                  </article>
+                  <article>
+                    <span>⚠ &nbsp;Multas</span>
+                    <strong>{formatCurrency(summary.total_penalties)}</strong>
+                    <small>Por fidelidade</small>
+                  </article>
+                  <article className="transactions-summary__profit">
+                    <span>⌁ &nbsp;Lucro total</span>
+                    <strong>{formatCurrency(summary.total_profit)}</strong>
+                    <small>Soma dos lucros, com sinal</small>
+                  </article>
+                </div>
+                <p className="transactions-summary__note">
+                  {historico.length
+                    ? `Os totais respeitam os filtros. ${jogadorHistoricoId ? 'Os valores consideram apenas o jogador selecionado.' : 'A soma das variações é o caixa atual.'}`
+                    : 'Sem transações, os totais ficam zerados. O botão Exportar CSV continua disponível e baixa só a linha de cabeçalho.'}
+                </p>
+              </section>
             </section>
-          </section>}
+          )}
         </>
       )}
       {clubeCriado && clube && (
         <div className="club-created-toast" role="status">
           <span className="club-created-toast__check">✓</span>
-          <div><strong>Clube criado</strong><span>{clube.name} ({clube.acronym}) começa com<br />300,00 em caixa.</span></div>
-          <Link to="/clubs" state={null} aria-label="Fechar">×</Link>
+          <div>
+            <strong>Clube criado</strong>
+            <span>
+              {clube.name} ({clube.acronym}) começa com
+              <br />
+              300,00 em caixa.
+            </span>
+          </div>
+          <Link to="/clubs" state={null} aria-label="Fechar">
+            ×
+          </Link>
         </div>
       )}
 
@@ -802,7 +850,9 @@ export default function ClubeDetalhesPage() {
         <div className="transactions-export-toast" role="status">
           <strong>✓ &nbsp;CSV baixado</strong>
           <span>{csvNome}, com os filtros da tela aplicados.</span>
-          <button type="button" aria-label="Fechar aviso" onClick={() => setCsvExportado(false)}>×</button>
+          <button type="button" aria-label="Fechar aviso" onClick={() => setCsvExportado(false)}>
+            ×
+          </button>
         </div>
       )}
     </main>

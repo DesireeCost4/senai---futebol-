@@ -31,7 +31,6 @@ export default function PartidasPage() {
   const [matchesError, setMatchesError] = useState('');
   const [matchesReloadKey, setMatchesReloadKey] = useState(0);
   const [showNewMatch, setShowNewMatch] = useState(false);
-  const [loadingMatchId, setLoadingMatchId] = useState<number | null>(null);
   const playInProgress = useRef(false);
 
   useEffect(() => {
@@ -98,7 +97,6 @@ export default function PartidasPage() {
       playInProgress.current = false;
       setPlaying(false);
     }
-
   }
 
   async function openMatch(match: Match) {
@@ -116,7 +114,11 @@ export default function PartidasPage() {
           <h1>Partidas</h1>
           <p>Jogue partidas entre clubes com os 5 titulares escalados e acompanhe o histórico.</p>
         </div>
-        <button type="button" className="play-match-button matches-new-button" onClick={() => setShowNewMatch(true)}>
+        <button
+          type="button"
+          className="play-match-button matches-new-button"
+          onClick={() => setShowNewMatch(true)}
+        >
           + &nbsp; Nova partida
         </button>
       </header>
@@ -125,14 +127,30 @@ export default function PartidasPage() {
         <section className="latest-match-card" aria-label="Última partida">
           <span className="latest-match-card__label">Última partida</span>
           <div className="latest-match-card__teams">
-            <strong>{matches[0].home.club_name}<small>Mandante</small></strong>
-            <span className="latest-match-card__club">{matches[0].home.club_name.slice(0, 3).toUpperCase()}</span>
-            <b>{matches[0].home.goals} × {matches[0].away.goals}</b>
-            <span className="latest-match-card__club">{matches[0].away.club_name.slice(0, 3).toUpperCase()}</span>
-            <strong>{matches[0].away.club_name}<small>Visitante</small></strong>
+            <strong>
+              {matches[0].home.club_name}
+              <small>Mandante</small>
+            </strong>
+            <span className="latest-match-card__club">
+              {matches[0].home.club_name.slice(0, 3).toUpperCase()}
+            </span>
+            <b>
+              {matches[0].home.goals} × {matches[0].away.goals}
+            </b>
+            <span className="latest-match-card__club">
+              {matches[0].away.club_name.slice(0, 3).toUpperCase()}
+            </span>
+            <strong>
+              {matches[0].away.club_name}
+              <small>Visitante</small>
+            </strong>
           </div>
-          <button type="button" className="view-duels-button" onClick={() => void openMatch(matches[0])} disabled={loadingMatchId === matches[0].id}>
-            {loadingMatchId === matches[0].id ? 'Carregando...' : 'Ver duelos'} <Eye size={13} />
+          <button
+            type="button"
+            className="view-duels-button"
+            onClick={() => void openMatch(matches[0])}
+          >
+            Ver duelos <Eye size={13} />
           </button>
         </section>
       )}
@@ -147,23 +165,29 @@ export default function PartidasPage() {
           </select>
         </header>
         <div className="match-history-inline__table">
-          {!matchesLoading && !matchesError && matches.slice(0, 8).map((match) => (
-            <div className="match-history-inline__row" key={match.id}>
-              <span>{new Date(match.played_at).toLocaleDateString('pt-BR')} &nbsp; {new Date(match.played_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
-              <strong>{match.home.club_name}</strong>
-              <b>{match.home.goals} × {match.away.goals}</b>
-              <strong>{match.away.club_name}</strong>
-              <button type="button" onClick={() => void openMatch(match)} disabled={loadingMatchId === match.id}>
-                {loadingMatchId === match.id ? 'Carregando...' : 'Ver duelos'} <Eye size={12} />
-              </button>
-            </div>
-          ))}
+          {!matchesLoading &&
+            !matchesError &&
+            matches.slice(0, 8).map((match) => (
+              <div className="match-history-inline__row" key={match.id}>
+                <span>
+                  {new Date(match.played_at).toLocaleDateString('pt-BR')} &nbsp;{' '}
+                  {new Date(match.played_at).toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+                <strong>{match.home.club_name}</strong>
+                <b>
+                  {match.home.goals} × {match.away.goals}
+                </b>
+                <strong>{match.away.club_name}</strong>
+                <button type="button" onClick={() => void openMatch(match)}>
+                  Ver duelos <Eye size={12} />
+                </button>
+              </div>
+            ))}
           {matchesLoading && (
-            <LoadingState
-              skeleton
-              title="Carregando partidas"
-              description="Carregando..."
-            />
+            <LoadingState skeleton title="Carregando partidas" description="Carregando..." />
           )}
           {!matchesLoading && matchesError && (
             <ErrorState
@@ -181,109 +205,130 @@ export default function PartidasPage() {
             />
           )}
         </div>
-        <small className="matches-footnote">{matches.length} {matches.length === 1 ? 'partida' : 'partidas'}</small>
+        <small className="matches-footnote">
+          {matches.length} {matches.length === 1 ? 'partida' : 'partidas'}
+        </small>
       </section>
 
-      {showNewMatch && <div className="match-modal-backdrop" onMouseDown={(event) => {
-        if (event.target === event.currentTarget && !playing) setShowNewMatch(false);
-      }}>
-      <section className="match-create-panel match-create-modal" aria-labelledby="match-create-title">
-        <button type="button" className="match-modal-close" onClick={() => setShowNewMatch(false)} disabled={playing}><X size={15} /></button>
-        <header>
-          <h2 id="match-create-title">Nova partida</h2>
-          <p>O resultado e os duelos serão retornados pela API.</p>
-        </header>
-        {error && (
-          <div className="match-error" role="alert">
-            {error}
-          </div>
-        )}
-        {loading ? (
-          <LoadingState message="Carregando clubes..." />
-        ) : clubs.length === 0 ? (
-          <EmptyState message="Cadastre clubes antes de disputar partidas." />
-        ) : (
-          <div className="match-selectors">
-            <label>
-              <span>
-                Mandante <b>*</b>
-              </span>
-              <select
-                id="home-club"
-                value={homeClubId}
-                aria-invalid={Boolean(fieldErrors.homeClubId)}
-                aria-describedby={fieldErrors.homeClubId ? 'home-club-error' : undefined}
-                onChange={(event) => {
-                  setHomeClubId(event.target.value);
-                  setFieldErrors((current) => ({ ...current, homeClubId: undefined }));
-                }}
-                disabled={playing}
-              >
-                <option value="">Selecione o mandante</option>
-                {clubs.map((club) => (
-                  <option key={club.id} value={club.id}>
-                    {club.name} ({club.acronym})
-                  </option>
-                ))}
-              </select>
-              {fieldErrors.homeClubId && (
-                <small className="match-field-error" id="home-club-error">
-                  {fieldErrors.homeClubId}
-                </small>
-              )}
-            </label>
-            <span className="match-versus">×</span>
-            <label>
-              <span>
-                Visitante <b>*</b>
-              </span>
-              <select
-                id="away-club"
-                value={awayClubId}
-                aria-invalid={Boolean(fieldErrors.awayClubId)}
-                aria-describedby={fieldErrors.awayClubId ? 'away-club-error' : undefined}
-                onChange={(event) => {
-                  setAwayClubId(event.target.value);
-                  setFieldErrors((current) => ({ ...current, awayClubId: undefined }));
-                }}
-                disabled={playing}
-              >
-                <option value="">Selecione o visitante</option>
-                {clubs.map((club) => (
-                  <option key={club.id} value={club.id}>
-                    {club.name} ({club.acronym})
-                  </option>
-                ))}
-              </select>
-              {fieldErrors.awayClubId && (
-                <small className="match-field-error" id="away-club-error">
-                  {fieldErrors.awayClubId}
-                </small>
-              )}
-            </label>
-          </div>
-        )}
-        <div className="match-rules">
-          <strong>ⓘ &nbsp; Como sai o placar</strong>
-          <p>Cada time faz 3 ataques. Pela ordem do elenco, os jogadores de linha vão do 1º ao 5º ataque. O goleiro defende o gol. O vencedor é quem fizer mais gols. Os dois clubes precisam ter os 5 titulares escalados.</p>
-        </div>
-        <footer className="match-create-panel__footer">
-          <p>
-            <CircleHelp size={14} />
-            Clubes sem escalação completa receberão a mensagem da API.
-          </p>
-          <button
-            type="button"
-            className="play-match-button"
-            onClick={() => void playMatch()}
-            disabled={loading || playing || clubs.length === 0}
+      {showNewMatch && (
+        <div
+          className="match-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !playing) setShowNewMatch(false);
+          }}
+        >
+          <section
+            className="match-create-panel match-create-modal"
+            aria-labelledby="match-create-title"
           >
-            {playing ? <span className="match-spinner" /> : <CalendarDays size={15} />}
-            {playing ? 'Jogando...' : 'Jogar partida'}
-          </button>
-        </footer>
-      </section>
-      </div>}
+            <button
+              type="button"
+              className="match-modal-close"
+              onClick={() => setShowNewMatch(false)}
+              disabled={playing}
+            >
+              <X size={15} />
+            </button>
+            <header>
+              <h2 id="match-create-title">Nova partida</h2>
+              <p>O resultado e os duelos serão retornados pela API.</p>
+            </header>
+            {error && (
+              <div className="match-error" role="alert">
+                {error}
+              </div>
+            )}
+            {loading ? (
+              <LoadingState message="Carregando clubes..." />
+            ) : clubs.length === 0 ? (
+              <EmptyState message="Cadastre clubes antes de disputar partidas." />
+            ) : (
+              <div className="match-selectors">
+                <label>
+                  <span>
+                    Mandante <b>*</b>
+                  </span>
+                  <select
+                    id="home-club"
+                    value={homeClubId}
+                    aria-invalid={Boolean(fieldErrors.homeClubId)}
+                    aria-describedby={fieldErrors.homeClubId ? 'home-club-error' : undefined}
+                    onChange={(event) => {
+                      setHomeClubId(event.target.value);
+                      setFieldErrors((current) => ({ ...current, homeClubId: undefined }));
+                    }}
+                    disabled={playing}
+                  >
+                    <option value="">Selecione o mandante</option>
+                    {clubs.map((club) => (
+                      <option key={club.id} value={club.id}>
+                        {club.name} ({club.acronym})
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.homeClubId && (
+                    <small className="match-field-error" id="home-club-error">
+                      {fieldErrors.homeClubId}
+                    </small>
+                  )}
+                </label>
+                <span className="match-versus">×</span>
+                <label>
+                  <span>
+                    Visitante <b>*</b>
+                  </span>
+                  <select
+                    id="away-club"
+                    value={awayClubId}
+                    aria-invalid={Boolean(fieldErrors.awayClubId)}
+                    aria-describedby={fieldErrors.awayClubId ? 'away-club-error' : undefined}
+                    onChange={(event) => {
+                      setAwayClubId(event.target.value);
+                      setFieldErrors((current) => ({ ...current, awayClubId: undefined }));
+                    }}
+                    disabled={playing}
+                  >
+                    <option value="">Selecione o visitante</option>
+                    {clubs.map((club) => (
+                      <option key={club.id} value={club.id}>
+                        {club.name} ({club.acronym})
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.awayClubId && (
+                    <small className="match-field-error" id="away-club-error">
+                      {fieldErrors.awayClubId}
+                    </small>
+                  )}
+                </label>
+              </div>
+            )}
+            <div className="match-rules">
+              <strong>ⓘ &nbsp; Como sai o placar</strong>
+              <p>
+                Cada time faz 3 ataques. Pela ordem do elenco, os jogadores de linha vão do 1º ao 5º
+                ataque. O goleiro defende o gol. O vencedor é quem fizer mais gols. Os dois clubes
+                precisam ter os 5 titulares escalados.
+              </p>
+            </div>
+            <footer className="match-create-panel__footer">
+              <p>
+                <CircleHelp size={14} />
+                Clubes sem escalação completa receberão a mensagem da API.
+              </p>
+              <button
+                type="button"
+                className="play-match-button"
+                onClick={() => void playMatch()}
+                disabled={loading || playing || clubs.length === 0}
+              >
+                {playing ? <span className="match-spinner" /> : <CalendarDays size={15} />}
+                {playing ? 'Jogando...' : 'Jogar partida'}
+              </button>
+            </footer>
+          </section>
+        </div>
+      )}
 
       {result && <DuelsDialog match={result} onClose={() => setResult(null)} />}
     </main>

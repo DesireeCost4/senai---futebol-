@@ -29,16 +29,15 @@ function initials(name: string): string {
 
 export default function DuelsDialog({ match, onClose }: Props) {
   const duels = match.duels ?? [];
-  const homePlayers = duels
-    .flatMap((duel) =>
-      duel.attacking_club_id === match.home.club_id ? [duel.attacker] : [duel.defender],
-    );
-  const awayPlayers = duels
-    .flatMap((duel) =>
-      duel.attacking_club_id === match.away.club_id ? [duel.attacker] : [duel.defender],
-    );
-  const uniquePlayers = (players: typeof homePlayers) =>
-    [...new Map(players.map((player) => [player.player_id, player])).values()];
+  const homePlayers = duels.flatMap((duel) =>
+    duel.attacking_club_id === match.home.club_id ? [duel.attacker] : [duel.defender],
+  );
+  const awayPlayers = duels.flatMap((duel) =>
+    duel.attacking_club_id === match.away.club_id ? [duel.attacker] : [duel.defender],
+  );
+  const uniquePlayers = (players: typeof homePlayers) => [
+    ...new Map(players.map((player) => [player.player_id, player])).values(),
+  ];
 
   const renderFieldPlayers = (players: typeof homePlayers, side: 'home' | 'away') =>
     uniquePlayers(players)
@@ -94,8 +93,8 @@ export default function DuelsDialog({ match, onClose }: Props) {
           <header className="match-field-panel__header">
             <h3>Em campo</h3>
             <span>
-              {match.home.club_name} · {match.home.formation} &nbsp; × &nbsp; {match.away.club_name} ·{' '}
-              {match.away.formation}
+              {match.home.club_name} · {match.home.formation} &nbsp; × &nbsp; {match.away.club_name}{' '}
+              · {match.away.formation}
             </span>
           </header>
           <div className="match-field">

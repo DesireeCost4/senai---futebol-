@@ -101,22 +101,38 @@ export default function HomePage() {
           <Link className="home-start-button" to="/clubs">
             Iniciar <ArrowRight size={13} />
           </Link>
-          <span className="home-enter-hint">ou tecle <kbd>Enter</kbd></span>
+          <span className="home-enter-hint">
+            ou tecle <kbd>Enter</kbd>
+          </span>
         </section>
 
         <div className="home-stats" aria-label="Resumo da liga">
-          <span><UsersRound size={11} />23 jogadores</span>
-          <span><UsersRound size={11} />7 livres</span>
-          <span><Shield size={11} />6 clubes</span>
-          <span><Crosshair size={11} />2 partidas</span>
-          <span><Clock3 size={11} />Não precisa de login</span>
+          <span>
+            <UsersRound size={11} />
+            23 jogadores
+          </span>
+          <span>
+            <UsersRound size={11} />7 livres
+          </span>
+          <span>
+            <Shield size={11} />6 clubes
+          </span>
+          <span>
+            <Crosshair size={11} />2 partidas
+          </span>
+          <span>
+            <Clock3 size={11} />
+            Não precisa de login
+          </span>
         </div>
 
         <nav className="home-steps" aria-label="Módulos da aplicação">
           {steps.map(({ number, title, description, icon: Icon, to }, index) => (
             <Link className="home-step" to={to} key={number}>
               <div className="home-step__top">
-                <span className="home-step__icon"><Icon size={13} /></span>
+                <span className="home-step__icon">
+                  <Icon size={13} />
+                </span>
                 <small>{number}</small>
               </div>
               <strong>{title}</strong>

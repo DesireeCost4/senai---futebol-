@@ -22,7 +22,6 @@ import {
   X,
 } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
-import AlterarCondicaoDialog from '../components/AlterarCondicaoDialog';
 import DetalhesJogadorDialog from '../components/DetalhesJogadorDialog';
 import { clubeService } from '../services/clubeService';
 import { jogadorService } from '../services/jogadorService';
@@ -328,8 +327,6 @@ export default function MercadoJogadoresPage() {
   const [condicaoSelecionada, setCondicaoSelecionada] = useState<CondicaoJogador>('APTO');
   const [erroCondicao, setErroCondicao] = useState('');
   const [salvandoCondicao, setSalvandoCondicao] = useState(false);
-  const [showAlterarCondicaoDialog, setShowAlterarCondicaoDialog] = useState(false);
-  const [condicaoTemporaria, setCondicaoTemporaria] = useState<CondicaoJogador>('APTO');
   const compraEmCurso = useRef(false);
   const cadastroEmCurso = useRef(false);
   const edicaoEmCurso = useRef(false);
@@ -698,10 +695,7 @@ export default function MercadoJogadoresPage() {
   function abrirCondicao(jogador: Jogador) {
     setMenuAcoesJogadorId(null);
     setMenuAcoesPosition(null);
-    const condicaoAtual = normalizeCondition(jogador.condition);
     setJogadorCondicao(jogador);
-    setCondicaoTemporaria(condicaoAtual);
-    setShowAlterarCondicaoDialog(true);
     setErroCondicao('');
   }
 
@@ -713,13 +707,14 @@ export default function MercadoJogadoresPage() {
     try {
       await jogadorService.alterarCondicao(jogadorCondicao.id, newCondition);
       setJogadorCondicao(null);
-      setShowAlterarCondicaoDialog(false);
       setCadastroSucesso(
         `Condição de ${jogadorCondicao.name} alterada para ${conditionLabel(newCondition)}.`,
       );
       setReloadKey((current) => current + 1);
     } catch (requestError) {
-      setErroCondicao(mensagemErro(requestError, 'Não foi possível alterar a condição do jogador.'));
+      setErroCondicao(
+        mensagemErro(requestError, 'Não foi possível alterar a condição do jogador.'),
+      );
     } finally {
       condicaoEmCurso.current = false;
       setSalvandoCondicao(false);
@@ -1293,11 +1288,7 @@ export default function MercadoJogadoresPage() {
             </tbody>
           </table>
           {carregando && (
-            <LoadingState
-              skeleton
-              title="Carregando jogadores"
-              description="Carregando..."
-            />
+            <LoadingState skeleton title="Carregando jogadores" description="Carregando..." />
           )}
           {!carregando && erro && (
             <ErrorState
@@ -1309,7 +1300,11 @@ export default function MercadoJogadoresPage() {
           )}
           {!carregando && !erro && !filterError && jogadores.length === 0 && (
             <EmptyState
-              title={busca.trim() ? `Nenhum jogador encontrado para “${busca.trim()}”` : 'Nenhum jogador cadastrado'}
+              title={
+                busca.trim()
+                  ? `Nenhum jogador encontrado para “${busca.trim()}”`
+                  : 'Nenhum jogador cadastrado'
+              }
               description={
                 busca.trim()
                   ? 'Confira a grafia ou tente alguns filtros. A busca ignora maiúsculas, minúsculas e acentos.'
@@ -1464,8 +1459,8 @@ export default function MercadoJogadoresPage() {
                 {errosCampos.clubId && <small>{errosCampos.clubId}</small>}
               </label>
               <p className="market-buy-dialog__hint">
-                O custo total inclui o valor do jogador e a taxa de 5% para valores acima de
-                30,00. O clube precisa manter o custo dentro de 50% do caixa disponível.
+                O custo total inclui o valor do jogador e a taxa de 5% para valores acima de 30,00.
+                O clube precisa manter o custo dentro de 50% do caixa disponível.
               </p>
               <label className="market-buy-field" htmlFor="loyalty-until">
                 <span>

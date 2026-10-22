@@ -76,14 +76,25 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
               <div>
                 <dt>
                   Multa
-                  <small>{vendaEncerrada ? 'Fidelidade cumprida: sem multa' : `${result.penalty_rate}% do valor de venda`}</small>
+                  <small>
+                    {vendaEncerrada
+                      ? 'Fidelidade cumprida: sem multa'
+                      : `${result.penalty_rate}% do valor de venda`}
+                  </small>
                 </dt>
                 <dd>{formatCurrency(result.penalty)}</dd>
               </div>
               <div>
                 <dt>Lucro</dt>
-                <dd className={Number(result.profit) < 0 ? 'transaction-result__negative' : 'transaction-result__positive'}>
-                  {Number(result.profit) > 0 ? '+' : ''}{formatCurrency(result.profit)}
+                <dd
+                  className={
+                    Number(result.profit) < 0
+                      ? 'transaction-result__negative'
+                      : 'transaction-result__positive'
+                  }
+                >
+                  {Number(result.profit) > 0 ? '+' : ''}
+                  {formatCurrency(result.profit)}
                 </dd>
               </div>
               <div>
@@ -92,12 +103,17 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
               </div>
               <div>
                 <dt>Crédito no caixa</dt>
-                <dd>{Number(result.cash_change) > 0 ? '+' : ''}{formatCurrency(result.cash_change)}</dd>
+                <dd>
+                  {Number(result.cash_change) > 0 ? '+' : ''}
+                  {formatCurrency(result.cash_change)}
+                </dd>
               </div>
               <div>
                 <dt>Contrato</dt>
                 <dd>
-                  <span className={`transaction-result__status transaction-result__status--${vendaEncerrada ? 'closed' : 'cancelled'}`}>
+                  <span
+                    className={`transaction-result__status transaction-result__status--${vendaEncerrada ? 'closed' : 'cancelled'}`}
+                  >
                     {vendaEncerrada ? 'ENCERRADO' : 'RESCINDIDO'}
                   </span>
                 </dd>

@@ -24,7 +24,7 @@ export default function App() {
         <Route path="/matches/:id" element={<PartidaDetalhesPage />} />
         <Route path="/matches/history" element={<HistoricoPartidasPage />} />
         <Route path="/standings" element={<ClassificacaoPage />} />
-        <Route path="*" element={<Navigate to="/clubs" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppShell>
   );

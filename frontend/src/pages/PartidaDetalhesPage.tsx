@@ -42,12 +42,21 @@ export default function PartidaDetalhesPage() {
     };
   }, [id]);
 
-  if (loading) return <main className="match-detail-page"><LoadingState message="Carregando partida..." /></main>;
+  if (loading)
+    return (
+      <main className="match-detail-page">
+        <LoadingState message="Carregando partida..." />
+      </main>
+    );
   if (error || !match) {
     return (
       <main className="match-detail-page">
-        <Link className="match-detail-back" to="/matches"><ArrowLeft size={13} /> Voltar para partidas</Link>
-        <div className="match-detail-error" role="alert">{error || 'Partida não encontrada.'}</div>
+        <Link className="match-detail-back" to="/matches">
+          <ArrowLeft size={13} /> Voltar para partidas
+        </Link>
+        <div className="match-detail-error" role="alert">
+          {error || 'Partida não encontrada.'}
+        </div>
       </main>
     );
   }
@@ -62,15 +71,24 @@ export default function PartidaDetalhesPage() {
           <strong>{match.home.club_name}</strong>
           <small>Mandante · {match.home.formation}</small>
         </div>
-        <span className="match-detail-score__club">{match.home.club_name.slice(0, 3).toUpperCase()}</span>
-        <b>{match.home.goals} × {match.away.goals}</b>
-        <span className="match-detail-score__club">{match.away.club_name.slice(0, 3).toUpperCase()}</span>
+        <span className="match-detail-score__club">
+          {match.home.club_name.slice(0, 3).toUpperCase()}
+        </span>
+        <b>
+          {match.home.goals} × {match.away.goals}
+        </b>
+        <span className="match-detail-score__club">
+          {match.away.club_name.slice(0, 3).toUpperCase()}
+        </span>
         <div>
           <strong>{match.away.club_name}</strong>
           <small>Visitante · {match.away.formation}</small>
         </div>
       </section>
-      <p className="match-detail-date"><CalendarDays size={12} /> Partida #{match.id} · {new Date(match.played_at).toLocaleString('pt-BR')}</p>
+      <p className="match-detail-date">
+        <CalendarDays size={12} /> Partida #{match.id} ·{' '}
+        {new Date(match.played_at).toLocaleString('pt-BR')}
+      </p>
       <DuelsField match={match} />
     </main>
   );

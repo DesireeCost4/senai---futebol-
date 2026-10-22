@@ -63,43 +63,86 @@ export default function AppShell({ children }: Props) {
   return (
     <div className="app-frame">
       <aside className="app-sidebar" aria-label="Navegação principal">
-        <Link className="app-brand" to="/clubs" aria-label="Passe, página inicial">
+        <Link className="app-brand" to="/" aria-label="Passe, página inicial">
           <span className="app-brand__mark">P</span>
-          <span className="app-brand__name">Passe<small>Gestão da liga</small></span>
+          <span className="app-brand__name">
+            Passe<small>Gestão da liga</small>
+          </span>
         </Link>
 
         <nav className="app-sidebar__nav">
           <section className="app-sidebar__group" aria-label="Mercado">
             <p className="app-sidebar__label">Mercado</p>
-            <Link className={pathname === '/players' ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/players">
-              <UsersRound size={15} />Jogadores
+            <Link
+              className={
+                pathname === '/players'
+                  ? 'app-sidebar__link app-sidebar__link--active'
+                  : 'app-sidebar__link'
+              }
+              to="/players"
+            >
+              <UsersRound size={15} />
+              Jogadores
             </Link>
-            <Link className={pathname.startsWith('/clubs') ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/clubs">
-              <Building2 size={15} />Clubes
+            <Link
+              className={
+                pathname.startsWith('/clubs')
+                  ? 'app-sidebar__link app-sidebar__link--active'
+                  : 'app-sidebar__link'
+              }
+              to="/clubs"
+            >
+              <Building2 size={15} />
+              Clubes
             </Link>
           </section>
 
           <section className="app-sidebar__group" aria-label="Liga">
             <p className="app-sidebar__label">Liga</p>
-            <Link className={pathname.startsWith('/matches') ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/matches">
-              <CalendarDays size={15} />Partidas
+            <Link
+              className={
+                pathname.startsWith('/matches')
+                  ? 'app-sidebar__link app-sidebar__link--active'
+                  : 'app-sidebar__link'
+              }
+              to="/matches"
+            >
+              <CalendarDays size={15} />
+              Partidas
             </Link>
-            <Link className={pathname === '/standings' ? 'app-sidebar__link app-sidebar__link--active' : 'app-sidebar__link'} to="/standings">
-              <Trophy size={15} />Classificação
+            <Link
+              className={
+                pathname === '/standings'
+                  ? 'app-sidebar__link app-sidebar__link--active'
+                  : 'app-sidebar__link'
+              }
+              to="/standings"
+            >
+              <Trophy size={15} />
+              Classificação
             </Link>
           </section>
 
           <section className="app-sidebar__group app-sidebar__clubs" aria-label="Clubes">
-            <div className="app-sidebar__label-row"><p className="app-sidebar__label">Clubes</p><span>{clubs.length}</span></div>
+            <div className="app-sidebar__label-row">
+              <p className="app-sidebar__label">Clubes</p>
+              <span>{clubs.length}</span>
+            </div>
             {clubs.length === 0 && <p className="app-sidebar__empty">Nenhum clube ainda.</p>}
             {clubs.map((club, index) => (
               <Link
-                className={currentClubId === club.id ? 'app-sidebar__club app-sidebar__club--active' : 'app-sidebar__club'}
+                className={
+                  currentClubId === club.id
+                    ? 'app-sidebar__club app-sidebar__club--active'
+                    : 'app-sidebar__club'
+                }
                 to={`/clubs/${club.id}`}
                 key={club.id}
                 title={club.name}
               >
-                <span className={`app-sidebar__club-mark app-sidebar__club-mark--${index % 5}`}>{club.acronym.slice(0, 1)}</span>
+                <span className={`app-sidebar__club-mark app-sidebar__club-mark--${index % 5}`}>
+                  {club.acronym.slice(0, 1)}
+                </span>
                 <span>{club.name}</span>
               </Link>
             ))}
@@ -108,14 +151,24 @@ export default function AppShell({ children }: Props) {
 
         <footer className="app-sidebar__footer">
           <section className="app-sidebar__footer-card">
-            <div><Trophy size={13} /><strong>Liga Fictícia 2026</strong></div>
-            <small>{clubs.length} clubes · {clubs.length === 0 ? 0 : 23} jogadores</small>
+            <div>
+              <Trophy size={13} />
+              <strong>Liga Fictícia 2026</strong>
+            </div>
+            <small>
+              {clubs.length} clubes · {clubs.length === 0 ? 0 : 23} jogadores
+            </small>
           </section>
           <section className="app-sidebar__footer-card">
-            <div><Crosshair size={13} /><strong>Última partida</strong></div>
+            <div>
+              <Crosshair size={13} />
+              <strong>Última partida</strong>
+            </div>
             <small>{clubs.length === 0 ? 'Nenhuma ainda' : 'Delta FC 2 × 1 Águias FC'}</small>
           </section>
-          <div className="app-sidebar__timezone"><Clock3 size={11} /> Horário de Brasília (UTC−3)</div>
+          <div className="app-sidebar__timezone">
+            <Clock3 size={11} /> Horário de Brasília (UTC−3)
+          </div>
         </footer>
       </aside>
 
@@ -123,12 +176,19 @@ export default function AppShell({ children }: Props) {
         <header className="app-topbar">
           <div className="app-topbar__breadcrumb">
             {crumbs.map((crumb, index) => (
-              <span key={`${crumb}-${index}`} className={index === crumbs.length - 1 ? 'app-topbar__current' : undefined}>
-                {index > 0 && <ChevronRight size={12} />}{crumb}
+              <span
+                key={`${crumb}-${index}`}
+                className={index === crumbs.length - 1 ? 'app-topbar__current' : undefined}
+              >
+                {index > 0 && <ChevronRight size={12} />}
+                {crumb}
               </span>
             ))}
           </div>
-          <div className="app-topbar__time"><Clock3 size={13} />Horário de Brasília (UTC−3)</div>
+          <div className="app-topbar__time">
+            <Clock3 size={13} />
+            Horário de Brasília (UTC−3)
+          </div>
         </header>
         <div className="app-content">{children}</div>
       </div>
