@@ -41,11 +41,13 @@ import type {
   OrdenacaoJogadores,
 } from '../types/players';
 import './MercadoJogadoresPage.css';
+import TransactionResultDialog from '../components/TransactionResultDialog';
 
 type ClubeOption = {
   id: number;
   name: string;
   acronym: string;
+  cash?: number | string;
 };
 
 type AbaElenco = 'todos' | 'livres' | 'clubes';
@@ -577,6 +579,9 @@ export default function MercadoJogadoresPage() {
       })) as CompraResultado;
       setResultado(resposta);
       setJogadorCompra(null);
+      setClubeFiltro(clubeId);
+      setAba('clubes');
+      setPagina(1);
       setReloadKey((current) => current + 1);
     } catch (requestError) {
       setErroCompra(mensagemErro(requestError, 'Não foi possível concluir a compra.'));
@@ -1367,17 +1372,42 @@ export default function MercadoJogadoresPage() {
             >
               ×
             </button>
-            <span className="market-buy-dialog__icon">
-              <ShoppingCart size={18} />
-            </span>
-            <h2 id="market-buy-title">Comprar jogador</h2>
-            <p className="market-buy-dialog__player">
-              {jogadorCompra.name} · {jogadorCompra.position} ·{' '}
-              {formatCurrency(jogadorCompra.market_value)}
-            </p>
+            <div className="market-buy-dialog__heading">
+              <span className="market-buy-dialog__icon">
+                <ShoppingCart size={18} />
+              </span>
+              <div>
+                <h2 id="market-buy-title">Comprar jogador</h2>
+                <p>Escolha o clube comprador e até quando vai a fidelidade do contrato.</p>
+              </div>
+            </div>
+            <div className="market-buy-dialog__player">
+              <span className="market-player-avatar" aria-hidden="true">
+                {jogadorCompra.name
+                  .split(/\s+/)
+                  .map((part) => part[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </span>
+              <span className="market-buy-dialog__player-info">
+                <strong>{jogadorCompra.name}</strong>
+                <small>
+                  {jogadorCompra.position} · {jogadorCompra.age} anos
+                </small>
+              </span>
+              <strong className="market-buy-dialog__player-value">
+                {formatCurrency(jogadorCompra.market_value)}
+              </strong>
+            </div>
             <form onSubmit={confirmarCompra} noValidate>
               {erroCompra && (
                 <div className="market-buy-error" role="alert">
+                  <strong>
+                    {erroCompra.toLowerCase().includes('rede')
+                      ? 'Não foi possível conectar ao servidor'
+                      : 'Compra recusada'}
+                  </strong>
                   {erroCompra}
                 </div>
               )}
@@ -1401,8 +1431,20 @@ export default function MercadoJogadoresPage() {
                     </option>
                   ))}
                 </select>
+                {clubeId && (
+                  <small className="market-buy-field__cash">
+                    Caixa atual:{' '}
+                    {formatCurrency(
+                      clubes.find((clube) => String(clube.id) === clubeId)?.cash ?? 0,
+                    )}
+                  </small>
+                )}
                 {errosCampos.clubId && <small>{errosCampos.clubId}</small>}
               </label>
+              <p className="market-buy-dialog__hint">
+                O custo total inclui o valor do jogador e a taxa de 5% para valores acima de
+                30,00. O clube precisa manter o custo dentro de 50% do caixa disponível.
+              </p>
               <label className="market-buy-field" htmlFor="loyalty-until">
                 <span>
                   Fim da fidelidade <b>*</b>
@@ -1418,9 +1460,17 @@ export default function MercadoJogadoresPage() {
                   aria-invalid={Boolean(errosCampos.loyaltyUntil)}
                 />
                 <small className={errosCampos.loyaltyUntil ? 'market-buy-field__error' : ''}>
-                  {errosCampos.loyaltyUntil || 'Horário interpretado como Brasília (UTC−3).'}
+                  {errosCampos.loyaltyUntil ||
+                    'A fidelidade começa na confirmação. Horário de Brasília (UTC−3).'}
                 </small>
               </label>
+              <output className="market-buy-dialog__loyalty">
+                {fidelidadeAte
+                  ? `Contrato com fidelidade até ${formatDateTimeLocalBrasilia(
+                      new Date(`${fidelidadeAte}:00`),
+                    )}`
+                  : 'Informe o fim da fidelidade.'}
+              </output>
               <footer className="market-buy-dialog__actions">
                 <button
                   type="button"
@@ -1761,7 +1811,14 @@ export default function MercadoJogadoresPage() {
               <h2 id="market-condition-title">Alterar condição física</h2>
               <p>A condição muda o desconto do valor de mercado, calculado ao salvar.</p>
             </header>
-            <form className="market-condition-dialog__form" onSubmit={salvarCondicao} noValidate>
+            <form
+              className="market-condition-dialog__form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void salvarCondicao(condicaoSelecionada);
+              }}
+              noValidate
+            >
               <div className="market-condition-dialog__player">
                 <span
                   className={`market-player-avatar market-player-avatar--${jogadorCondicao.id % 6}`}

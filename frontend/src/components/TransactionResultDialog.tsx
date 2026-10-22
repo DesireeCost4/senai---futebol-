@@ -15,6 +15,7 @@ function isSale(result: ResultadoTransacao): result is VendaResultado {
 export default function TransactionResultDialog({ result, onClose }: Props) {
   const venda = isSale(result);
   const custoTotal = venda ? null : Number(result.value) + Number(result.fee);
+  const vendaEncerrada = venda && Number(result.remaining_days) <= 0;
 
   return (
     <div
@@ -24,7 +25,7 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
       }}
     >
       <section
-        className="transaction-result"
+        className={`transaction-result${venda ? ' transaction-result--sale' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="transaction-result-title"
@@ -41,7 +42,18 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
           <Check size={19} />
         </span>
         <h2 id="transaction-result-title">{venda ? 'Venda concluída' : 'Compra concluída'}</h2>
-        <p className="transaction-result__player">{result.player_name}</p>
+        <p className="transaction-result__player">
+          {venda
+            ? `${result.player_name} voltou a ficar livre e saiu da escalação.`
+            : result.player_name}
+        </p>
+        {venda && (
+          <p className="transaction-result__description">
+            {vendaEncerrada
+              ? 'A fidelidade já tinha terminado, então não houve multa.'
+              : 'O contrato foi encerrado antes do fim da fidelidade.'}
+          </p>
+        )}
 
         <dl className="transaction-result__fields">
           {venda ? (
@@ -51,7 +63,10 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
                 <dd>{formatCurrency(result.purchase_value)}</dd>
               </div>
               <div>
-                <dt>Valor de venda</dt>
+                <dt>
+                  Valor de venda
+                  <small>Valor de mercado no momento da venda</small>
+                </dt>
                 <dd>{formatCurrency(result.value)}</dd>
               </div>
               <div>
@@ -59,12 +74,17 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
                 <dd>{result.remaining_days}</dd>
               </div>
               <div>
-                <dt>Multa aplicada ({result.penalty_rate}%)</dt>
+                <dt>
+                  Multa
+                  <small>{vendaEncerrada ? 'Fidelidade cumprida: sem multa' : `${result.penalty_rate}% do valor de venda`}</small>
+                </dt>
                 <dd>{formatCurrency(result.penalty)}</dd>
               </div>
               <div>
                 <dt>Lucro</dt>
-                <dd>{formatCurrency(result.profit)}</dd>
+                <dd className={Number(result.profit) < 0 ? 'transaction-result__negative' : 'transaction-result__positive'}>
+                  {Number(result.profit) > 0 ? '+' : ''}{formatCurrency(result.profit)}
+                </dd>
               </div>
               <div>
                 <dt>Comissão</dt>
@@ -72,10 +92,18 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
               </div>
               <div>
                 <dt>Crédito no caixa</dt>
-                <dd>{formatCurrency(result.cash_change)}</dd>
+                <dd>{Number(result.cash_change) > 0 ? '+' : ''}{formatCurrency(result.cash_change)}</dd>
+              </div>
+              <div>
+                <dt>Contrato</dt>
+                <dd>
+                  <span className={`transaction-result__status transaction-result__status--${vendaEncerrada ? 'closed' : 'cancelled'}`}>
+                    {vendaEncerrada ? 'ENCERRADO' : 'RESCINDIDO'}
+                  </span>
+                </dd>
               </div>
               <div className="transaction-result__total">
-                <dt>Nova caixa</dt>
+                <dt>Nova caixa do clube</dt>
                 <dd>{formatCurrency(result.club_cash)}</dd>
               </div>
             </>
@@ -98,6 +126,10 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
                 <dd>{formatDateTimeBrasilia(result.contract.loyalty_until)}</dd>
               </div>
               <div>
+                <dt>Contrato</dt>
+                <dd>{result.contract.status || 'Ativo'}</dd>
+              </div>
+              <div>
                 <dt>Nova caixa</dt>
                 <dd>{formatCurrency(result.club_cash)}</dd>
               </div>
@@ -105,9 +137,16 @@ export default function TransactionResultDialog({ result, onClose }: Props) {
           )}
         </dl>
 
-        <button className="transaction-result__done" type="button" onClick={onClose}>
-          Concluir
-        </button>
+        <footer className="transaction-result__actions">
+          {venda && (
+            <button className="transaction-result__history" type="button" onClick={onClose}>
+              ↶&nbsp; Ver histórico
+            </button>
+          )}
+          <button className="transaction-result__done" type="button" onClick={onClose}>
+            {venda ? 'Fechar' : 'Continuar'}
+          </button>
+        </footer>
       </section>
     </div>
   );

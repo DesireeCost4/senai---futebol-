@@ -6,11 +6,13 @@ import type { Jogador, CondicaoJogador } from '../types/players';
 type Props = {
   player: Jogador;
   currentCondition: CondicaoJogador;
+  clubName?: string;
+  isTitular?: boolean;
   onClose: () => void;
   onSave: (newCondition: CondicaoJogador) => void;
 };
 
-export default function AlterarCondicaoDialog({ player, currentCondition, onClose, onSave }: Props) {
+export default function AlterarCondicaoDialog({ player, currentCondition, clubName, isTitular, onClose, onSave }: Props) {
   const [selectedCondition, setSelectedCondition] = useState<CondicaoJogador>(
     currentCondition === 'DOENTE' ? 'MAL_CONDICIONADO' : currentCondition
   );
@@ -28,6 +30,14 @@ export default function AlterarCondicaoDialog({ player, currentCondition, onClos
       .join('')
       .toUpperCase();
   };
+
+  const conditionLabel = (cond: string) => {
+    if (cond === 'DOENTE') return 'Doente';
+    if (cond === 'MAL_CONDICIONADO') return 'Mal condicionado';
+    return 'Apto';
+  };
+
+  const isPlayerTitular = isTitular || Boolean(player.club_id);
 
   return (
     <div
@@ -59,10 +69,10 @@ export default function AlterarCondicaoDialog({ player, currentCondition, onClos
           <span className="player-avatar">{initials(player.name)}</span>
           <div className="player-details">
             <p className="player-name">{player.name}</p>
-            <p className="player-meta">{player.position} - Lateral - {player.age} anos</p>
+            <p className="player-meta">{player.position} - {player.age} anos</p>
           </div>
-          <span className="current-condition">
-            <span className="dot" /> {currentCondition === 'DOENTE' ? 'Doente' : currentCondition === 'MAL_CONDICIONADO' ? 'Mal condicionado' : 'Apto'}
+          <span className={`current-condition current-condition--${currentCondition.toLowerCase()}`}>
+            <span className="dot" /> {conditionLabel(currentCondition)}
           </span>
         </div>
 
@@ -78,6 +88,7 @@ export default function AlterarCondicaoDialog({ player, currentCondition, onClos
                 onChange={() => setSelectedCondition('APTO')}
               />
               <strong>Apto</strong>
+              {currentCondition === 'APTO' && <span className="current-status">Atual</span>}
             </div>
             <span>Sem desconto por condição.</span>
             <span>De Doente não passa direto para Apto.</span>
@@ -93,6 +104,7 @@ export default function AlterarCondicaoDialog({ player, currentCondition, onClos
                 onChange={() => setSelectedCondition('MAL_CONDICIONADO')}
               />
               <strong>Mal condicionado</strong>
+              {currentCondition === 'MAL_CONDICIONADO' && <span className="current-status">Atual</span>}
             </div>
             <span>Desconto de 15%. Agilidade de 80 a 100 corta pela metade; de 1 a 30 soma 10 pontos.</span>
           </label>
@@ -112,6 +124,16 @@ export default function AlterarCondicaoDialog({ player, currentCondition, onClos
             <span>Desconto de 30%, com o mesmo ajuste de agilidade.</span>
           </label>
         </div>
+
+        {selectedCondition === 'DOENTE' && isPlayerTitular && (
+          <div className="alterar-condicao-warning" role="alert">
+            <span className="warning-icon">⚠️</span>
+            <div>
+              <strong>{player.name} é titular</strong>
+              <p>Ao passar a Doente, ele sai da escalação, e o {clubName || 'clube'} só volta a jogar partidas depois de escalar de novo os 5 titulares.</p>
+            </div>
+          </div>
+        )}
 
         <div className="alterar-condicao-dialog__actions">
           <button type="button" onClick={onClose} className="btn-cancel">Cancelar</button>

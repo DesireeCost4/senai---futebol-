@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { Check, Shield, UsersRound } from 'lucide-react';
+import { Check, Shield, UsersRound, Shirt, AlertTriangle } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import ClubTabs from '../components/ClubTabs';
 import { clubeService } from '../services/clubeService';
@@ -101,6 +101,7 @@ export default function EscalacaoPage() {
   const [success, setSuccess] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
   const [validationAttempted, setValidationAttempted] = useState(false);
+  const [rejected, setRejected] = useState('');
   const saveInProgress = useRef(false);
 
   const slots = useMemo(() => makeSlots(formation), [formation]);
@@ -154,6 +155,7 @@ export default function EscalacaoPage() {
     setSelections({});
     setSuccess('');
     setValidationAttempted(false);
+    setRejected('');
   }
 
   async function saveLineup() {
@@ -168,13 +170,16 @@ export default function EscalacaoPage() {
     setSaving(true);
     setError('');
     setSuccess('');
+    setRejected('');
     try {
       const updated = await ligaService.salvarEscalacao(clubId, formation, selectedIds.map(Number));
       setLineup(updated);
       setSelections(mapExistingPlayers(updated, formation));
       setSuccess('Escalação salva com sucesso.');
     } catch (requestError) {
-      setError(mensagemErro(requestError));
+      const message = mensagemErro(requestError);
+      setRejected(message);
+      setError('');
     } finally {
       saveInProgress.current = false;
       setSaving(false);
@@ -238,32 +243,23 @@ export default function EscalacaoPage() {
       <section className="lineup-panel" aria-labelledby="lineup-formation-title">
         <header className="lineup-panel__header">
           <div>
-            <h2 id="lineup-formation-title">Formação</h2>
-            <p>1 goleiro e 4 jogadores de linha conforme os setores.</p>
+            <h2 id="lineup-formation-title">Titulares</h2>
+            <p>1 goleiro e 4 jogadores de linha, na formação escolhida.</p>
           </div>
-          <div className="formation-options" role="group" aria-label="Formação">
-            {formations.map((option) => (
-              <button
-                type="button"
-                key={option}
-                aria-pressed={formation === option}
-                className={
-                  formation === option
-                    ? 'formation-option formation-option--active'
-                    : 'formation-option'
-                }
-                onClick={() => changeFormation(option)}
-                disabled={saving}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+          <span className={isCompleteSelection ? 'lineup-complete-badge' : 'lineup-incomplete-badge'}>
+            {isCompleteSelection ? '✓ Completa' : '⚠ Incompleta'}
+          </span>
         </header>
 
         {error && (
           <div className="lineup-error" role="alert">
             {error}
+          </div>
+        )}
+        {rejected && (
+          <div className="lineup-rejected" role="alert">
+            <AlertTriangle size={12} />
+            <span><strong>A escalação foi recusada</strong><br />{rejected}</span>
           </div>
         )}
         {success && (
@@ -275,6 +271,20 @@ export default function EscalacaoPage() {
         {availablePlayers.length === 0 ? (
           <EmptyState message="Este clube não possui jogadores aptos para escalar." />
         ) : (
+          <>
+          <div className="formation-section">
+            <strong>Formação</strong>
+            <small>Os números contam os jogadores de linha da três para frente. O goleiro fica fora da conta.</small>
+            <div className="formation-cards">
+              {formations.map((option) => (
+                <button type="button" key={option} className={formation === option ? 'formation-card formation-card--active' : 'formation-card'} onClick={() => changeFormation(option)} disabled={saving}>
+                  <span className="formation-card__pitch"><Shirt size={13} /></span>
+                  <b>{option}</b>
+                  <small>{option === formation ? 'Defesa 2, meio 1, ataque 1' : 'Defesa 2, ataque 2'}</small>
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="lineup-slots">
             {slots.map((slot) => {
               const candidates = availablePlayers.filter(
@@ -316,6 +326,10 @@ export default function EscalacaoPage() {
               );
             })}
           </div>
+          {!isCompleteSelection && availablePlayers.length > 0 && (
+            <div className="lineup-warning"><AlertTriangle size={12} /><span><strong>Escalação incompleta: o clube não pode jogar partidas</strong><br />O elenco tem {availablePlayers.length} jogador{availablePlayers.length === 1 ? '' : 'es'} disponível{availablePlayers.length === 1 ? '' : 'is'}, mas a escalação precisa de 5 titulares. {lineup?.players.some((player) => player.condition === 'DOENTE') ? 'Há jogador doente fora da escalação.' : 'Selecione os jogadores restantes para completar a escalação.'}</span></div>
+          )}
+          </>
         )}
 
         <footer className="lineup-panel__footer">
@@ -341,6 +355,18 @@ export default function EscalacaoPage() {
           </button>
         </footer>
       </section>
+
+      <aside className="lineup-field-panel" aria-label="Prévia da escalação">
+        <header><strong>Em campo</strong><small>Prévia da formação {formation}; os vagos ficam fora do ataque.</small></header>
+        <div className="lineup-field">
+          {slots.map((slot, index) => {
+            const player = club?.players.find((item) => String(item.id) === selections[slot.key]);
+            return <span className={`field-player field-player--${slot.sector.toLowerCase()} field-player--${index}`} key={slot.key}><i>{player?.acronym ?? player?.name?.slice(0, 2).toUpperCase() ?? '?'}</i>{player?.name?.split(' ')[0] ?? slot.label}</span>;
+          })}
+        </div>
+        <p className="lineup-field-note">Na partida, atacam os 3 jogadores de linha mais avançados e defendem o goleiro e os 2 mais recuados.</p>
+        <section className="lineup-reserves"><strong>Reservas</strong><small>Jogadores do elenco fora da escalação.</small>{club?.players.filter((player) => !selectedIds.includes(String(player.id))).map((player) => <div key={player.id}><span>{player.name}<small>{player.position}</small></span><em>{player.condition === 'DOENTE' ? 'Doente' : 'Apto'}</em></div>)}</section>
+      </aside>
 
       <section className="lineup-roster" aria-label="Elenco disponível">
         <h2>

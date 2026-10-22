@@ -223,16 +223,32 @@
 }
 
 .club-condition {
-  color: #32815d;
-  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 10px;
+  background: #ecf8f0;
+  padding: 2px 5px;
+  color: #278251;
+  font-size: 6px;
+  white-space: nowrap;
 }
 
-.club-condition--doente {
-  color: #ae4b52;
+.club-condition > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .club-condition--mal_condicionado {
-  color: #a7752c;
+  background: #fff6e8;
+  color: #b27722;
+}
+
+.club-condition--doente {
+  background: #fff0f0;
+  color: #c34d55;
 }
 
 .club-squad-table__money,
@@ -280,7 +296,9 @@
 
 .club-sell-dialog {
   position: relative;
-  width: min(100%, 400px);
+  width: min(100%, 430px);
+  max-height: min(90vh, 690px);
+  overflow-y: auto;
   border: 1px solid #e4e9ee;
   border-radius: 9px;
   background: #fff;
@@ -318,30 +336,197 @@
 }
 
 .club-sell-dialog h2 {
-  margin: 14px 0 6px;
+  margin: 14px 0 3px;
   color: #2c3948;
-  font-size: 16px;
+  font-size: 14px;
 }
 
-.club-sell-dialog p {
+.club-sell-dialog__subtitle {
   margin: 0;
   color: #748192;
-  font-size: 10px;
-  line-height: 1.55;
+  font-size: 8px;
+  line-height: 1.45;
 }
 
-.club-sell-dialog p strong {
-  color: #344253;
+.club-sell-dialog__warning,
+.club-sell-dialog__error,
+.club-sell-dialog__hint,
+.club-sell-dialog__sending {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  border-radius: 6px;
+  padding: 8px 9px;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.club-sell-dialog__warning {
+  margin-top: 12px;
+  border: 1px solid #f2d78e;
+  background: #fff9e8;
+  color: #aa6d25;
+}
+
+.club-sell-dialog__warning strong,
+.club-sell-dialog__warning small,
+.club-sell-dialog__error strong,
+.club-sell-dialog__error span {
+  display: block;
+}
+
+.club-sell-dialog__warning strong {
+  margin-bottom: 2px;
+  color: #9b601d;
+  font-size: 8px;
+}
+
+.club-sell-dialog__warning small {
+  color: #a66b27;
+  font-size: 7px;
 }
 
 .club-sell-dialog__error {
   margin-top: 12px;
-  border: 1px solid #f0d5d6;
-  border-radius: 5px;
-  background: #fff6f6;
-  padding: 9px 10px;
-  color: #9d4149;
-  font-size: 10px;
+  border: 1px solid #f0c9cc;
+  background: #fff2f2;
+  color: #c34d55;
+}
+
+.club-sell-dialog__error strong {
+  margin-bottom: 2px;
+  font-size: 8px;
+}
+
+.club-sell-dialog__error span {
+  font-size: 7px;
+}
+
+.club-sell-dialog__player {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  border: 1px solid #edf0f3;
+  border-radius: 6px;
+  background: #fafbfd;
+  padding: 8px 9px;
+}
+
+.club-sell-dialog__avatar {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0eaff;
+  color: #7659d5;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.club-sell-dialog__player > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.club-sell-dialog__player > span:nth-child(2) strong {
+  color: #344253;
+  font-size: 8px;
+}
+
+.club-sell-dialog__player > span:nth-child(2) small {
+  color: #8792a0;
+  font-size: 7px;
+}
+
+.club-sell-dialog__market-value {
+  display: grid;
+  gap: 2px;
+  margin-left: auto;
+  text-align: right;
+}
+
+.club-sell-dialog__market-value small {
+  color: #8792a0;
+  font-size: 7px;
+}
+
+.club-sell-dialog__market-value strong {
+  color: #344253;
+  font-size: 9px;
+}
+
+.club-sell-dialog__details {
+  display: grid;
+  gap: 0;
+  margin: 9px 0 0;
+  border: 1px solid #edf0f3;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.club-sell-dialog__details > div {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #edf0f3;
+  padding: 0 9px;
+}
+
+.club-sell-dialog__details > div:last-child {
+  border-bottom: 0;
+}
+
+.club-sell-dialog__details dt {
+  color: #748192;
+  font-size: 8px;
+}
+
+.club-sell-dialog__details dd {
+  margin: 0;
+  color: #344253;
+  font-size: 8px;
+  font-weight: 620;
+  text-align: right;
+}
+
+.club-sell-dialog__rate {
+  display: inline-flex;
+  border: 1px solid #f2d78e;
+  border-radius: 4px;
+  background: #fff9e8;
+  padding: 2px 5px;
+  color: #a66b27;
+  font-size: 7px;
+}
+
+.club-sell-dialog__hint {
+  margin: 8px 0 0;
+  border: 1px solid #e7ebf0;
+  background: #f8fafc;
+  color: #748192;
+  font-size: 7px;
+}
+
+.club-sell-dialog__sending {
+  align-items: center;
+  margin: 7px 0 0;
+  border: 1px solid #e7ebf0;
+  background: #f8fafc;
+  color: #748192;
+  font-size: 7px;
+}
+
+.club-sell-dialog__sending .club-sell-spinner {
+  width: 10px;
+  height: 10px;
+  border-width: 1px;
 }
 
 .club-sell-dialog footer {
@@ -370,8 +555,8 @@
 }
 
 .club-sell-confirm {
-  border-color: #a3444d;
-  background: #a3444d;
+  border-color: #2875d1;
+  background: #2875d1;
   color: #fff;
 }
 
@@ -667,70 +852,170 @@
   .club-detail-page {
     padding: 18px 12px 28px;
   }
+}
 
-  .club-detail-header h1 {
-    font-size: 18px;
+  .club-detail-page {
+    width: 100%;
+    min-height: calc(100vh - 34px);
+    margin: 0;
+    padding: 18px 16px 28px;
+  }
+
+  .club-detail-header {
+    gap: 9px;
+    margin-bottom: 13px;
+  }
+
+  .club-detail-header__icon {
+    width: 31px;
+    height: 31px;
+    border: 0;
+    border-radius: 8px;
+    background: #f1f2f4;
+    color: #363b43;
+    font-size: 8px;
+    font-weight: 700;
+  }
+
+  .club-detail-header__eyebrow { display: none; }
+  .club-detail-header h1 { color: #202329; font-size: 16px; }
+  .club-detail-header h1 span { display: none; }
+  .club-detail-header p { display: none; }
+
+  .club-detail-header__badges {
+    display: flex;
+    gap: 5px;
+    margin-top: 3px;
+  }
+
+  .club-detail-header__badges span {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    border: 1px solid #e1e4e8;
+    border-radius: 3px;
+    padding: 2px 4px;
+    color: #545a63;
+    font-size: 7px;
   }
 
   .club-detail-market-link {
-    width: 34px;
-    min-width: 34px;
-    justify-content: center;
-    overflow: hidden;
-    padding: 0;
-    font-size: 0;
+    min-height: 25px;
+    border-color: #1761ef;
+    background: #1761ef;
+    padding: 0 9px;
+    color: #fff;
+    font-size: 9px;
   }
 
-  .club-detail-market-link svg {
-    flex: 0 0 auto;
+  .club-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-bottom: 11px;
+    border-color: #e2e5e9;
+    border-radius: 7px;
   }
 
   .club-summary__item {
-    gap: 6px;
-    padding: 12px 9px;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3px 5px;
+    min-height: 67px;
+    padding: 10px 10px 8px;
   }
 
-  .club-summary__item > span {
-    min-height: 24px;
-    font-size: 9px;
-    line-height: 1.3;
-  }
+  .club-summary__item + .club-summary__item { border-left: 1px solid #edf0f3; }
+  .club-summary__item > span { display: flex; align-items: center; justify-content: space-between; grid-column: 1 / -1; color: #4f5660; font-size: 8px; }
+  .club-summary__item > span svg { color: #6e7680; }
+  .club-summary__item > strong { color: #171a1e; font-size: 15px; line-height: 1; }
+  .club-summary__item > strong small { color: #868c95; font-size: 7px; font-weight: 400; }
+  .club-summary__item > small { align-self: end; color: #8b9199; font-size: 7px; }
+  .club-summary__item > em { grid-column: 1 / -1; color: #8b9199; font-size: 7px; font-style: normal; }
+  .club-summary__item--net-worth > strong { color: #171a1e; }
+  .club-summary__item--squad-count > strong { grid-column: 1 / -1; }
 
-  .club-summary__item > strong {
-    font-size: 12px;
+  .club-tabs {
+    gap: 13px;
+    margin-bottom: 11px;
   }
+  .club-tab { min-height: 25px; gap: 4px; color: #737a84; font-size: 8px; }
+  .club-tab--active::after { height: 1px; }
+  .club-tab > span:not(.club-tab__lineup-icon) { min-width: 13px; height: 13px; font-size: 7px; }
 
-  .transactions-panel__header {
+  .club-squad-panel {
+    border-color: #e1e4e8;
+    box-shadow: none;
+  }
+  .club-squad-panel__header {
+    min-height: 39px;
+    padding: 8px 10px;
+  }
+  .club-squad-panel__header h2 { margin: 0 0 2px; color: #292d33; font-size: 10px; }
+  .club-squad-panel__header p { color: #848b94; font-size: 7px; }
+  .club-squad-table { min-width: 870px; }
+  .club-squad-table th { height: 25px; padding: 0 8px; font-size: 7px; }
+  .club-squad-table td { height: 36px; padding: 0 8px; font-size: 8px; }
+  .club-squad-table th:first-child, .club-squad-table td:first-child { padding-left: 10px; }
+  .club-squad-table td:first-child strong { font-size: 8px; }
+  .club-squad-table td:first-child small { font-size: 7px; }
+  .club-position { min-width: 25px; min-height: 15px; font-size: 7px; }
+  .club-condition { font-size: 6px; }
+  .club-sell-button { min-height: 20px; padding: 0 7px; font-size: 7px; }
+
+  .club-squad-empty {
+    display: grid;
+    justify-items: center;
+    padding: 24px 10px 23px;
+    text-align: center;
+  }
+  .club-squad-empty__icon {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border-radius: 7px;
+    background: #f2f3f5;
+    color: #8b929b;
+  }
+  .club-squad-empty strong { margin-top: 7px; color: #30343a; font-size: 8px; }
+  .club-squad-empty p { margin: 6px 0 8px; color: #7e858e; font-size: 7px; line-height: 1.45; }
+  .club-squad-empty a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #dfe3e7;
+    border-radius: 4px;
+    padding: 4px 7px;
+    color: #343a42;
+    font-size: 7px;
+    text-decoration: none;
+  }
+  .club-squad-empty a svg { width: 10px; height: 10px; }
+
+  .club-created-toast {
+    position: fixed;
+    z-index: 20;
+    right: 22px;
+    bottom: 16px;
+    display: flex;
+    min-width: 205px;
     align-items: flex-start;
+    gap: 7px;
+    border: 1px solid #e1e4e8;
+    border-radius: 7px;
+    background: #fff;
+    padding: 9px 10px;
+    box-shadow: 0 3px 12px rgb(28 35 44 / 18%);
   }
+  .club-created-toast__check { color: #21a36a; font-size: 11px; }
+  .club-created-toast div { display: grid; gap: 2px; }
+  .club-created-toast strong { color: #262b31; font-size: 8px; font-weight: 650; }
+  .club-created-toast div span { color: #858b94; font-size: 7px; line-height: 1.35; }
+  .club-created-toast > a { margin-left: auto; color: #7b828b; font-size: 12px; text-decoration: none; }
 
-  .transactions-panel__header p {
-    max-width: 210px;
-    line-height: 1.4;
+  @media (max-width: 600px) {
+    .club-detail-page { padding: 15px 10px 24px; }
+    .club-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .club-summary__item:nth-child(3) { border-left: 0; border-top: 1px solid #edf0f3; }
+    .club-summary__item:nth-child(4) { border-top: 1px solid #edf0f3; }
   }
-
-  .transactions-filters {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 9px;
-    padding: 10px 12px;
-  }
-
-  .transactions-player-filter {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .transactions-player-filter select {
-    max-width: 65%;
-    flex: 1;
-  }
-
-  .transactions-summary__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .transactions-summary__grid .transactions-summary__profit {
-    grid-column: 1 / -1;
-  }
-}

@@ -4,8 +4,8 @@ import {
   Building2,
   CalendarDays,
   ChevronRight,
-  CircleHelp,
   Clock3,
+  Crosshair,
   Trophy,
   UsersRound,
 } from 'lucide-react';
@@ -86,6 +86,7 @@ export default function AppShell({ children }: Props) {
 
           <section className="app-sidebar__group app-sidebar__clubs" aria-label="Clubes">
             <div className="app-sidebar__label-row"><p className="app-sidebar__label">Clubes</p><span>{clubs.length}</span></div>
+            {clubs.length === 0 && <p className="app-sidebar__empty">Nenhum clube ainda.</p>}
             {clubs.map((club, index) => (
               <Link
                 className={currentClubId === club.id ? 'app-sidebar__club app-sidebar__club--active' : 'app-sidebar__club'}
@@ -101,8 +102,15 @@ export default function AppShell({ children }: Props) {
         </nav>
 
         <footer className="app-sidebar__footer">
-          <div><span className="app-sidebar__online" /><span>Liga Fictícia 2026</span></div>
-          <small>{clubs.length} clubes · Horário de Brasília (UTC−3)</small>
+          <section className="app-sidebar__footer-card">
+            <div><Trophy size={13} /><strong>Liga Fictícia 2026</strong></div>
+            <small>{clubs.length} clubes · {clubs.length === 0 ? 0 : 23} jogadores</small>
+          </section>
+          <section className="app-sidebar__footer-card">
+            <div><Crosshair size={13} /><strong>Última partida</strong></div>
+            <small>{clubs.length === 0 ? 'Nenhuma ainda' : 'Delta FC 2 × 1 Águias FC'}</small>
+          </section>
+          <div className="app-sidebar__timezone"><Clock3 size={11} /> Horário de Brasília (UTC−3)</div>
         </footer>
       </aside>
 

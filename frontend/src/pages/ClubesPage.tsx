@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
-import { Link } from 'react-router-dom';
-import { Building2, Check, ChevronDown, Plus, RotateCcw, ShoppingCart, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AlertCircle, Check, ChevronDown, Plus, Shield, SlidersHorizontal, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import { clubeService } from '../services/clubeService';
 import { formatCurrency } from '../utils/formatters';
@@ -19,7 +19,7 @@ type Clube = {
 type OrdenacaoClubes = 'name' | 'net_worth_desc' | 'net_worth_asc';
 
 const ordenacoes: { value: OrdenacaoClubes; label: string }[] = [
-  { value: 'name', label: 'Nome (A–Z)' },
+  { value: 'name', label: 'Nome' },
   { value: 'net_worth_desc', label: 'Patrimônio (maior primeiro)' },
   { value: 'net_worth_asc', label: 'Patrimônio (menor primeiro)' },
 ];
@@ -41,11 +41,13 @@ export default function ClubesPage() {
   const [formularioAberto, setFormularioAberto] = useState(false);
   const [nome, setNome] = useState('');
   const [sigla, setSigla] = useState('');
-  const [errosCampos, setErrosCampos] = useState<{ name?: string; acronym?: string }>({});
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [errosCampos, setErrosCampos] = useState<{ name?: string; acronym?: string; checkbox?: string }>({});
   const [erroCriacao, setErroCriacao] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [salvando, setSalvando] = useState(false);
   const createInProgress = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
@@ -70,7 +72,7 @@ export default function ClubesPage() {
   }, [ordenacao, reloadKey]);
 
   function validarFormulario() {
-    const novosErros: { name?: string; acronym?: string } = {};
+    const novosErros: { name?: string; acronym?: string; checkbox?: string } = {};
     const nomeLimpo = nome.trim();
     const siglaLimpa = sigla.trim();
 
@@ -81,6 +83,8 @@ export default function ClubesPage() {
     if (!siglaLimpa) novosErros.acronym = 'Informe a sigla do clube.';
     else if (!/^[A-Z]{3}$/.test(siglaLimpa))
       novosErros.acronym = 'A sigla deve ter exatamente 3 letras maiúsculas.';
+
+    if (!checkboxChecked) novosErros.checkbox = 'Você deve confirmar que o clube começa com 300,00 em caixa e sem jogadores.';
 
     setErrosCampos(novosErros);
     return Object.keys(novosErros).length === 0;
@@ -95,13 +99,13 @@ export default function ClubesPage() {
     setErroCriacao('');
     setSucesso('');
     try {
-      await clubeService.criarClube({ name: nome.trim(), acronym: sigla.trim() });
+      const clubeCriado = await clubeService.criarClube({ name: nome.trim(), acronym: sigla.trim() });
       setFormularioAberto(false);
       setNome('');
       setSigla('');
+      setCheckboxChecked(false);
       setErrosCampos({});
-      setSucesso('Clube criado com sucesso.');
-      setReloadKey((current) => current + 1);
+      navigate(`/clubs/${clubeCriado.id}`, { state: { clubeCriado: true } });
     } catch (requestError) {
       setErroCriacao(mensagemErro(requestError));
     } finally {
@@ -115,6 +119,7 @@ export default function ClubesPage() {
     setFormularioAberto(false);
     setErroCriacao('');
     setErrosCampos({});
+    setCheckboxChecked(false);
   }
 
   return (
@@ -122,30 +127,31 @@ export default function ClubesPage() {
       <header className="clubs-page__header">
         <div className="clubs-page__title-row">
           <span className="clubs-page__icon">
-            <Building2 size={19} />
+            <Shield size={19} />
           </span>
           <div>
             <h1>Clubes</h1>
-            <p>Visão geral dos clubes da liga e de seus recursos.</p>
+            <p>Cada clube começa com 300,00 em caixa e sem jogadores. A liga aceita no máximo 20 clubes.</p>
           </div>
-          <Link className="clubs-market-link" to="/players">
-            <ShoppingCart size={15} />
-            Mercado de jogadores
-          </Link>
+          <button className="clubs-create-button" type="button" onClick={() => {
+            setFormularioAberto(true);
+            setSucesso('');
+          }}>
+            <Plus size={15} /> Novo clube
+          </button>
         </div>
       </header>
 
       <section className="clubs-panel" aria-labelledby="clubs-list-title">
         <div className="clubs-panel__toolbar">
-          <div>
-            <h2 id="clubs-list-title">Todos os clubes</h2>
-            <p>
-              {clubes.length} {clubes.length === 1 ? 'clube' : 'clubes'}
-            </p>
+          <div className="clubs-count">
+            <strong id="clubs-list-title">{clubes.length} clubes</strong>
+            <span>{clubes.length} de 20</span>
           </div>
           <div className="clubs-toolbar__actions">
             <label className="clubs-sort">
-              <span>Ordenar por</span>
+              <SlidersHorizontal size={14} />
+              <span>Ordenar:</span>
               <select
                 value={ordenacao}
                 onChange={(event) => setOrdenacao(event.target.value as OrdenacaoClubes)}
@@ -159,27 +165,6 @@ export default function ClubesPage() {
               </select>
               <ChevronDown size={14} aria-hidden="true" />
             </label>
-            <button
-              type="button"
-              className="clubs-refresh"
-              onClick={() => setReloadKey((current) => current + 1)}
-              disabled={carregando}
-              aria-label="Atualizar lista de clubes"
-              title="Atualizar lista"
-            >
-              <RotateCcw size={15} />
-            </button>
-            <button
-              type="button"
-              className="clubs-create-button"
-              onClick={() => {
-                setFormularioAberto(true);
-                setSucesso('');
-              }}
-            >
-              <Plus size={15} />
-              <span>Novo clube</span>
-            </button>
           </div>
         </div>
 
@@ -203,6 +188,7 @@ export default function ClubesPage() {
                 <th scope="col" className="clubs-table__money">
                   Patrimônio
                 </th>
+                <th scope="col" />
               </tr>
             </thead>
             <tbody>
@@ -229,6 +215,9 @@ export default function ClubesPage() {
                     <td className="clubs-table__money clubs-table__net-worth">
                       {formatCurrency(clube.net_worth)}
                     </td>
+                    <td className="clubs-table__action">
+                      <Link to={`/clubs/${clube.id}`}>Ver clube <span aria-hidden="true">›</span></Link>
+                    </td>
                   </tr>
                 ))}
             </tbody>
@@ -238,13 +227,17 @@ export default function ClubesPage() {
             <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
           )}
           {!carregando && !erro && clubes.length === 0 && (
-            <EmptyState message="Ainda não há clubes cadastrados." />
+            <div className="clubs-empty-state">
+              <span className="clubs-empty-state__icon"><Shield size={18} /></span>
+              <strong>Nenhum clube cadastrado</strong>
+              <p>Crie o primeiro clube com nome e sigla. Ele começa com 300,00<br />em caixa e sem jogadores.</p>
+              <button type="button" onClick={() => setFormularioAberto(true)}>
+                <Plus size={12} /> Novo clube
+              </button>
+            </div>
           )}
         </div>
-        <footer className="clubs-panel__footer">
-          <span>Valores apresentados conforme os dados da API.</span>
-          <span>{clubes.length} registros</span>
-        </footer>
+        <p className="clubs-page__hint">Clubes pelo nome por padrão ou pelo patrimônio, do maior para o menor, com empate desfeito pelo nome.</p>
       </section>
       {sucesso && (
         <div className="clubs-toast clubs-toast--success" role="status">
@@ -270,11 +263,8 @@ export default function ClubesPage() {
           >
             <header className="clubs-modal__header">
               <div>
-                <span className="clubs-modal__icon">
-                  <Building2 size={18} />
-                </span>
                 <h2 id="create-club-title">Novo clube</h2>
-                <p>Cadastre um clube na liga.</p>
+                <p>Informe o nome e a sigla do clube.</p>
               </div>
               <button
                 type="button"
@@ -289,13 +279,12 @@ export default function ClubesPage() {
             <form onSubmit={criarClube} noValidate>
               {erroCriacao && (
                 <div className="clubs-form__error" role="alert">
-                  {erroCriacao}
+                  <strong><AlertCircle size={11} /> Não foi possível criar o clube</strong>
+                  <span>{erroCriacao}</span>
                 </div>
               )}
               <label className="clubs-field" htmlFor="club-name">
-                <span>
-                  Nome do clube <b>*</b>
-                </span>
+                <span>Nome</span>
                 <input
                   id="club-name"
                   value={nome}
@@ -306,7 +295,7 @@ export default function ClubesPage() {
                   maxLength={60}
                   aria-invalid={Boolean(errosCampos.name)}
                   aria-describedby={errosCampos.name ? 'club-name-error' : 'club-name-help'}
-                  placeholder="Ex.: Clube Atlético Central"
+                  placeholder="Leões da Serra"
                   autoFocus
                 />
                 {errosCampos.name ? (
@@ -314,13 +303,11 @@ export default function ClubesPage() {
                     {errosCampos.name}
                   </small>
                 ) : (
-                  <small id="club-name-help">De 3 a 60 caracteres.</small>
+                  <small id="club-name-help">De 3 a 60 caracteres e de 2 a 5 palavras; só letras, espaços, hífen e ponto.<br />Não pode repetir outro clube.</small>
                 )}
               </label>
               <label className="clubs-field" htmlFor="club-acronym">
-                <span>
-                  Sigla <b>*</b>
-                </span>
+                <span>Sigla</span>
                 <input
                   id="club-acronym"
                   value={sigla}
@@ -333,7 +320,7 @@ export default function ClubesPage() {
                   aria-describedby={
                     errosCampos.acronym ? 'club-acronym-error' : 'club-acronym-help'
                   }
-                  placeholder="CAC"
+                  placeholder="LDS"
                   autoComplete="off"
                 />
                 {errosCampos.acronym ? (
@@ -341,9 +328,25 @@ export default function ClubesPage() {
                     {errosCampos.acronym}
                   </small>
                 ) : (
-                  <small id="club-acronym-help">Exatamente 3 letras maiúsculas.</small>
+                  <small id="club-acronym-help">3 letras de A a Z, maiúsculas, que aparecerão no nome nessa ordem; a primeira é a primeira letra do nome.</small>
                 )}
               </label>
+              <label className="clubs-checkbox-field">
+                <input
+                  type="checkbox"
+                  checked={checkboxChecked}
+                  onChange={(event) => {
+                    setCheckboxChecked(event.target.checked);
+                    setErrosCampos((current) => ({ ...current, checkbox: undefined }));
+                  }}
+                  aria-invalid={Boolean(errosCampos.checkbox)}
+                />
+                O clube começa com 300,00 em caixa e sem jogadores.
+                {errosCampos.checkbox && (
+                  <small className="clubs-field__error">{errosCampos.checkbox}</small>
+                )}
+              </label>
+
               <footer className="clubs-modal__actions">
                 <button
                   type="button"

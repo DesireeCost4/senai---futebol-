@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { AlertTriangle, Building2, ShoppingCart, X } from 'lucide-react';
+import { AlertTriangle, BadgeDollarSign, Landmark, ShoppingCart, Shirt, WalletCards, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import ClubTabs from '../components/ClubTabs';
 import TransactionResultDialog from '../components/TransactionResultDialog';
@@ -33,6 +33,15 @@ type JogadorDoClube = {
     penalty_rate: number;
   } | null;
 };
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
 
 type ClubeDetalhe = {
   id: number;
@@ -82,7 +91,8 @@ function conditionLabel(condition: string): string {
 
 export default function ClubeDetalhesPage() {
   const { id } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [clube, setClube] = useState<ClubeDetalhe | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
@@ -104,6 +114,7 @@ export default function ClubeDetalhesPage() {
   const [erroExportacao, setErroExportacao] = useState('');
   const exportInProgress = useRef(false);
   const abaAtiva: AbaClube = searchParams.get('tab') === 'history' ? 'historico' : 'elenco';
+  const clubeCriado = Boolean((location.state as { clubeCriado?: boolean } | null)?.clubeCriado);
 
   useEffect(() => {
     let cancelled = false;
@@ -269,14 +280,16 @@ export default function ClubeDetalhesPage() {
         <>
           <header className="club-detail-header">
             <span className="club-detail-header__icon">
-              <Building2 size={21} />
+              {clube.acronym.slice(0, 3)}
             </span>
             <div>
-              <div className="club-detail-header__eyebrow">Detalhes do clube</div>
               <h1>
                 {clube.name} <span>{clube.acronym}</span>
               </h1>
-              <p>Elenco e situação financeira atualizados pela API.</p>
+              <div className="club-detail-header__badges">
+                <span>Sigla {clube.acronym}</span>
+                <span><Shirt size={10} /> {clube.players?.length ?? 0} de 12 jogadores</span>
+              </div>
             </div>
             <Link className="club-detail-market-link" to="/players">
               <ShoppingCart size={15} />
@@ -286,21 +299,27 @@ export default function ClubeDetalhesPage() {
 
           <section className="club-summary" aria-label="Resumo financeiro do clube">
             <article className="club-summary__item">
-              <span>Caixa</span>
+              <span>Caixa <WalletCards size={12} /></span>
               <strong>{formatCurrency(clube.cash)}</strong>
+              <small>moedas</small>
+              <em>Só muda por compras e vendas</em>
             </article>
             <article className="club-summary__item">
-              <span>Valor do elenco</span>
+              <span>Valor do elenco <BadgeDollarSign size={12} /></span>
               <strong>{formatCurrency(clube.squad_value)}</strong>
+              <small>moedas</small>
+              <em>Soma dos valores de mercado</em>
             </article>
             <article className="club-summary__item club-summary__item--net-worth">
-              <span>Patrimônio</span>
+              <span>Patrimônio <Landmark size={12} /></span>
               <strong>{formatCurrency(clube.net_worth)}</strong>
+              <small>moedas</small>
+              <em>Caixa + valor do elenco</em>
             </article>
             <article className="club-summary__item club-summary__item--squad-count">
-              <span>Elenco</span>
+              <span>Elenco <Shirt size={12} /></span>
               <strong>{clube.players?.length ?? 0} <small>de 12</small></strong>
-              <small>Limite da liga</small>
+              <em>Limite de 12 jogadores</em>
             </article>
           </section>
 
@@ -363,6 +382,7 @@ export default function ClubeDetalhesPage() {
                         <span
                           className={`club-condition club-condition--${jogador.condition.toLowerCase()}`}
                         >
+                          <span aria-hidden="true" />
                           {conditionLabel(jogador.condition)}
                         </span>
                       </td>
@@ -398,7 +418,12 @@ export default function ClubeDetalhesPage() {
                 </tbody>
               </table>
               {!clube.players?.length && (
-                <EmptyState message="Este clube ainda não tem jogadores no elenco." />
+                <div className="club-squad-empty">
+                  <span className="club-squad-empty__icon"><Shirt size={18} /></span>
+                  <strong>Nenhum jogador no elenco</strong>
+                  <p>Compre jogadores livres para montar o elenco. O limite é de 12<br />jogadores, e o custo de cada compra não pode passar de 50% do<br />caixa.</p>
+                  <Link to="/players"><Shirt size={10} /> Ver jogadores livres</Link>
+                </div>
               )}
             </div>
           </section>}
@@ -585,6 +610,13 @@ export default function ClubeDetalhesPage() {
           </section>}
         </>
       )}
+      {clubeCriado && clube && (
+        <div className="club-created-toast" role="status">
+          <span className="club-created-toast__check">✓</span>
+          <div><strong>Clube criado</strong><span>{clube.name} ({clube.acronym}) começa com<br />300,00 em caixa.</span></div>
+          <Link to="/clubs" state={null} aria-label="Fechar">×</Link>
+        </div>
+      )}
 
       {jogadorVenda && (
         <div
@@ -611,15 +643,80 @@ export default function ClubeDetalhesPage() {
             <span className="club-sell-dialog__icon">
               <AlertTriangle size={18} />
             </span>
-            <h2 id="club-sell-title">Confirmar venda</h2>
-            <p>
-              Vender <strong>{jogadorVenda.name}</strong>? A venda encerra o contrato e o jogador
-              ficará livre.
+            <h2 id="club-sell-title">
+              {erroVenda ? 'Venda recusada' : `Vender ${jogadorVenda.name}?`}
+            </h2>
+            <p className="club-sell-dialog__subtitle">
+              O jogador sai do elenco do {clube?.name} e volta a ficar livre.
             </p>
+            {!erroVenda && (
+              <div className="club-sell-dialog__warning">
+                <AlertTriangle size={14} />
+                <span>
+                  <strong>{jogadorVenda.name} é titular</strong>
+                  <small>
+                    Ao vender, ele sai da escalação, e o {clube?.name} só volta a jogar partidas
+                    depois de escalar de novo os 5 titulares.
+                  </small>
+                </span>
+              </div>
+            )}
             {erroVenda && (
               <div className="club-sell-dialog__error" role="alert">
-                {erroVenda}
+                <strong>A venda foi recusada</strong>
+                <span>{erroVenda}</span>
               </div>
+            )}
+            <div className="club-sell-dialog__player">
+              <span className="club-sell-dialog__avatar" aria-hidden="true">
+                {initials(jogadorVenda.name)}
+              </span>
+              <span>
+                <strong>{jogadorVenda.name}</strong>
+                <small>
+                  {jogadorVenda.position} · {jogadorVenda.age} anos
+                </small>
+              </span>
+              <span className="club-sell-dialog__market-value">
+                <small>Valor de mercado</small>
+                <strong>{formatCurrency(jogadorVenda.market_value)}</strong>
+              </span>
+            </div>
+            <dl className="club-sell-dialog__details">
+              <div>
+                <dt>Valor de compra</dt>
+                <dd>{formatCurrency(jogadorVenda.contract?.purchase_value ?? 0)}</dd>
+              </div>
+              <div>
+                <dt>Fim da fidelidade</dt>
+                <dd>
+                  {jogadorVenda.contract?.loyalty_until
+                    ? formatDateTimeBrasilia(jogadorVenda.contract.loyalty_until)
+                    : '—'}
+                </dd>
+              </div>
+              <div>
+                <dt>Dias restantes</dt>
+                <dd>{jogadorVenda.contract?.remaining_days ?? 0}</dd>
+              </div>
+              <div>
+                <dt>% de multa se vender agora</dt>
+                <dd>
+                  <span className="club-sell-dialog__rate">
+                    {jogadorVenda.contract?.penalty_rate ?? 0}%
+                  </span>
+                </dd>
+              </div>
+            </dl>
+            <p className="club-sell-dialog__hint">
+              A venda é pelo valor de mercado do momento. Multa (teto de 10,00), lucro, comissão e
+              crédito são calculados ao confirmar.
+            </p>
+            {vendendo && (
+              <p className="club-sell-dialog__sending" role="status">
+                <span className="club-sell-spinner" />
+                Enviando a venda. Os botões ficam desabilitados até a resposta.
+              </p>
             )}
             <footer>
               <button
@@ -637,7 +734,7 @@ export default function ClubeDetalhesPage() {
                 onClick={() => void confirmarVenda()}
               >
                 {vendendo ? <span className="club-sell-spinner" /> : null}
-                {vendendo ? 'Enviando...' : 'Confirmar venda'}
+                {vendendo ? 'Vendendo...' : 'Confirmar venda'}
               </button>
             </footer>
           </section>

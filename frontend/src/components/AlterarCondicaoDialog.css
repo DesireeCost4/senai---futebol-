@@ -103,8 +103,8 @@
   gap: 4px;
   padding: 3px 8px;
   border-radius: 12px;
-  background: #fce8e8;
-  color: #d33b3b;
+  background: #ecfdf5;
+  color: #059669;
   font-size: 10px;
   font-weight: 600;
 }
@@ -113,7 +113,54 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #d33b3b;
+  background: #059669;
+}
+
+.alterar-condicao-dialog__player-info .current-condition.current-condition--mal_condicionado {
+  background: #fef3c7;
+  color: #d97706;
+}
+.alterar-condicao-dialog__player-info .current-condition.current-condition--mal_condicionado .dot {
+  background: #d97706;
+}
+
+.alterar-condicao-dialog__player-info .current-condition.current-condition--doente {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.alterar-condicao-dialog__player-info .current-condition.current-condition--doente .dot {
+  background: #dc2626;
+}
+
+.alterar-condicao-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #fef08a;
+  border-radius: 8px;
+  background: #fefce8;
+  margin-bottom: 16px;
+  color: #854d0e;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.alterar-condicao-warning .warning-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.alterar-condicao-warning strong {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #713f12;
+}
+
+.alterar-condicao-warning p {
+  margin: 0;
+  color: #854d0e;
 }
 
 .alterar-condicao-dialog__options {
