@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { isAxiosError } from 'axios';
-import { AlertTriangle, BadgeDollarSign, Landmark, ShoppingCart, Shirt, WalletCards, X } from 'lucide-react';
+import { AlertTriangle, BadgeDollarSign, FileQuestion, Landmark, RefreshCw, ShoppingCart, Shirt, WalletCards, X } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import ClubTabs from '../components/ClubTabs';
 import TransactionResultDialog from '../components/TransactionResultDialog';
@@ -96,6 +96,7 @@ export default function ClubeDetalhesPage() {
   const [clube, setClube] = useState<ClubeDetalhe | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
+  const [clubeNaoEncontrado, setClubeNaoEncontrado] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [jogadorVenda, setJogadorVenda] = useState<JogadorDoClube | null>(null);
   const [erroVenda, setErroVenda] = useState('');
@@ -124,11 +125,15 @@ export default function ClubeDetalhesPage() {
     async function carregarDetalhes() {
       setCarregando(true);
       setErro('');
+      setClubeNaoEncontrado(false);
       try {
         const resultado = (await clubeService.buscarClubePorId(Number(id))) as ClubeDetalhe;
         if (!cancelled) setClube(resultado);
       } catch (requestError) {
-        if (!cancelled) setErro(mensagemErro(requestError));
+        if (!cancelled) {
+          setClubeNaoEncontrado(isAxiosError(requestError) && requestError.response?.status === 404);
+          setErro(mensagemErro(requestError));
+        }
       } finally {
         if (!cancelled) setCarregando(false);
       }
@@ -277,8 +282,23 @@ export default function ClubeDetalhesPage() {
   return (
     <main className="club-detail-page">
       {carregando && <LoadingState message="Carregando detalhes do clube..." />}
-      {!carregando && erro && (
-        <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
+      {!carregando && erro && clubeNaoEncontrado && (
+        <section className="club-not-found-state">
+          <ErrorState
+            title="Clube não encontrado"
+            description="Clube não encontrado. O endereço pode estar errado ou o clube não existe."
+            icon={<FileQuestion size={16} />}
+          />
+          <Link to="/clubs" className="club-not-found-state__back">← &nbsp;Voltar para clubes</Link>
+        </section>
+      )}
+      {!carregando && erro && !clubeNaoEncontrado && (
+        <ErrorState
+          title="Não foi possível carregar o clube"
+          description={erro}
+          icon={<RefreshCw size={16} />}
+          onRetry={() => setReloadKey((current) => current + 1)}
+        />
       )}
 
       {!carregando && !erro && clube && (
@@ -505,16 +525,6 @@ export default function ClubeDetalhesPage() {
                 <span>{erroExportacao}</span>
               </div>
             )}
-            {historicoErro && (
-              <div
-                className={`transactions-inline-error${jogadorHistoricoId ? ' transactions-inline-error--filter' : ''}`}
-                role="alert"
-              >
-                <strong>{jogadorHistoricoId ? 'O filtro foi recusado' : 'Não foi possível carregar o histórico'}</strong>
-                <span>{jogadorHistoricoId ? 'Jogador não encontrado.' : historicoErro}</span>
-              </div>
-            )}
-
             <div
               className="transactions-table-wrap"
               role="region"
@@ -590,13 +600,27 @@ export default function ClubeDetalhesPage() {
                     })}
                 </tbody>
               </table>
-              {historicoCarregando && <LoadingState message="Carregando transações..." />}
+              {historicoCarregando && (
+                <LoadingState
+                  skeleton
+                  title="Carregando histórico"
+                  description="Carregando..."
+                />
+              )}
+              {!historicoCarregando && historicoErro && (
+                <ErrorState
+                  title="Não foi possível carregar o histórico"
+                  description="Não foi possível carregar o histórico. Os totais e a exportação ficam indisponíveis até a tentativa funcionar."
+                  icon={<RefreshCw size={16} />}
+                  onRetry={() => setHistoricoReloadKey((current) => current + 1)}
+                />
+              )}
               {!historicoCarregando && !historicoErro && historico.length === 0 && (
-                <div className="transactions-empty">
-                  <span className="transactions-empty__icon" aria-hidden="true">↶</span>
-                  <strong>Nenhuma transação ainda</strong>
-                  <p>As compras e vendas do clube aparecem aqui, com os totais logo abaixo.</p>
-                </div>
+                <EmptyState
+                  title="Nenhuma compra ou venda"
+                  description="As compras e vendas do clube aparecem aqui, com os totais logo abaixo."
+                  icon={<ShoppingCart size={16} />}
+                />
               )}
             </div>
 

@@ -8,12 +8,14 @@ import PartidasPage from './pages/PartidasPage';
 import HistoricoPartidasPage from './pages/HistoricoPartidasPage';
 import ClassificacaoPage from './pages/ClassificacaoPage';
 import PartidaDetalhesPage from './pages/PartidaDetalhesPage';
+import HomePage from './pages/HomePage';
 import './App.css';
 
 export default function App() {
   return (
     <AppShell>
       <Routes>
+        <Route path="/" element={<HomePage />} />
         <Route path="/clubs" element={<ClubesPage />} />
         <Route path="/clubs/:id" element={<ClubeDetalhesPage />} />
         <Route path="/clubs/:id/lineup" element={<EscalacaoPage />} />

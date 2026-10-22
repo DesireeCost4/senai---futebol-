@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 import { CalendarDays, CircleHelp, Eye, X } from 'lucide-react';
-import { EmptyState, LoadingState } from '../components/RequestState';
+import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
 import DuelsDialog from '../components/DuelsDialog';
 import { ligaService } from '../services/ligaService';
 import type { ClubeLiga, Match } from '../types/league';
@@ -27,6 +27,9 @@ export default function PartidasPage() {
   const [fieldErrors, setFieldErrors] = useState<{ homeClubId?: string; awayClubId?: string }>({});
   const [result, setResult] = useState<Match | null>(null);
   const [matches, setMatches] = useState<Match[]>([]);
+  const [matchesLoading, setMatchesLoading] = useState(true);
+  const [matchesError, setMatchesError] = useState('');
+  const [matchesReloadKey, setMatchesReloadKey] = useState(0);
   const [showNewMatch, setShowNewMatch] = useState(false);
   const [loadingMatchId, setLoadingMatchId] = useState<number | null>(null);
   const playInProgress = useRef(false);
@@ -53,18 +56,25 @@ export default function PartidasPage() {
   useEffect(() => {
     let cancelled = false;
     async function loadMatches() {
+      setMatchesLoading(true);
+      setMatchesError('');
       try {
         const response = await ligaService.listarPartidas();
         if (!cancelled) setMatches(response);
-      } catch {
-        if (!cancelled) setMatches([]);
+      } catch (requestError) {
+        if (!cancelled) {
+          setMatches([]);
+          setMatchesError(mensagemErro(requestError));
+        }
+      } finally {
+        if (!cancelled) setMatchesLoading(false);
       }
     }
     void loadMatches();
     return () => {
       cancelled = true;
     };
-  }, [result]);
+  }, [result, matchesReloadKey]);
 
   async function playMatch() {
     if (playInProgress.current) return;
@@ -111,7 +121,7 @@ export default function PartidasPage() {
         </button>
       </header>
 
-      {matches[0] && (
+      {!matchesLoading && !matchesError && matches[0] && (
         <section className="latest-match-card" aria-label="Última partida">
           <span className="latest-match-card__label">Última partida</span>
           <div className="latest-match-card__teams">
@@ -137,7 +147,7 @@ export default function PartidasPage() {
           </select>
         </header>
         <div className="match-history-inline__table">
-          {matches.slice(0, 8).map((match) => (
+          {!matchesLoading && !matchesError && matches.slice(0, 8).map((match) => (
             <div className="match-history-inline__row" key={match.id}>
               <span>{new Date(match.played_at).toLocaleDateString('pt-BR')} &nbsp; {new Date(match.played_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
               <strong>{match.home.club_name}</strong>
@@ -148,7 +158,28 @@ export default function PartidasPage() {
               </button>
             </div>
           ))}
-          {!matches.length && <EmptyState message="Nenhuma partida encontrada." />}
+          {matchesLoading && (
+            <LoadingState
+              skeleton
+              title="Carregando partidas"
+              description="Carregando..."
+            />
+          )}
+          {!matchesLoading && matchesError && (
+            <ErrorState
+              title="Não foi possível carregar as partidas"
+              description="Não foi possível carregar os dados. Verifique a conexão e tente de novo."
+              onRetry={() => setMatchesReloadKey((current) => current + 1)}
+            />
+          )}
+          {!matchesLoading && !matchesError && !matches.length && (
+            <EmptyState
+              title="Nenhuma partida jogada"
+              description="Escale os 5 titulares de dois clubes e jogue a primeira partida. O resultado aparece aqui e na classificação."
+              actionLabel="＋  Nova partida"
+              onAction={() => setShowNewMatch(true)}
+            />
+          )}
         </div>
         <small className="matches-footnote">{matches.length} {matches.length === 1 ? 'partida' : 'partidas'}</small>
       </section>

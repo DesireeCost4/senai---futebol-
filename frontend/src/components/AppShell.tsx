@@ -58,6 +58,8 @@ export default function AppShell({ children }: Props) {
   const crumbs = breadcrumb(pathname, clubs);
   const currentClubId = pathname.startsWith('/clubs/') ? Number(pathname.split('/')[2]) : null;
 
+  if (pathname === '/') return <>{children}</>;
+
   return (
     <div className="app-frame">
       <aside className="app-sidebar" aria-label="Navegação principal">

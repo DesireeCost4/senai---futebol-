@@ -15,6 +15,7 @@ import {
   Pencil,
   RotateCcw,
   Search,
+  SearchX,
   ShoppingCart,
   Trash2,
   UsersRound,
@@ -1291,12 +1292,33 @@ export default function MercadoJogadoresPage() {
                 })}
             </tbody>
           </table>
-          {carregando && <LoadingState message="Carregando jogadores..." />}
+          {carregando && (
+            <LoadingState
+              skeleton
+              title="Carregando jogadores"
+              description="Carregando..."
+            />
+          )}
           {!carregando && erro && (
-            <ErrorState message={erro} onRetry={() => setReloadKey((current) => current + 1)} />
+            <ErrorState
+              title="Não foi possível carregar os jogadores"
+              description="Não foi possível carregar os dados. Verifique a conexão e tente de novo."
+              icon={<SearchX size={16} />}
+              onRetry={() => setReloadKey((current) => current + 1)}
+            />
           )}
           {!carregando && !erro && !filterError && jogadores.length === 0 && (
-            <EmptyState message="Nenhum jogador encontrado com esses filtros." />
+            <EmptyState
+              title={busca.trim() ? `Nenhum jogador encontrado para “${busca.trim()}”` : 'Nenhum jogador cadastrado'}
+              description={
+                busca.trim()
+                  ? 'Confira a grafia ou tente alguns filtros. A busca ignora maiúsculas, minúsculas e acentos.'
+                  : 'Cadastre o primeiro jogador para começar.'
+              }
+              icon={<SearchX size={16} />}
+              actionLabel={activeFilters.length > 0 ? 'Limpar filtros' : 'Novo jogador'}
+              onAction={activeFilters.length > 0 ? limparFiltros : () => setFormularioAberto(true)}
+            />
           )}
         </div>
 

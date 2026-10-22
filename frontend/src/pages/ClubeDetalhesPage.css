@@ -1119,6 +1119,30 @@
     padding: 24px 10px 23px;
     text-align: center;
   }
+
+  .club-not-found-state {
+    min-height: 10.5rem;
+    border: 1px solid #e4e6e9;
+    border-radius: 0.55rem;
+    background: #fff;
+  }
+
+  .club-not-found-state .request-state {
+    min-height: 8.5rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .club-not-found-state__back {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 0.8rem;
+    border: 1px solid #dfe2e6;
+    border-radius: 0.35rem;
+    padding: 0.45rem 0.7rem;
+    color: #252a31;
+    font-size: 0.6875rem;
+    text-decoration: none;
+  }
   .club-squad-empty__icon {
     display: grid;
     width: 25px;
