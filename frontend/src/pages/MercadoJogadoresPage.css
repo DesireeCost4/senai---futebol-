@@ -993,6 +993,88 @@
   background: #f1f4f7;
 }
 
+.market-row-actions {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.market-player-actions-menu {
+  position: fixed;
+  z-index: 60;
+  display: grid;
+  width: 176px;
+  gap: 2px;
+  border: 1px solid #e3e7ec;
+  border-radius: 6px;
+  background: #fff;
+  padding: 4px;
+  box-shadow: 0 8px 22px rgb(23 35 49 / 16%);
+}
+
+.market-player-actions-menu__title {
+  padding: 4px 7px 5px;
+  color: #929ca8;
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.market-player-actions-menu > button {
+  display: flex;
+  min-height: 27px;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  padding: 4px 7px;
+  color: #465465;
+  font: inherit;
+  font-size: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.market-player-actions-menu > button:hover:not(:disabled) {
+  background: #f2f5f8;
+}
+
+.market-player-actions-menu > button:disabled {
+  color: #a0a9b4;
+  cursor: not-allowed;
+}
+
+.market-player-actions-menu > button > span {
+  display: grid;
+  gap: 2px;
+}
+
+.market-player-actions-menu > button small,
+.market-player-actions-menu__hint {
+  color: #939daa;
+  font-size: 6.5px;
+  font-weight: 400;
+}
+
+.market-player-actions-menu > .market-player-actions-menu__delete {
+  border-top: 1px solid #edf0f3;
+  border-radius: 0 0 4px 4px;
+  margin-top: 2px;
+  padding-top: 6px;
+  color: #b3454e;
+}
+
+.market-player-actions-menu > .market-player-actions-menu__delete:disabled {
+  color: #c18a8e;
+}
+
+.market-player-actions-menu__hint {
+  margin: 0;
+  padding: 0 7px 4px 27px;
+}
+
 .market-players-footer {
   min-height: 34px;
   padding: 0 10px;
@@ -1050,6 +1132,223 @@
   background: #fff;
   padding: 15px 16px 12px;
   box-shadow: 0 20px 60px rgb(16 30 48 / 24%);
+}
+
+.market-edit-dialog {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(90vh, 680px);
+  overflow-y: auto;
+  border: 1px solid #e4e9ee;
+  border-radius: 9px;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 20px 60px rgb(16 30 48 / 24%);
+}
+
+.market-edit-dialog__header {
+  padding: 0 24px 0 0;
+}
+
+.market-edit-dialog__header h2 {
+  margin: 0 0 4px;
+  color: #2c3948;
+  font-size: 13px;
+}
+
+.market-edit-dialog__header p {
+  margin: 0;
+  color: #7b8796;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.market-edit-dialog__profile {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.market-condition-dialog {
+  position: relative;
+  width: min(100%, 390px);
+  border: 1px solid #e4e9ee;
+  border-radius: 9px;
+  background: #fff;
+  padding: 18px;
+  box-shadow: 0 20px 60px rgb(16 30 48 / 24%);
+}
+
+.market-condition-dialog__header h2 {
+  margin: 0 0 5px;
+  color: #2c3948;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.market-condition-dialog__header p {
+  margin: 0;
+  color: #7b8796;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.market-condition-dialog__player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px;
+  border: 1px solid #f0f0f2;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.market-condition-dialog__player .market-player-avatar {
+  width: 24px;
+  height: 24px;
+  margin-right: 0;
+  font-size: 8px;
+}
+
+.market-condition-dialog__player-name {
+  font-size: 10px;
+  font-weight: 620;
+  color: #2f3b4a;
+}
+
+.market-condition-dialog__player .market-condition {
+  margin-left: auto;
+  padding: 3px 8px;
+  font-size: 8px;
+}
+
+.market-condition-dialog__options {
+  position: relative;
+  margin-top: 13px;
+  padding: 12px 5px 0;
+}
+
+.market-condition-dialog__options::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #f5f5f7;
+}
+
+.market-condition-dialog__separator {
+  display: block;
+  height: 1px;
+  background: #f5f5f7;
+}
+
+.market-condition-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding-left: 7px;
+  cursor: pointer;
+}
+
+.market-condition-option--selected {
+  margin: 7px -5px;
+  padding: 10px 15px 11px 11px;
+  border: 1px solid #155dfc;
+  border-radius: 8px;
+  background: #eff6ff;
+}
+
+.market-condition-option input[type='radio'] {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: #155dfc;
+}
+
+.market-condition-option:has(input:disabled) {
+  cursor: not-allowed;
+}
+
+.market-condition-option__text {
+  display: block;
+}
+
+.market-condition-option__text strong {
+  display: block;
+  color: #2f3b4a;
+  font-size: 10px;
+  font-weight: 620;
+}
+
+.market-condition-option__text small {
+  display: block;
+  margin-top: 3px;
+  color: #7b8796;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.market-condition-option--selected .market-condition-option__text strong {
+  color: #14306b;
+}
+
+.market-condition-dialog__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f1f3;
+}
+
+.market-condition-dialog__cancel,
+.market-condition-dialog__confirm {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.market-condition-dialog__cancel {
+  border: 0;
+  background: transparent;
+  padding: 0 11px;
+  color: #465465;
+}
+
+.market-condition-dialog__confirm {
+  border: 1px solid #155dfc;
+  border-radius: 6px;
+  background: #155dfc;
+  padding: 0 16px;
+  color: #fff;
+}
+
+.market-condition-dialog__cancel:disabled,
+.market-condition-dialog__confirm:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.market-edit-dialog .market-position-choice:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.market-position-picker__hint {
+  display: block;
+  margin-top: 4px;
+  color: #8792a0;
+  font-size: 6.5px;
+  line-height: 1.4;
 }
 
 .market-create-dialog__header {
@@ -1491,6 +1790,55 @@
   border-color: #2875d1;
   background: #2875d1;
   color: #fff;
+}
+
+.market-create-result__actions button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.market-delete-dialog {
+  width: min(100%, 380px);
+  border: 1px solid #e4e9ee;
+  border-radius: 10px;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgb(16 30 48 / 24%);
+}
+
+.market-delete-dialog h2 {
+  margin: 0 0 7px;
+  color: #303c4a;
+  font-size: 14px;
+}
+
+.market-delete-dialog > p {
+  margin: 0;
+  color: #748192;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.market-delete-dialog__confirm {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #b8424b !important;
+  border-radius: 6px;
+  background: #b8424b !important;
+  padding: 0 12px;
+  color: #fff !important;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.market-delete-dialog__confirm:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
 .market-create-dialog .market-buy-field {

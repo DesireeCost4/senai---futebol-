@@ -1,22 +1,28 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { isAxiosError } from 'axios';
 import { Link } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import {
   Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   Eye,
+  Handshake,
+  HeartPulse,
   MoreHorizontal,
   Plus,
+  Pencil,
   RotateCcw,
   Search,
   ShoppingCart,
+  Trash2,
   UsersRound,
   X,
 } from 'lucide-react';
 import { EmptyState, ErrorState, LoadingState } from '../components/RequestState';
-import TransactionResultDialog from '../components/TransactionResultDialog';
+import AlterarCondicaoDialog from '../components/AlterarCondicaoDialog';
+import DetalhesJogadorDialog from '../components/DetalhesJogadorDialog';
 import { clubeService } from '../services/clubeService';
 import { jogadorService } from '../services/jogadorService';
 import { mercadoService } from '../services/mercadoService';
@@ -26,7 +32,14 @@ import {
   formatDateTimeLocalBrasilia,
 } from '../utils/formatters';
 import type { CompraResultado } from '../types/transactions';
-import type { FiltrosJogadores, Jogador, NovoJogador, OrdenacaoJogadores } from '../types/players';
+import type {
+  CondicaoJogador,
+  EdicaoJogador,
+  FiltrosJogadores,
+  Jogador,
+  NovoJogador,
+  OrdenacaoJogadores,
+} from '../types/players';
 import './MercadoJogadoresPage.css';
 
 type ClubeOption = {
@@ -52,6 +65,36 @@ const sortOptions: { value: OrdenacaoJogadores; label: string }[] = [
   { value: 'age_asc', label: 'Menor idade' },
   { value: 'age_desc', label: 'Maior idade' },
   { value: 'position', label: 'Posição' },
+];
+
+type CondicaoOption = {
+  value: CondicaoJogador;
+  label: string;
+  description: string[];
+};
+
+const conditionOptions: CondicaoOption[] = [
+  {
+    value: 'APTO',
+    label: 'Apto',
+    description: [
+      'Sem desconto por condição física.',
+      'O ajuste pela idade continua valendo na conta.',
+    ],
+  },
+  {
+    value: 'MAL_CONDICIONADO',
+    label: 'Mal condicionado',
+    description: [
+      'Desconto de 15%. Agilidade de 80 a 100: metade do desconto; de 1 a 30: +10 pontos.',
+      'Máximo de 25% de desconto.',
+    ],
+  },
+  {
+    value: 'DOENTE',
+    label: 'Doente',
+    description: ['Desconto de 30%. Agilidade de 80 a 100: metade; de 1 a 30: +10 pontos.'],
+  },
 ];
 
 const emptyPlayerForm: NovoJogador = {
@@ -81,6 +124,37 @@ const technicalAttributes: { key: TechnicalAttributeKey; label: string }[] = [
 ];
 
 type ErrosCadastro = Partial<Record<keyof NovoJogador, string>>;
+type ErrosEdicao = Partial<Record<keyof EdicaoJogador, string>>;
+
+function validarEdicao(dados: EdicaoJogador, jogadorOriginal: Jogador): ErrosEdicao {
+  const errors: ErrosEdicao = {};
+  const name = dados.name.trim();
+
+  if (name.length < 3 || name.length > 100 || name.split(/\s+/).length < 2 || /\d/.test(name)) {
+    errors.name = 'Use de 3 a 100 caracteres, pelo menos duas palavras e sem números.';
+  }
+  if (!positions.some(({ value }) => value === dados.position)) {
+    errors.position = 'Selecione uma posição.';
+  } else if (
+    jogadorOriginal.club_id !== null &&
+    jogadorOriginal.club_id !== undefined &&
+    dados.position !== jogadorOriginal.position
+  ) {
+    errors.position = 'Jogadores que pertencem a um clube não podem mudar de posição.';
+  }
+  if (!Number.isInteger(dados.age) || dados.age < 16 || dados.age > 45) {
+    errors.age = 'A idade deve estar entre 16 e 45 anos.';
+  } else if (dados.age < jogadorOriginal.age) {
+    errors.age = 'A idade não pode ser menor que a idade atual.';
+  }
+  if (!Number.isInteger(dados.agility) || dados.agility < 1 || dados.agility > 100) {
+    errors.agility = 'A agilidade deve estar entre 1 e 100.';
+  } else if (dados.age >= 35 && dados.agility > 85) {
+    errors.agility = 'A partir dos 35 anos, a agilidade máxima é 85.';
+  }
+
+  return errors;
+}
 
 function validarCadastro(dados: NovoJogador): ErrosCadastro {
   const errors: ErrosCadastro = {};
@@ -185,6 +259,12 @@ function conditionLabel(condition: string): string {
   return 'Mal condicionado';
 }
 
+function normalizeCondition(condition: string | undefined): CondicaoJogador {
+  if (condition === 'DOENTE') return 'DOENTE';
+  if (condition === 'MAL_CONDICIONADO') return 'MAL_CONDICIONADO';
+  return 'APTO';
+}
+
 function pageButtons(page: number, pageCount: number): number[] {
   const first = Math.max(1, Math.min(page - 1, pageCount - 2));
   return Array.from({ length: Math.min(pageCount, 3) }, (_, index) => first + index);
@@ -228,9 +308,35 @@ export default function MercadoJogadoresPage() {
   const [cadastroSucesso, setCadastroSucesso] = useState('');
   const [cadastroResultado, setCadastroResultado] = useState<Jogador | null>(null);
   const [mostrarDetalhesCadastro, setMostrarDetalhesCadastro] = useState(false);
+  const [menuAcoesJogadorId, setMenuAcoesJogadorId] = useState<number | null>(null);
+  const [menuAcoesPosition, setMenuAcoesPosition] = useState<{ top: number; left: number } | null>(
+    null,
+  );
+  const [jogadorDetalhes, setJogadorDetalhes] = useState<Jogador | null>(null);
+  const [jogadorEdicao, setJogadorEdicao] = useState<Jogador | null>(null);
+  const [formEdicao, setFormEdicao] = useState<EdicaoJogador | null>(null);
+  const [edicaoTentada, setEdicaoTentada] = useState(false);
+  const [erroEdicao, setErroEdicao] = useState('');
+  const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [jogadorExclusao, setJogadorExclusao] = useState<Jogador | null>(null);
+  const [erroExclusao, setErroExclusao] = useState('');
+  const [excluindoJogador, setExcluindoJogador] = useState(false);
+  const [jogadorCondicao, setJogadorCondicao] = useState<Jogador | null>(null);
+  const [condicaoSelecionada, setCondicaoSelecionada] = useState<CondicaoJogador>('APTO');
+  const [erroCondicao, setErroCondicao] = useState('');
+  const [salvandoCondicao, setSalvandoCondicao] = useState(false);
+  const [showAlterarCondicaoDialog, setShowAlterarCondicaoDialog] = useState(false);
+  const [condicaoTemporaria, setCondicaoTemporaria] = useState<CondicaoJogador>('APTO');
   const compraEmCurso = useRef(false);
   const cadastroEmCurso = useRef(false);
+  const edicaoEmCurso = useRef(false);
+  const exclusaoEmCurso = useRef(false);
+  const condicaoEmCurso = useRef(false);
   const errosCadastro = useMemo(() => validarCadastro(formJogador), [formJogador]);
+  const errosEdicaoForm = useMemo(
+    () => (formEdicao && jogadorEdicao ? validarEdicao(formEdicao, jogadorEdicao) : {}),
+    [formEdicao, jogadorEdicao],
+  );
   const playerFilters = useMemo(
     () =>
       buildFilters(
@@ -303,6 +409,31 @@ export default function MercadoJogadoresPage() {
         ]
       : []),
   ];
+
+  useEffect(() => {
+    if (menuAcoesJogadorId === null) return;
+
+    function fecharMenu(event: MouseEvent | KeyboardEvent) {
+      if (event instanceof KeyboardEvent && event.key === 'Escape') {
+        setMenuAcoesJogadorId(null);
+        setMenuAcoesPosition(null);
+      } else if (
+        event instanceof MouseEvent &&
+        event.target instanceof Element &&
+        !event.target.closest('.market-row-actions, .market-player-actions-menu')
+      ) {
+        setMenuAcoesJogadorId(null);
+        setMenuAcoesPosition(null);
+      }
+    }
+
+    document.addEventListener('mousedown', fecharMenu);
+    document.addEventListener('keydown', fecharMenu);
+    return () => {
+      document.removeEventListener('mousedown', fecharMenu);
+      document.removeEventListener('keydown', fecharMenu);
+    };
+  }, [menuAcoesJogadorId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -490,6 +621,102 @@ export default function MercadoJogadoresPage() {
     } finally {
       cadastroEmCurso.current = false;
       setCadastrando(false);
+    }
+  }
+
+  function abrirEdicao(jogador: Jogador) {
+    setMenuAcoesJogadorId(null);
+    setMenuAcoesPosition(null);
+    setJogadorEdicao(jogador);
+    setFormEdicao({
+      name: jogador.name,
+      position: jogador.position,
+      age: jogador.age,
+      agility: jogador.agility,
+    });
+    setEdicaoTentada(false);
+    setErroEdicao('');
+  }
+
+  async function salvarEdicao(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setEdicaoTentada(true);
+    if (!jogadorEdicao || !formEdicao || Object.keys(errosEdicaoForm).length > 0) return;
+    if (edicaoEmCurso.current) return;
+
+    edicaoEmCurso.current = true;
+    setSalvandoEdicao(true);
+    setErroEdicao('');
+    try {
+      await jogadorService.editarJogador(jogadorEdicao.id, {
+        ...formEdicao,
+        name: formEdicao.name.trim(),
+      });
+      setJogadorEdicao(null);
+      setFormEdicao(null);
+      setCadastroSucesso('Jogador atualizado com sucesso.');
+      setReloadKey((current) => current + 1);
+    } catch (requestError) {
+      setErroEdicao(mensagemErro(requestError, 'Não foi possível atualizar o jogador.'));
+    } finally {
+      edicaoEmCurso.current = false;
+      setSalvandoEdicao(false);
+    }
+  }
+
+  function confirmarExclusao(jogador: Jogador) {
+    setMenuAcoesJogadorId(null);
+    setMenuAcoesPosition(null);
+    setErroExclusao('');
+    setJogadorExclusao(jogador);
+  }
+
+  async function excluirJogador() {
+    if (!jogadorExclusao || exclusaoEmCurso.current) return;
+    exclusaoEmCurso.current = true;
+    setExcluindoJogador(true);
+    setErroExclusao('');
+    try {
+      await jogadorService.excluirJogador(jogadorExclusao.id);
+      setJogadorExclusao(null);
+      setCadastroSucesso('Jogador excluído com sucesso.');
+      setReloadKey((current) => current + 1);
+    } catch (requestError) {
+      setErroExclusao(mensagemErro(requestError, 'Não foi possível excluir o jogador.'));
+    } finally {
+      exclusaoEmCurso.current = false;
+      setExcluindoJogador(false);
+    }
+  }
+
+  function abrirCondicao(jogador: Jogador) {
+    setMenuAcoesJogadorId(null);
+    setMenuAcoesPosition(null);
+    const condicaoAtual = normalizeCondition(jogador.condition);
+    setJogadorCondicao(jogador);
+    setCondicaoTemporaria(condicaoAtual);
+    setShowAlterarCondicaoDialog(true);
+    setErroCondicao('');
+  }
+
+  async function salvarCondicao(newCondition: CondicaoJogador) {
+    if (!jogadorCondicao || condicaoEmCurso.current) return;
+    condicaoEmCurso.current = true;
+    setSalvandoCondicao(true);
+    setErroCondicao('');
+    try {
+      await jogadorService.alterarCondicao(jogadorCondicao.id, newCondition);
+      setJogadorCondicao(null);
+      setShowAlterarCondicaoDialog(false);
+      setCadastroSucesso(
+        `Condição de ${jogadorCondicao.name} alterada para ${conditionLabel(newCondition)}.`,
+      );
+      setReloadKey((current) => current + 1);
+    } catch (requestError) {
+      setErroCondicao(mensagemErro(requestError, 'Não foi possível alterar a condição do jogador.'));
+    } finally {
+      condicaoEmCurso.current = false;
+      setSalvandoCondicao(false);
     }
   }
 
@@ -901,30 +1128,158 @@ export default function MercadoJogadoresPage() {
                         )}
                       </td>
                       <td className="market-players-table__action">
-                        {jogador.club_id === null || jogador.club_id === undefined ? (
+                        <div className="market-row-actions">
+                          {jogador.club_id === null || jogador.club_id === undefined ? (
+                            <button
+                              className="market-buy-button"
+                              type="button"
+                              disabled={Boolean(jogadorCompra) || comprando}
+                              onClick={() => abrirCompra(jogador)}
+                            >
+                              <ShoppingCart size={12} />
+                              Comprar
+                            </button>
+                          ) : club ? (
+                            <Link
+                              className="market-buy-button"
+                              to={`/clubs/${club.id}`}
+                              aria-label={`Abrir clube ${club.name}`}
+                              title={`Abrir ${club.name}`}
+                            >
+                              {club.acronym}
+                            </Link>
+                          ) : null}
                           <button
-                            className="market-buy-button"
-                            type="button"
-                            disabled={Boolean(jogadorCompra) || comprando}
-                            onClick={() => abrirCompra(jogador)}
-                          >
-                            <ShoppingCart size={12} />
-                            Comprar
-                          </button>
-                        ) : club ? (
-                          <Link
                             className="market-row-menu-button"
-                            to={`/clubs/${club.id}`}
-                            aria-label={`Abrir clube ${club.name}`}
-                            title={`Abrir ${club.name}`}
+                            type="button"
+                            aria-label={`Mais ações para ${jogador.name}`}
+                            aria-haspopup="menu"
+                            aria-expanded={menuAcoesJogadorId === jogador.id}
+                            aria-controls={`player-actions-${jogador.id}`}
+                            onClick={(event) => {
+                              if (menuAcoesJogadorId === jogador.id) {
+                                setMenuAcoesJogadorId(null);
+                                setMenuAcoesPosition(null);
+                                return;
+                              }
+                              const bounds = event.currentTarget.getBoundingClientRect();
+                              setMenuAcoesPosition({
+                                top: Math.min(bounds.bottom + 4, window.innerHeight - 250),
+                                left: Math.min(bounds.right - 176, window.innerWidth - 184),
+                              });
+                              setMenuAcoesJogadorId(jogador.id);
+                            }}
                           >
                             <MoreHorizontal size={15} />
-                          </Link>
-                        ) : (
-                          <span className="market-row-menu-button" aria-hidden="true">
-                            <MoreHorizontal size={15} />
-                          </span>
-                        )}
+                          </button>
+                          {menuAcoesJogadorId === jogador.id &&
+                            menuAcoesPosition &&
+                            createPortal(
+                              <div
+                                className="market-player-actions-menu"
+                                id={`player-actions-${jogador.id}`}
+                                role="menu"
+                                aria-label={`Ações para ${jogador.name}`}
+                                style={{
+                                  top: menuAcoesPosition.top,
+                                  left: menuAcoesPosition.left,
+                                }}
+                              >
+                                <span className="market-player-actions-menu__title">
+                                  Mais ações
+                                </span>
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => {
+                                    setJogadorDetalhes(jogador);
+                                    setMenuAcoesJogadorId(null);
+                                    setMenuAcoesPosition(null);
+                                  }}
+                                >
+                                  <Eye size={13} />
+                                  Ver detalhes
+                                </button>
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => abrirEdicao(jogador)}
+                                >
+                                  <Pencil size={13} />
+                                  Editar
+                                </button>
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  onClick={() => abrirCondicao(jogador)}
+                                >
+                                  <HeartPulse size={13} />
+                                  Alterar condição física
+                                </button>
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  className="market-player-actions-menu__unavailable"
+                                  disabled
+                                  title="A API atual não oferece renovação de contrato."
+                                >
+                                  <Handshake size={13} />
+                                  <span>
+                                    Renovar contrato
+                                    <small>Indisponível no momento</small>
+                                  </span>
+                                </button>
+                                {jogador.club_id === null || jogador.club_id === undefined ? (
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    disabled={Boolean(jogadorCompra) || comprando}
+                                    onClick={() => {
+                                      setMenuAcoesJogadorId(null);
+                                      setMenuAcoesPosition(null);
+                                      abrirCompra(jogador);
+                                    }}
+                                  >
+                                    <ShoppingCart size={13} />
+                                    Comprar
+                                  </button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    role="menuitem"
+                                    disabled
+                                    title="O jogador já pertence a um clube."
+                                  >
+                                    <ShoppingCart size={13} />
+                                    Comprar
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  role="menuitem"
+                                  className="market-player-actions-menu__delete"
+                                  disabled={
+                                    jogador.club_id !== null && jogador.club_id !== undefined
+                                  }
+                                  title={
+                                    jogador.club_id !== null && jogador.club_id !== undefined
+                                      ? 'Jogadores pertencentes a clubes não podem ser excluídos.'
+                                      : undefined
+                                  }
+                                  onClick={() => confirmarExclusao(jogador)}
+                                >
+                                  <Trash2 size={13} />
+                                  Excluir
+                                </button>
+                                {jogador.club_id !== null && jogador.club_id !== undefined && (
+                                  <p className="market-player-actions-menu__hint">
+                                    Jogadores só podem ser excluídos quando estão livres.
+                                  </p>
+                                )}
+                              </div>,
+                              document.body,
+                            )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -1383,6 +1738,379 @@ export default function MercadoJogadoresPage() {
                 </div>
               </footer>
             </form>
+          </section>
+        </div>
+      )}
+
+      {jogadorCondicao && (
+        <div
+          className="market-buy-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !salvandoCondicao) {
+              setJogadorCondicao(null);
+            }
+          }}
+        >
+          <section
+            className="market-condition-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="market-condition-title"
+          >
+            <header className="market-condition-dialog__header">
+              <h2 id="market-condition-title">Alterar condição física</h2>
+              <p>A condição muda o desconto do valor de mercado, calculado ao salvar.</p>
+            </header>
+            <form className="market-condition-dialog__form" onSubmit={salvarCondicao} noValidate>
+              <div className="market-condition-dialog__player">
+                <span
+                  className={`market-player-avatar market-player-avatar--${jogadorCondicao.id % 6}`}
+                  aria-hidden="true"
+                >
+                  {initials(jogadorCondicao.name)}
+                </span>
+                <strong className="market-condition-dialog__player-name">
+                  {jogadorCondicao.name}
+                </strong>
+                <span
+                  className={`market-condition market-condition--${normalizeCondition(
+                    jogadorCondicao.condition,
+                  ).toLowerCase()}`}
+                >
+                  <span />
+                  {conditionLabel(jogadorCondicao.condition)}
+                </span>
+              </div>
+              {erroCondicao && (
+                <div className="market-buy-error" role="alert">
+                  {erroCondicao}
+                </div>
+              )}
+              <div
+                className="market-condition-dialog__options"
+                role="radiogroup"
+                aria-label="Condição física do jogador"
+              >
+                {conditionOptions.map((option, index) => {
+                  const selecionada = condicaoSelecionada === option.value;
+                  const bloqueada =
+                    option.value === 'APTO' &&
+                    normalizeCondition(jogadorCondicao.condition) === 'DOENTE';
+                  return (
+                    <div key={option.value}>
+                      {index > 0 && <span className="market-condition-dialog__separator" />}
+                      <label
+                        className={
+                          selecionada
+                            ? 'market-condition-option market-condition-option--selected'
+                            : 'market-condition-option'
+                        }
+                      >
+                        <input
+                          type="radio"
+                          name="player-condition"
+                          value={option.value}
+                          checked={selecionada}
+                          disabled={bloqueada}
+                          onChange={() => setCondicaoSelecionada(option.value)}
+                        />
+                        <span className="market-condition-option__text">
+                          <strong>{option.label}</strong>
+                          {option.description.map((descricao) => (
+                            <small key={descricao}>{descricao}</small>
+                          ))}
+                        </span>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              <footer className="market-condition-dialog__footer">
+                <button
+                  type="button"
+                  className="market-condition-dialog__cancel"
+                  disabled={salvandoCondicao}
+                  onClick={() => setJogadorCondicao(null)}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="market-condition-dialog__confirm"
+                  disabled={salvandoCondicao}
+                >
+                  {salvandoCondicao ? <span className="market-spinner" /> : <Check size={13} />}
+                  {salvandoCondicao ? 'Salvando...' : 'Salvar condição'}
+                </button>
+              </footer>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {jogadorEdicao && formEdicao && (
+        <div
+          className="market-buy-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !salvandoEdicao) {
+              setJogadorEdicao(null);
+              setFormEdicao(null);
+            }
+          }}
+        >
+          <section
+            className="market-edit-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="market-edit-title"
+          >
+            <button
+              className="market-buy-dialog__close"
+              type="button"
+              aria-label="Fechar edição"
+              disabled={salvandoEdicao}
+              onClick={() => {
+                setJogadorEdicao(null);
+                setFormEdicao(null);
+              }}
+            >
+              ×
+            </button>
+            <header className="market-edit-dialog__header">
+              <h2 id="market-edit-title">Editar jogador</h2>
+              <p>
+                Edite nome, posição, idade e agilidade. Os indicadores técnicos não são alterados.
+              </p>
+            </header>
+            <form className="market-create-form" onSubmit={salvarEdicao} noValidate>
+              {erroEdicao && (
+                <div className="market-buy-error" role="alert">
+                  {erroEdicao}
+                </div>
+              )}
+              <label className="market-create-field market-create-field--name">
+                <span>Nome</span>
+                <input
+                  id="edit-player-name"
+                  autoComplete="name"
+                  maxLength={100}
+                  value={formEdicao.name}
+                  aria-invalid={Boolean(edicaoTentada && errosEdicaoForm.name)}
+                  aria-describedby="edit-player-name-hint"
+                  onChange={(event) =>
+                    setFormEdicao((current) =>
+                      current ? { ...current, name: event.target.value } : current,
+                    )
+                  }
+                />
+                <small
+                  id="edit-player-name-hint"
+                  className={
+                    edicaoTentada && errosEdicaoForm.name ? 'market-create-field__error' : ''
+                  }
+                >
+                  {edicaoTentada && errosEdicaoForm.name
+                    ? errosEdicaoForm.name
+                    : 'De 3 a 100 caracteres, com pelo menos duas palavras e sem números.'}
+                </small>
+              </label>
+              <fieldset
+                className={
+                  edicaoTentada && errosEdicaoForm.position
+                    ? 'market-position-picker market-position-picker--invalid'
+                    : 'market-position-picker'
+                }
+                aria-describedby={
+                  edicaoTentada && errosEdicaoForm.position
+                    ? 'edit-player-position-hint'
+                    : undefined
+                }
+              >
+                <legend>Posição</legend>
+                <div className="market-position-picker__options">
+                  {positions.map((position) => (
+                    <label
+                      className={
+                        formEdicao.position === position.value
+                          ? 'market-position-choice market-position-choice--selected'
+                          : 'market-position-choice'
+                      }
+                      key={position.value}
+                    >
+                      <input
+                        type="radio"
+                        name="edit-player-position"
+                        value={position.value}
+                        checked={formEdicao.position === position.value}
+                        disabled={
+                          jogadorEdicao.club_id !== null && jogadorEdicao.club_id !== undefined
+                        }
+                        aria-invalid={Boolean(edicaoTentada && errosEdicaoForm.position)}
+                        onChange={() =>
+                          setFormEdicao((current) =>
+                            current ? { ...current, position: position.value } : current,
+                          )
+                        }
+                      />
+                      <strong>{position.value}</strong>
+                      <small>{position.label}</small>
+                    </label>
+                  ))}
+                </div>
+                <small
+                  id="edit-player-position-hint"
+                  className={
+                    edicaoTentada && errosEdicaoForm.position
+                      ? 'market-create-field__error'
+                      : 'market-position-picker__hint'
+                  }
+                >
+                  {edicaoTentada && errosEdicaoForm.position
+                    ? errosEdicaoForm.position
+                    : jogadorEdicao.club_id !== null && jogadorEdicao.club_id !== undefined
+                      ? 'A posição não pode ser alterada enquanto o jogador estiver em um clube.'
+                      : 'Selecione uma posição.'}
+                </small>
+              </fieldset>
+              <div className="market-create-profile market-edit-dialog__profile">
+                <label className="market-create-field">
+                  <span>Idade</span>
+                  <input
+                    type="number"
+                    min={jogadorEdicao.age}
+                    max={45}
+                    value={formEdicao.age}
+                    aria-invalid={Boolean(edicaoTentada && errosEdicaoForm.age)}
+                    aria-describedby="edit-player-age-hint"
+                    onChange={(event) =>
+                      setFormEdicao((current) =>
+                        current ? { ...current, age: Number(event.target.value) } : current,
+                      )
+                    }
+                  />
+                  <small
+                    id="edit-player-age-hint"
+                    className={
+                      edicaoTentada && errosEdicaoForm.age ? 'market-create-field__error' : ''
+                    }
+                  >
+                    {edicaoTentada && errosEdicaoForm.age
+                      ? errosEdicaoForm.age
+                      : `De ${jogadorEdicao.age} a 45 anos; a idade não pode diminuir.`}
+                  </small>
+                </label>
+                <label className="market-create-field">
+                  <span>Agilidade</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={formEdicao.agility}
+                    aria-invalid={Boolean(edicaoTentada && errosEdicaoForm.agility)}
+                    aria-describedby="edit-player-agility-hint"
+                    onChange={(event) =>
+                      setFormEdicao((current) =>
+                        current ? { ...current, agility: Number(event.target.value) } : current,
+                      )
+                    }
+                  />
+                  <small
+                    id="edit-player-agility-hint"
+                    className={
+                      edicaoTentada && errosEdicaoForm.agility ? 'market-create-field__error' : ''
+                    }
+                  >
+                    {edicaoTentada && errosEdicaoForm.agility
+                      ? errosEdicaoForm.agility
+                      : 'De 1 a 100; até 85 com 35 anos ou mais.'}
+                  </small>
+                </label>
+              </div>
+              <footer className="market-create-dialog__footer">
+                <p>
+                  <UsersRound size={12} />
+                  {jogadorEdicao.club_id === null || jogadorEdicao.club_id === undefined
+                    ? 'Jogador livre.'
+                    : `Em ${clubes.find((item) => item.id === jogadorEdicao.club_id)?.name ?? 'um clube'}.`}
+                </p>
+                <div className="market-buy-dialog__actions">
+                  <button
+                    type="button"
+                    className="market-buy-cancel"
+                    disabled={salvandoEdicao}
+                    onClick={() => {
+                      setJogadorEdicao(null);
+                      setFormEdicao(null);
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className="market-buy-confirm" disabled={salvandoEdicao}>
+                    {salvandoEdicao ? <span className="market-spinner" /> : <Check size={14} />}
+                    {salvandoEdicao ? 'Salvando...' : 'Salvar alterações'}
+                  </button>
+                </div>
+              </footer>
+            </form>
+          </section>
+        </div>
+      )}
+
+      {jogadorDetalhes && (
+        <DetalhesJogadorDialog
+          player={jogadorDetalhes}
+          clubes={clubes}
+          onClose={() => setJogadorDetalhes(null)}
+          onEdit={(player) => abrirEdicao(player)}
+          onChangeCondition={(player) => abrirCondicao(player)}
+          onBuy={(player) => setJogadorCompra(player)}
+        />
+      )}
+
+      {jogadorExclusao && (
+        <div
+          className="market-create-result-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget && !excluindoJogador) {
+              setJogadorExclusao(null);
+            }
+          }}
+        >
+          <section
+            className="market-delete-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="market-delete-title"
+            aria-describedby="market-delete-description"
+          >
+            <h2 id="market-delete-title">Excluir jogador?</h2>
+            <p id="market-delete-description">
+              {jogadorExclusao.name} será removido da lista. Esta ação não pode ser desfeita.
+            </p>
+            {erroExclusao && (
+              <div className="market-buy-error" role="alert">
+                {erroExclusao}
+              </div>
+            )}
+            <footer className="market-create-result__actions">
+              <button
+                type="button"
+                className="market-create-result__details-button"
+                disabled={excluindoJogador}
+                onClick={() => setJogadorExclusao(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="market-delete-dialog__confirm"
+                disabled={excluindoJogador}
+                onClick={() => void excluirJogador()}
+              >
+                <Trash2 size={13} />
+                {excluindoJogador ? 'Excluindo...' : 'Excluir jogador'}
+              </button>
+            </footer>
           </section>
         </div>
       )}
