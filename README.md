@@ -30,7 +30,7 @@ O script versionado [schema.sql](./backend/src/main/resources/schema.sql) cria
 as tabelas, chaves, relacionamentos e restrições do banco. A criação padrão
 não carrega jogadores, clubes, transações nem partidas.
 
-<<<<<<< HEAD
+
 ### Criar o banco vazio com Docker
 
 Na raiz do repositório:
