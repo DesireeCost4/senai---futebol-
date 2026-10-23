@@ -119,6 +119,7 @@ public class LigaService {
         return consultarEscalacaoDto(clubeId);
     }
 
+    @Transactional(readOnly = true)
     public LineupResponseDTO consultarEscalacaoDto(Integer clubeId) {
         ClubeModel clube = clubeRepository.findById(clubeId)
                 .orElseThrow(() -> new RecursoNotFoundException("Clube não encontrado."));

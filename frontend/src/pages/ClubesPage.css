@@ -2,22 +2,22 @@
   width: 100%;
   min-height: calc(100vh - 34px);
   margin: 0;
-  padding: 21px 20px 28px;
+  padding: 26px 24px 34px;
   background: #fff;
 }
 
-.clubs-page__header { margin-bottom: 18px; }
+.clubs-page__header { margin-bottom: 22px; }
 
 .clubs-page__title-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .clubs-page__icon {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid #76a5ff;
@@ -29,28 +29,28 @@
 .clubs-page__title-row h1 {
   margin: 0 0 2px;
   color: #17191d;
-  font-size: 19.55px;
+  font-size: 23px;
   font-weight: 700;
 }
 
 .clubs-page__title-row p {
   margin: 0;
   color: #70747d;
-  font-size: 11.5px;
+  font-size: 13px;
 }
 
 .clubs-create-button {
   display: inline-flex;
-  min-height: 25px;
+  min-height: 32px;
   align-items: center;
   gap: 5px;
   margin-left: auto;
   border: 1px solid #1761ef;
   border-radius: 5px;
   background: #1761ef;
-  padding: 0 10px;
+  padding: 0 13px;
   color: #fff;
-  font-size: 11.5px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -65,34 +65,34 @@
 
 .clubs-panel__toolbar {
   display: flex;
-  min-height: 39px;
+  min-height: 48px;
   align-items: center;
   justify-content: space-between;
-  padding: 0 11px;
+  padding: 0 14px;
 }
 
-.clubs-count { display: flex; align-items: center; gap: 8px; }
-.clubs-count strong { color: #25282d; font-size: 11.5px; }
+.clubs-count { display: flex; align-items: center; gap: 9px; }
+.clubs-count strong { color: #25282d; font-size: 13px; }
 .clubs-count span {
   border-radius: 4px;
   background: #f0f1f3;
-  padding: 2px 5px;
+  padding: 3px 6px;
   color: #4d5158;
-  font-size: 9.2px;
+  font-size: 10.5px;
 }
 
 .clubs-toolbar__actions { display: flex; align-items: center; gap: 7px; }
 
 .clubs-sort {
   display: inline-flex;
-  min-height: 25px;
+  min-height: 32px;
   align-items: center;
   gap: 5px;
   border: 1px solid #c9cdd3;
   border-radius: 5px;
-  padding: 0 7px;
+  padding: 0 9px;
   color: #61666f;
-  font-size: 10.35px;
+  font-size: 11.5px;
 }
 
 .clubs-sort svg { color: #777d87; }
@@ -103,70 +103,70 @@
   appearance: none;
   background: transparent;
   color: #25282d;
-  font-size: 10.35px;
+  font-size: 11.5px;
   cursor: pointer;
 }
 
 .clubs-table-scroll { max-width: 100%; overflow-x: auto; }
 .clubs-table { width: 100%; min-width: 650px; border-collapse: collapse; }
 .clubs-table th {
-  height: 27px;
+  height: 36px;
   border-top: 1px solid #eceef0;
   border-bottom: 1px solid #eceef0;
   background: #fafafa;
-  padding: 0 10px;
+  padding: 0 13px;
   color: #747981;
-  font-size: 10.35px;
+  font-size: 11.5px;
   font-weight: 500;
   text-align: left;
 }
 .clubs-table td {
-  height: 39px;
+  height: 52px;
   border-bottom: 1px solid #eceef0;
-  padding: 0 10px;
+  padding: 0 13px;
   color: #292c31;
-  font-size: 11.5px;
+  font-size: 13px;
   white-space: nowrap;
 }
 .clubs-table tbody tr:hover { background: #fafcff; }
 .clubs-table td:first-child, .clubs-table th:first-child { padding-left: 11px; }
 .clubs-table__avatar {
   display: inline-grid;
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   vertical-align: middle;
   place-items: center;
   border: 1px solid #e4e6e9;
   border-radius: 6px;
   background: #f5f6f7;
   color: #363a40;
-  font-size: 9.2px;
+  font-size: 10.5px;
   font-weight: 700;
 }
 .clubs-table__name {
   display: inline-block;
   margin-left: 7px;
   color: #25282d;
-  font-size: 11.5px;
+  font-size: 13px;
   text-decoration: none;
 }
 .clubs-table__name:hover { color: #1761ef; }
 .clubs-table__acronym {
   display: inline-grid;
-  min-width: 27px;
-  min-height: 15px;
+  min-width: 32px;
+  min-height: 19px;
   place-items: center;
   border: 1px solid #e2e4e7;
   border-radius: 4px;
   color: #52575e;
-  font-size: 9.2px;
+  font-size: 10.5px;
 }
 .clubs-table__money { text-align: right !important; font-variant-numeric: tabular-nums; }
 .clubs-table__net-worth { font-weight: 700; }
 .clubs-table__action { text-align: right; }
-.clubs-table__action a { color: #22262b; font-size: 10.35px; text-decoration: none; }
+.clubs-table__action a { color: #22262b; font-size: 11.5px; text-decoration: none; }
 .clubs-table__action span { margin-left: 5px; font-size: 18.4px; vertical-align: -1px; }
-.clubs-page__hint { margin: 14px 0 0; color: #7d828a; font-size: 9.2px; }
+.clubs-page__hint { margin: 16px 0 0; color: #7d828a; font-size: 10.5px; }
 
 .clubs-empty-state {
   display: grid;

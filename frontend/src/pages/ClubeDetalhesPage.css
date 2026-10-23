@@ -5,6 +5,230 @@
   padding: 24px 30px 40px;
 }
 
+/* Keep the club detail view readable at the same scale as the market views. */
+.club-detail-page {
+  width: min(100%, 1460px);
+  padding: 24px 28px 36px;
+}
+
+.club-detail-back {
+  gap: 8px;
+  margin-bottom: 26px;
+  font-size: 14px;
+}
+
+.club-detail-header {
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.club-detail-header__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  font-size: 13px;
+}
+
+.club-detail-header h1 {
+  font-size: 27px;
+}
+
+.club-detail-header h1 span {
+  font-size: 15px;
+}
+
+.club-detail-header__badges span {
+  font-size: 11px;
+}
+
+.club-detail-market-link {
+  min-height: 36px;
+  padding: 0 13px;
+  font-size: 12px;
+}
+
+.club-summary {
+  margin-bottom: 22px;
+}
+
+.club-summary__item {
+  gap: 8px;
+  padding: 18px 20px;
+}
+
+.club-summary__item > span {
+  font-size: 13px;
+}
+
+.club-summary__item > strong {
+  font-size: 23px;
+}
+
+.club-summary__item > small,
+.club-summary__item > em {
+  font-size: 10.5px;
+}
+
+.club-squad-panel__header {
+  min-height: 72px;
+  padding: 14px 18px;
+}
+
+.club-squad-panel__header h2 {
+  font-size: 15px;
+}
+
+.club-squad-panel__header p {
+  font-size: 11.5px;
+}
+
+.club-squad-table {
+  min-width: 1280px;
+}
+
+.club-squad-table th {
+  height: 44px;
+  padding: 0 15px;
+  font-size: 11.5px;
+}
+
+.club-squad-table td {
+  height: 56px;
+  padding: 0 15px;
+  font-size: 13px;
+}
+
+.club-squad-table th:first-child,
+.club-squad-table td:first-child {
+  padding-left: 18px;
+}
+
+.club-squad-table td:first-child strong {
+  font-size: 13px;
+}
+
+.club-squad-table td:first-child small {
+  font-size: 10.5px;
+}
+
+.club-position {
+  min-width: 34px;
+  min-height: 22px;
+  font-size: 10.5px;
+}
+
+.club-condition {
+  gap: 4px;
+  padding: 3px 7px;
+  font-size: 9px;
+}
+
+.club-condition > span {
+  width: 5px;
+  height: 5px;
+}
+
+.club-sell-button {
+  min-height: 32px;
+  padding: 0 11px;
+  font-size: 11.5px;
+}
+
+@media (max-width: 600px) {
+  .club-detail-page {
+    padding: 16px 10px 28px;
+  }
+
+  .club-detail-header {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .club-detail-header__icon {
+    width: 40px;
+    height: 40px;
+    font-size: 11px;
+  }
+
+  .club-detail-header h1 {
+    font-size: 21px;
+  }
+
+  .club-detail-header__badges span {
+    font-size: 10px;
+  }
+
+  .club-detail-market-link {
+    min-height: 32px;
+    padding: 0 9px;
+    font-size: 10.5px;
+  }
+
+  .club-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .club-summary__item {
+    min-height: 92px;
+    padding: 12px;
+  }
+
+  .club-summary__item > strong {
+    font-size: 20px;
+  }
+
+  .club-summary__item > span {
+    font-size: 10.5px;
+  }
+
+  .club-summary__item > small,
+  .club-summary__item > em {
+    font-size: 9px;
+  }
+
+  .club-squad-panel__header {
+    min-height: 58px;
+    padding: 11px 12px;
+  }
+
+  .club-squad-panel__header h2 {
+    font-size: 13px;
+  }
+
+  .club-squad-panel__header p {
+    font-size: 10px;
+  }
+
+  .club-squad-table {
+    min-width: 980px;
+  }
+
+  .club-squad-table th {
+    height: 36px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .club-squad-table td {
+    height: 48px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+
+  .club-squad-table th:first-child,
+  .club-squad-table td:first-child {
+    padding-left: 12px;
+  }
+
+  .club-squad-table td:first-child strong {
+    font-size: 11.5px;
+  }
+
+  .club-squad-table td:first-child small {
+    font-size: 9.5px;
+  }
+}
+
 .club-detail-back {
   display: inline-flex;
   align-items: center;
@@ -1194,3 +1418,57 @@
     .club-summary__item:nth-child(3) { border-left: 0; border-top: 1px solid #edf0f3; }
     .club-summary__item:nth-child(4) { border-top: 1px solid #edf0f3; }
   }
+
+/* Final scale overrides for the club detail view. */
+.club-detail-page { width: min(100%, 1460px); padding: 24px 28px 36px; }
+.club-detail-header { gap: 15px; margin-bottom: 24px; }
+.club-detail-header__icon { width: 48px; height: 48px; border-radius: 11px; font-size: 13px; }
+.club-detail-header h1 { font-size: 27px; }
+.club-detail-header h1 span { font-size: 15px; }
+.club-detail-header__badges span { font-size: 11px; }
+.club-detail-market-link { min-height: 36px; padding: 0 13px; font-size: 12px; }
+.club-summary { margin-bottom: 22px; }
+.club-summary__item { gap: 8px; padding: 18px 20px; }
+.club-summary__item > span { font-size: 13px; }
+.club-summary__item > strong { font-size: 23px; }
+.club-summary__item > small,
+.club-summary__item > em { font-size: 10.5px; }
+.club-squad-panel__header { min-height: 72px; padding: 14px 18px; }
+.club-squad-panel__header h2 { font-size: 15px; }
+.club-squad-panel__header p { font-size: 11.5px; }
+.club-squad-table { min-width: 1280px; }
+.club-squad-table th { height: 44px; padding: 0 15px; font-size: 11.5px; }
+.club-squad-table td { height: 56px; padding: 0 15px; font-size: 13px; }
+.club-squad-table th:first-child,
+.club-squad-table td:first-child { padding-left: 18px; }
+.club-squad-table td:first-child strong { font-size: 13px; }
+.club-squad-table td:first-child small { font-size: 10.5px; }
+.club-position { min-width: 34px; min-height: 22px; font-size: 10.5px; }
+.club-condition { gap: 4px; padding: 3px 7px; font-size: 9px; }
+.club-condition > span { width: 5px; height: 5px; }
+.club-sell-button { min-height: 32px; padding: 0 11px; font-size: 11.5px; }
+
+@media (max-width: 600px) {
+  .club-detail-page { padding: 16px 10px 28px; }
+  .club-detail-header { align-items: flex-start; gap: 10px; }
+  .club-detail-header__icon { width: 40px; height: 40px; font-size: 11px; }
+  .club-detail-header h1 { font-size: 21px; }
+  .club-detail-header__badges span { font-size: 10px; }
+  .club-detail-market-link { min-height: 32px; padding: 0 9px; font-size: 10.5px; }
+  .club-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .club-summary__item { min-height: 92px; padding: 12px; }
+  .club-summary__item > strong { font-size: 20px; }
+  .club-summary__item > span { font-size: 10.5px; }
+  .club-summary__item > small,
+  .club-summary__item > em { font-size: 9px; }
+  .club-squad-panel__header { min-height: 58px; padding: 11px 12px; }
+  .club-squad-panel__header h2 { font-size: 13px; }
+  .club-squad-panel__header p { font-size: 10px; }
+  .club-squad-table { min-width: 980px; }
+  .club-squad-table th { height: 36px; padding: 0 10px; font-size: 10px; }
+  .club-squad-table td { height: 48px; padding: 0 10px; font-size: 11px; }
+  .club-squad-table th:first-child,
+  .club-squad-table td:first-child { padding-left: 12px; }
+  .club-squad-table td:first-child strong { font-size: 11.5px; }
+  .club-squad-table td:first-child small { font-size: 9.5px; }
+}

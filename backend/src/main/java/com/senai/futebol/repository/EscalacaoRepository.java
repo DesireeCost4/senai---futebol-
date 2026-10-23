@@ -3,6 +3,7 @@ package com.senai.futebol.repository;
 import com.senai.futebol.model.EscalacoesModel;
 import com.senai.futebol.model.EscalacoesModelId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,8 +15,10 @@ import java.util.List;
 @Repository
 public interface EscalacaoRepository extends JpaRepository<EscalacoesModel, EscalacoesModelId> {
 
+    @EntityGraph(attributePaths = {"jogador", "clube"})
     List<EscalacoesModel> findByClubeId(Long clubeId);
 
+    @EntityGraph(attributePaths = {"jogador", "clube"})
     List<EscalacoesModel> findByClubeId(Integer clubeId);
 
     @Modifying

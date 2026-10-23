@@ -1,7 +1,7 @@
 .app-frame {
   display: grid;
   min-height: 100vh;
-  grid-template-columns: 165px minmax(0, 1fr);
+  grid-template-columns: 256px minmax(0, 1fr);
   background: #f7f8fa;
 }
 
@@ -9,67 +9,71 @@
   position: sticky;
   top: 0;
   display: flex;
+  width: 256px;
+  min-width: 256px;
   height: 100vh;
   min-height: 620px;
   flex-direction: column;
+  align-self: start;
   border-right: 1px solid #e3e8ee;
   background: #fff;
-  padding: 13px 9px 11px;
+  padding: 16px 12px 14px;
 }
 
 .app-brand {
   display: flex;
-  min-height: 38px;
+  min-height: 44px;
   align-items: center;
-  gap: 8px;
-  margin: 0 4px 21px;
+  gap: 10px;
+  margin: 0 6px 24px;
   color: #252e3b;
   text-decoration: none;
 }
 
 .app-brand__mark {
   display: grid;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   place-items: center;
-  border-radius: 6px;
+  border-radius: 7px;
   background: #2769f5;
   color: #fff;
-  font-size: 16.1px;
+  font-size: 18px;
   font-weight: 750;
 }
 
 .app-brand__name {
   display: grid;
   gap: 1px;
-  font-size: 12.65px;
+  font-size: 14px;
   font-weight: 750;
   line-height: 1.1;
 }
 
 .app-brand__name small {
   color: #8b95a2;
-  font-size: 8.05px;
+  font-size: 9px;
   font-weight: 450;
 }
 
 .app-sidebar__nav {
   min-height: 0;
   flex: 1;
+  width: 100%;
   overflow-y: auto;
   scrollbar-width: thin;
 }
 
 .app-sidebar__group {
   border-bottom: 1px solid #edf0f3;
-  margin-bottom: 10px;
-  padding: 0 0 10px;
+  margin-bottom: 14px;
+  padding: 0 0 14px;
 }
 
 .app-sidebar__label {
-  margin: 0 8px 5px;
+  margin: 0 10px 7px;
   color: #8a95a2;
-  font-size: 9.2px;
+  font-size: 10px;
   font-weight: 650;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -77,15 +81,15 @@
 
 .app-sidebar__link {
   display: flex;
-  min-height: 27px;
+  min-height: 34px;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border: 1px solid transparent;
-  border-radius: 4px;
-  margin: 1px 0;
-  padding: 0 7px;
+  border-radius: 5px;
+  margin: 2px 0;
+  padding: 0 9px;
   color: #4d5a69;
-  font-size: 10.35px;
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -114,12 +118,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-right: 8px;
+  padding-right: 10px;
 }
 
 .app-sidebar__label-row > span {
   color: #9aa4b1;
-  font-size: 9.2px;
+  font-size: 10px;
 }
 
 .app-sidebar__clubs {
@@ -127,21 +131,21 @@
 }
 
 .app-sidebar__empty {
-  margin: 9px 8px 0;
+  margin: 10px 10px 0;
   color: #8a929c;
-  font-size: 9.2px;
+  font-size: 10px;
 }
 
 .app-sidebar__club {
   display: flex;
-  min-height: 24px;
+  min-height: 30px;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   overflow: hidden;
   border-radius: 4px;
-  padding: 0 6px;
+  padding: 0 8px;
   color: #586576;
-  font-size: 9.2px;
+  font-size: 10.5px;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -159,14 +163,14 @@
 
 .app-sidebar__club-mark {
   display: grid;
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 4px;
+  border-radius: 5px;
   background: #edf2fa;
   color: #596c8a;
-  font-size: 8.05px;
+  font-size: 9px;
   font-weight: 700;
 }
 
@@ -178,25 +182,26 @@
 
 .app-sidebar__footer {
   display: grid;
-  gap: 5px;
+  width: 100%;
+  gap: 8px;
   border-top: 0;
-  padding: 8px 0 0;
+  padding: 10px 0 0;
   color: #586576;
-  font-size: 9.2px;
+  font-size: 10px;
 }
 
 .app-sidebar__footer-card {
   display: grid;
-  gap: 3px;
+  gap: 4px;
   border: 1px solid #e4e8ed;
-  border-radius: 6px;
-  padding: 7px 7px 6px;
+  border-radius: 7px;
+  padding: 9px 9px 8px;
 }
 
 .app-sidebar__footer-card > div {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
 }
 
 .app-sidebar__footer-card svg {
@@ -205,22 +210,22 @@
 
 .app-sidebar__footer-card strong {
   color: #303844;
-  font-size: 9.2px;
+  font-size: 10px;
   font-weight: 650;
 }
 
 .app-sidebar__footer-card small {
   color: #929ca8;
-  font-size: 8.05px;
+  font-size: 9px;
 }
 
 .app-sidebar__timezone {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 3px 6px 0;
+  gap: 6px;
+  padding: 4px 8px 0;
   color: #929ca8;
-  font-size: 8.05px;
+  font-size: 9px;
 }
 
 .app-main {
@@ -295,6 +300,7 @@
     z-index: 10;
     top: 0;
     width: 100%;
+    min-width: 0;
     height: auto;
     min-height: 0;
     flex-direction: row;
