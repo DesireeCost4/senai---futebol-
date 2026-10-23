@@ -4,7 +4,6 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-      - ./backend/src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     environment:
       MYSQL_DATABASE: ${DB_NAME:-db_senaiFut}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
