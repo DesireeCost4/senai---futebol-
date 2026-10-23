@@ -19,7 +19,7 @@ Pré-requisitos: Docker Engine e Docker Compose V2.
 1. Clone o repositório e entre na pasta do projeto:
 
    ```bash
-   git clone <URL_DO_REPOSITORIO>
+   git clone <https://github.com/DesireeCost4/senai---futebol-.git>
    cd senai---futebol--main
    ```
 
