@@ -42,7 +42,7 @@ Na raiz do repositório:
 
 2. Crie um arquivo `.env` a partir do modelo. Os valores padrão do
    Compose já permitem executar o projeto sem esse arquivo:
->>>>>>> 158fd39c289578ae416f46bef4aff826c11ab400
+
 
 ```bash
 docker compose up -d mysql
