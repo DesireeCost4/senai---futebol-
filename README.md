@@ -30,9 +30,19 @@ O script versionado [schema.sql](./backend/src/main/resources/schema.sql) cria
 as tabelas, chaves, relacionamentos e restrições do banco. A criação padrão
 não carrega jogadores, clubes, transações nem partidas.
 
+<<<<<<< HEAD
 ### Criar o banco vazio com Docker
 
 Na raiz do repositório:
+=======
+   ```bash
+   git clone <https://github.com/DesireeCost4/senai---futebol-.git>
+   cd senai---futebol--main
+   ```
+
+2. Crie um arquivo `.env` a partir do modelo. Os valores padrão do
+   Compose já permitem executar o projeto sem esse arquivo:
+>>>>>>> 158fd39c289578ae416f46bef4aff826c11ab400
 
 ```bash
 docker compose up -d mysql
