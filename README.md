@@ -23,7 +23,7 @@ Pré-requisitos: Docker Engine e Docker Compose V2.
    cd senai---futebol--main
    ```
 
-2. (Opcional) crie um arquivo `.env` a partir do modelo. Os valores padrão do
+2. Crie um arquivo `.env` a partir do modelo. Os valores padrão do
    Compose já permitem executar o projeto sem esse arquivo:
 
    ```bash
