@@ -11,7 +11,7 @@
   display: inline-flex;
   margin-bottom: 15px;
   color: #687688;
-  font-size: 10px;
+  font-size: 11.5px;
   text-decoration: none;
 }
 
@@ -38,7 +38,7 @@
   padding: 0 9px;
   color: #536274;
   font: inherit;
-  font-size: 8px;
+  font-size: 9.2px;
   cursor: pointer;
 }
 
@@ -62,7 +62,7 @@
 .standings-header div div {
   margin-bottom: 3px;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -71,13 +71,13 @@
 .standings-header h1 {
   margin: 0;
   color: #263443;
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .standings-header p {
   margin: 4px 0 0;
   color: #7d8998;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .standings-panel {
@@ -93,7 +93,7 @@
   border-top: 1px solid #e9edf1;
   padding: 8px 12px;
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .standings-sidebar {
@@ -112,13 +112,13 @@
 .standings-sidebar h2 {
   margin: 0 0 3px;
   color: #344253;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .standings-sidebar p {
   margin: 0 0 9px;
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .standings-match {
@@ -130,12 +130,12 @@
 
 .standings-match small {
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .standings-match strong {
   color: #586576;
-  font-size: 7px;
+  font-size: 8.05px;
   line-height: 1.4;
 }
 
@@ -146,7 +146,7 @@
 
 .standings-sidebar a {
   color: #286dbe;
-  font-size: 7px;
+  font-size: 8.05px;
   text-decoration: none;
 }
 
@@ -156,7 +156,7 @@
   margin: 0;
   padding-left: 22px;
   color: #586576;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .standings-panel__header {
@@ -172,14 +172,14 @@
 .standings-panel__header h2 {
   margin: 0 0 4px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
   font-weight: 650;
 }
 
 .standings-panel__header p {
   margin: 0;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .standings-refresh {
@@ -190,7 +190,7 @@
   padding: 0 9px;
   color: #536274;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   cursor: pointer;
 }
 
@@ -219,7 +219,7 @@
   background: #fbfcfd;
   padding: 0 9px;
   color: #83909e;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -229,7 +229,7 @@
   border-bottom: 1px solid #edf0f3;
   padding: 0 9px;
   color: #586576;
-  font-size: 10px;
+  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -264,7 +264,7 @@
   border-radius: 5px;
   background: #f1f4f7;
   color: #617082;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
 }
 
@@ -275,7 +275,7 @@
 
 .standings-points {
   color: #2d7651;
-  font-size: 11px;
+  font-size: 12.65px;
 }
 
 .standings-error {
@@ -283,7 +283,7 @@
   background: #fff6f6;
   padding: 9px 14px;
   color: #9d4149;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 @media (max-width: 600px) {

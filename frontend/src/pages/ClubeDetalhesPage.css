@@ -11,7 +11,7 @@
   gap: 7px;
   margin-bottom: 23px;
   color: #687688;
-  font-size: 11px;
+  font-size: 12.65px;
   text-decoration: none;
 }
 
@@ -41,7 +41,7 @@
 .club-detail-header__eyebrow {
   margin-bottom: 3px;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -50,21 +50,21 @@
 .club-detail-header h1 {
   margin: 0;
   color: #263443;
-  font-size: 21px;
+  font-size: 24.15px;
   font-weight: 700;
 }
 
 .club-detail-header h1 span {
   margin-left: 5px;
   color: #8994a2;
-  font-size: 12px;
+  font-size: 13.8px;
   font-weight: 600;
 }
 
 .club-detail-header p {
   margin: 4px 0 0;
   color: #7d8998;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .club-detail-market-link {
@@ -78,7 +78,7 @@
   background: #f6faff;
   padding: 0 10px;
   color: #286dbe;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 620;
   text-decoration: none;
   white-space: nowrap;
@@ -105,12 +105,12 @@
 
 .club-summary__item > span {
   color: #8591a0;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .club-summary__item > strong {
   color: #344253;
-  font-size: 17px;
+  font-size: 19.55px;
   font-weight: 680;
   font-variant-numeric: tabular-nums;
 }
@@ -139,14 +139,14 @@
 .club-squad-panel__header h2 {
   margin: 0 0 4px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
   font-weight: 650;
 }
 
 .club-squad-panel__header p {
   margin: 0;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .club-squad-table-wrap {
@@ -169,7 +169,7 @@
   background: #fbfcfd;
   padding: 0 12px;
   color: #83909e;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -184,7 +184,7 @@
   border-bottom: 1px solid #edf0f3;
   padding: 0 12px;
   color: #586576;
-  font-size: 10px;
+  font-size: 11.5px;
   white-space: nowrap;
 }
 
@@ -199,7 +199,7 @@
 .club-squad-table td:first-child strong {
   display: block;
   color: #344253;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 620;
 }
 
@@ -207,7 +207,7 @@
   display: block;
   margin-top: 2px;
   color: #9aa4b1;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-position {
@@ -218,7 +218,7 @@
   border-radius: 4px;
   background: #f1f4f7;
   color: #5f6b7a;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 700;
 }
 
@@ -230,7 +230,7 @@
   background: #ecf8f0;
   padding: 2px 5px;
   color: #278251;
-  font-size: 6px;
+  font-size: 6.9px;
   white-space: nowrap;
 }
 
@@ -274,7 +274,7 @@
   padding: 0 8px;
   color: #a3444d;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 620;
   cursor: pointer;
 }
@@ -338,13 +338,13 @@
 .club-sell-dialog h2 {
   margin: 14px 0 3px;
   color: #2c3948;
-  font-size: 14px;
+  font-size: 16.1px;
 }
 
 .club-sell-dialog__subtitle {
   margin: 0;
   color: #748192;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.45;
 }
 
@@ -357,7 +357,7 @@
   gap: 7px;
   border-radius: 6px;
   padding: 8px 9px;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.4;
 }
 
@@ -378,12 +378,12 @@
 .club-sell-dialog__warning strong {
   margin-bottom: 2px;
   color: #9b601d;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-sell-dialog__warning small {
   color: #a66b27;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__error {
@@ -395,11 +395,11 @@
 
 .club-sell-dialog__error strong {
   margin-bottom: 2px;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-sell-dialog__error span {
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__player {
@@ -423,7 +423,7 @@
   border-radius: 50%;
   background: #f0eaff;
   color: #7659d5;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 700;
 }
 
@@ -435,12 +435,12 @@
 
 .club-sell-dialog__player > span:nth-child(2) strong {
   color: #344253;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-sell-dialog__player > span:nth-child(2) small {
   color: #8792a0;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__market-value {
@@ -452,12 +452,12 @@
 
 .club-sell-dialog__market-value small {
   color: #8792a0;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__market-value strong {
   color: #344253;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .club-sell-dialog__details {
@@ -485,13 +485,13 @@
 
 .club-sell-dialog__details dt {
   color: #748192;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-sell-dialog__details dd {
   margin: 0;
   color: #344253;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 620;
   text-align: right;
 }
@@ -503,7 +503,7 @@
   background: #fff9e8;
   padding: 2px 5px;
   color: #a66b27;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__hint {
@@ -511,7 +511,7 @@
   border: 1px solid #e7ebf0;
   background: #f8fafc;
   color: #748192;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__sending {
@@ -520,7 +520,7 @@
   border: 1px solid #e7ebf0;
   background: #f8fafc;
   color: #748192;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .club-sell-dialog__sending .club-sell-spinner {
@@ -549,7 +549,7 @@
   padding: 0 11px;
   color: #596677;
   font: inherit;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 620;
   cursor: pointer;
 }
@@ -588,14 +588,14 @@
 .transactions-panel__header h2 {
   margin: 0 0 4px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
   font-weight: 650;
 }
 
 .transactions-panel__header p {
   margin: 0;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-export {
@@ -611,7 +611,7 @@
   padding: 0 9px;
   color: #516071;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 620;
   cursor: pointer;
 }
@@ -658,7 +658,7 @@
   float: left;
   margin-right: 2px;
   color: #8591a0;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-type-filter label {
@@ -671,7 +671,7 @@
   background: #fff;
   padding: 0 8px;
   color: #596778;
-  font-size: 8px;
+  font-size: 9.2px;
   cursor: pointer;
 }
 
@@ -697,7 +697,7 @@
   border-radius: 5px;
   padding: 0 8px;
   color: #8591a0;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-player-filter select {
@@ -707,7 +707,7 @@
   outline: 0;
   background: transparent;
   color: #4b5969;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-clear-filter {
@@ -716,7 +716,7 @@
   background: transparent;
   color: #3474b6;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   cursor: pointer;
 }
 
@@ -729,8 +729,8 @@
   background: #fff6f6;
   padding: 9px 14px;
   color: #9d4149;
-  font-size: 10px;
-  font-size: 8px;
+  font-size: 11.5px;
+  font-size: 9.2px;
 }
 
 .transactions-inline-error strong,
@@ -740,11 +740,11 @@
 
 .transactions-inline-error strong {
   margin-bottom: 2px;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .transactions-inline-error span {
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .transactions-inline-error--filter {
@@ -767,7 +767,7 @@
   border-radius: 50%;
   background: #e8eef8;
   color: #45628c;
-  font-size: 6px;
+  font-size: 6.9px;
   font-weight: 700;
 }
 
@@ -807,19 +807,19 @@
   border-radius: 8px;
   background: #f1f3f5;
   color: #8c98a6;
-  font-size: 17px;
+  font-size: 19.55px;
 }
 
 .transactions-empty strong {
   color: #344253;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-empty p {
   max-width: 260px;
   margin: 0;
   color: #8994a2;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.4;
 }
 
@@ -843,7 +843,7 @@
   background: #fbfcfd;
   padding: 0 11px;
   color: #83909e;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -853,7 +853,7 @@
   border-bottom: 1px solid #edf0f3;
   padding: 0 11px;
   color: #586576;
-  font-size: 9px;
+  font-size: 10.35px;
   white-space: nowrap;
 }
 
@@ -878,7 +878,7 @@
   border-radius: 4px;
   background: #fff4e8;
   color: #a76b23;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 650;
 }
 
@@ -906,7 +906,7 @@
 .transactions-summary h3 {
   margin: 0 0 10px;
   color: #586576;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
 }
 
@@ -931,14 +931,14 @@
 .transactions-summary__grid article span {
   min-height: 19px;
   color: #8792a0;
-  font-size: 7px;
+  font-size: 8.05px;
   line-height: 1.35;
 }
 
 .transactions-summary__grid article strong {
   overflow: hidden;
   color: #3d4b5b;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 680;
   font-variant-numeric: tabular-nums;
   text-overflow: ellipsis;
@@ -946,13 +946,13 @@
 
 .transactions-summary__grid article small {
   color: #9aa4b0;
-  font-size: 6px;
+  font-size: 6.9px;
 }
 
 .transactions-summary__note {
   margin: 8px 0 0;
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
 }
 
 .transactions-export-toast {
@@ -972,12 +972,12 @@
 
 .transactions-export-toast strong {
   color: #278251;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .transactions-export-toast span {
   color: #596778;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .transactions-export-toast button {
@@ -987,7 +987,7 @@
   border: 0;
   background: transparent;
   color: #7b8796;
-  font-size: 14px;
+  font-size: 16.1px;
   cursor: pointer;
 }
 
@@ -1024,12 +1024,12 @@
     border-radius: 8px;
     background: #f1f2f4;
     color: #363b43;
-    font-size: 8px;
+    font-size: 9.2px;
     font-weight: 700;
   }
 
   .club-detail-header__eyebrow { display: none; }
-  .club-detail-header h1 { color: #202329; font-size: 16px; }
+  .club-detail-header h1 { color: #202329; font-size: 18.4px; }
   .club-detail-header h1 span { display: none; }
   .club-detail-header p { display: none; }
 
@@ -1047,7 +1047,7 @@
     border-radius: 3px;
     padding: 2px 4px;
     color: #545a63;
-    font-size: 7px;
+    font-size: 8.05px;
   }
 
   .club-detail-market-link {
@@ -1056,7 +1056,7 @@
     background: #1761ef;
     padding: 0 9px;
     color: #fff;
-    font-size: 9px;
+    font-size: 10.35px;
   }
 
   .club-summary {
@@ -1076,12 +1076,12 @@
   }
 
   .club-summary__item + .club-summary__item { border-left: 1px solid #edf0f3; }
-  .club-summary__item > span { display: flex; align-items: center; justify-content: space-between; grid-column: 1 / -1; color: #4f5660; font-size: 8px; }
+  .club-summary__item > span { display: flex; align-items: center; justify-content: space-between; grid-column: 1 / -1; color: #4f5660; font-size: 9.2px; }
   .club-summary__item > span svg { color: #6e7680; }
-  .club-summary__item > strong { color: #171a1e; font-size: 15px; line-height: 1; }
-  .club-summary__item > strong small { color: #868c95; font-size: 7px; font-weight: 400; }
-  .club-summary__item > small { align-self: end; color: #8b9199; font-size: 7px; }
-  .club-summary__item > em { grid-column: 1 / -1; color: #8b9199; font-size: 7px; font-style: normal; }
+  .club-summary__item > strong { color: #171a1e; font-size: 17.25px; line-height: 1; }
+  .club-summary__item > strong small { color: #868c95; font-size: 8.05px; font-weight: 400; }
+  .club-summary__item > small { align-self: end; color: #8b9199; font-size: 8.05px; }
+  .club-summary__item > em { grid-column: 1 / -1; color: #8b9199; font-size: 8.05px; font-style: normal; }
   .club-summary__item--net-worth > strong { color: #171a1e; }
   .club-summary__item--squad-count > strong { grid-column: 1 / -1; }
 
@@ -1089,9 +1089,9 @@
     gap: 13px;
     margin-bottom: 11px;
   }
-  .club-tab { min-height: 25px; gap: 4px; color: #737a84; font-size: 8px; }
+  .club-tab { min-height: 25px; gap: 4px; color: #737a84; font-size: 9.2px; }
   .club-tab--active::after { height: 1px; }
-  .club-tab > span:not(.club-tab__lineup-icon) { min-width: 13px; height: 13px; font-size: 7px; }
+  .club-tab > span:not(.club-tab__lineup-icon) { min-width: 13px; height: 13px; font-size: 8.05px; }
 
   .club-squad-panel {
     border-color: #e1e4e8;
@@ -1101,17 +1101,17 @@
     min-height: 39px;
     padding: 8px 10px;
   }
-  .club-squad-panel__header h2 { margin: 0 0 2px; color: #292d33; font-size: 10px; }
-  .club-squad-panel__header p { color: #848b94; font-size: 7px; }
+  .club-squad-panel__header h2 { margin: 0 0 2px; color: #292d33; font-size: 11.5px; }
+  .club-squad-panel__header p { color: #848b94; font-size: 8.05px; }
   .club-squad-table { min-width: 870px; }
-  .club-squad-table th { height: 25px; padding: 0 8px; font-size: 7px; }
-  .club-squad-table td { height: 36px; padding: 0 8px; font-size: 8px; }
+  .club-squad-table th { height: 25px; padding: 0 8px; font-size: 8.05px; }
+  .club-squad-table td { height: 36px; padding: 0 8px; font-size: 9.2px; }
   .club-squad-table th:first-child, .club-squad-table td:first-child { padding-left: 10px; }
-  .club-squad-table td:first-child strong { font-size: 8px; }
-  .club-squad-table td:first-child small { font-size: 7px; }
-  .club-position { min-width: 25px; min-height: 15px; font-size: 7px; }
-  .club-condition { font-size: 6px; }
-  .club-sell-button { min-height: 20px; padding: 0 7px; font-size: 7px; }
+  .club-squad-table td:first-child strong { font-size: 9.2px; }
+  .club-squad-table td:first-child small { font-size: 8.05px; }
+  .club-position { min-width: 25px; min-height: 15px; font-size: 8.05px; }
+  .club-condition { font-size: 6.9px; }
+  .club-sell-button { min-height: 20px; padding: 0 7px; font-size: 8.05px; }
 
   .club-squad-empty {
     display: grid;
@@ -1152,8 +1152,8 @@
     background: #f2f3f5;
     color: #8b929b;
   }
-  .club-squad-empty strong { margin-top: 7px; color: #30343a; font-size: 8px; }
-  .club-squad-empty p { margin: 6px 0 8px; color: #7e858e; font-size: 7px; line-height: 1.45; }
+  .club-squad-empty strong { margin-top: 7px; color: #30343a; font-size: 9.2px; }
+  .club-squad-empty p { margin: 6px 0 8px; color: #7e858e; font-size: 8.05px; line-height: 1.45; }
   .club-squad-empty a {
     display: inline-flex;
     align-items: center;
@@ -1162,7 +1162,7 @@
     border-radius: 4px;
     padding: 4px 7px;
     color: #343a42;
-    font-size: 7px;
+    font-size: 8.05px;
     text-decoration: none;
   }
   .club-squad-empty a svg { width: 10px; height: 10px; }
@@ -1182,11 +1182,11 @@
     padding: 9px 10px;
     box-shadow: 0 3px 12px rgb(28 35 44 / 18%);
   }
-  .club-created-toast__check { color: #21a36a; font-size: 11px; }
+  .club-created-toast__check { color: #21a36a; font-size: 12.65px; }
   .club-created-toast div { display: grid; gap: 2px; }
-  .club-created-toast strong { color: #262b31; font-size: 8px; font-weight: 650; }
-  .club-created-toast div span { color: #858b94; font-size: 7px; line-height: 1.35; }
-  .club-created-toast > a { margin-left: auto; color: #7b828b; font-size: 12px; text-decoration: none; }
+  .club-created-toast strong { color: #262b31; font-size: 9.2px; font-weight: 650; }
+  .club-created-toast div span { color: #858b94; font-size: 8.05px; line-height: 1.35; }
+  .club-created-toast > a { margin-left: auto; color: #7b828b; font-size: 13.8px; text-decoration: none; }
 
   @media (max-width: 600px) {
     .club-detail-page { padding: 15px 10px 24px; }

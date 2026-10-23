@@ -13,7 +13,7 @@
   align-items: center;
   gap: 6px;
   color: #718091;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 560;
   text-decoration: none;
   white-space: nowrap;
@@ -28,7 +28,7 @@
   background: #f0f3f6;
   padding: 0 4px;
   color: #798696;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .club-tab:hover {
@@ -57,7 +57,7 @@
 
 .club-tab__lineup-icon {
   color: currentColor;
-  font-size: 12px;
+  font-size: 13.8px;
   line-height: 1;
 }
 

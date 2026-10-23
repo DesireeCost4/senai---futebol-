@@ -11,7 +11,7 @@
   display: inline-flex;
   margin-bottom: 15px;
   color: #687688;
-  font-size: 10px;
+  font-size: 11.5px;
   text-decoration: none;
 }
 
@@ -40,7 +40,7 @@
 .match-history-header div div {
   margin-bottom: 3px;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -49,13 +49,13 @@
 .match-history-header h1 {
   margin: 0;
   color: #263443;
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .match-history-header p {
   margin: 4px 0 0;
   color: #7d8998;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .match-history-panel {
@@ -79,14 +79,14 @@
 .match-history-panel__header h2 {
   margin: 0 0 4px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
   font-weight: 650;
 }
 
 .match-history-panel__header p {
   margin: 0;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-history-filter {
@@ -98,7 +98,7 @@
   border-radius: 5px;
   padding: 0 9px;
   color: #8591a0;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-history-filter select {
@@ -107,7 +107,7 @@
   outline: 0;
   background: transparent;
   color: #4b5969;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-history-table-wrap {
@@ -130,7 +130,7 @@
   background: #fbfcfd;
   padding: 0 13px;
   color: #83909e;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -140,7 +140,7 @@
   border-bottom: 1px solid #edf0f3;
   padding: 0 13px;
   color: #586576;
-  font-size: 10px;
+  font-size: 11.5px;
   white-space: nowrap;
 }
 
@@ -154,7 +154,7 @@
 
 .match-score {
   color: #344253;
-  font-size: 11px;
+  font-size: 12.65px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -169,7 +169,7 @@
   padding: 0 8px;
   color: #536274;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   cursor: pointer;
 }
 
@@ -188,7 +188,7 @@
   background: #fff6f6;
   padding: 9px 14px;
   color: #9d4149;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .match-history-error--duel {
@@ -210,7 +210,7 @@
   place-items: center;
   background: rgb(18 27 39 / 18%);
   color: #344253;
-  font-size: 11px;
+  font-size: 12.65px;
 }
 
 @media (max-width: 600px) {

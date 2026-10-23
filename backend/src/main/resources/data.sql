@@ -24,13 +24,13 @@ INSERT INTO clubes (id, nome, sigla, caixa, formacao) VALUES (3, 'Santa Cruz Fut
 
 -- Elenco do Sport (Clube ID 1) - 1 GOL, 3 ZAG, 1 ATA
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (1, 'Goleiro Sport', 'GOL', 70, 25, 500.00, 'APTO', 1, 65, 30, 60, 40, 85, 75, 80);
+VALUES (1, 'Goleiro Sport', 'GOL', 70, 25, 500.00, 'APTO', 1, 65, 30, 60, 40, 85, 75, 85);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (2, 'Zagueiro Sport 1', 'ZAG', 68, 26, 400.00, 'APTO', 1, 70, 40, 65, 50, 82, 80, 78);
+VALUES (2, 'Zagueiro Sport 1', 'ZAG', 68, 26, 400.00, 'APTO', 1, 70, 40, 65, 50, 82, 80, 82);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (3, 'Zagueiro Sport 2', 'ZAG', 65, 27, 400.00, 'APTO', 1, 68, 38, 62, 48, 80, 82, 75);
+VALUES (3, 'Zagueiro Sport 2', 'ZAG', 65, 27, 400.00, 'APTO', 1, 68, 38, 62, 48, 80, 82, 82);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
 VALUES (4, 'Zagueiro Sport 3', 'ZAG', 75, 24, 450.00, 'APTO', 1, 78, 50, 70, 65, 75, 76, 82);
@@ -41,13 +41,13 @@ VALUES (5, 'Atacante Sport', 'ATA', 80, 22, 800.00, 'APTO', 1, 85, 85, 72, 80, 4
 
 -- Elenco do Náutico (Clube ID 2) - 1 GOL, 3 ZAG, 1 ATA
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (6, 'Goleiro Náutico', 'GOL', 72, 28, 500.00, 'APTO', 2, 66, 32, 58, 42, 83, 74, 79);
+VALUES (6, 'Goleiro Náutico', 'GOL', 72, 28, 500.00, 'APTO', 2, 66, 32, 58, 42, 83, 74, 83);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (7, 'Zagueiro Náutico 1', 'ZAG', 67, 25, 400.00, 'APTO', 2, 69, 42, 63, 52, 79, 81, 77);
+VALUES (7, 'Zagueiro Náutico 1', 'ZAG', 67, 25, 400.00, 'APTO', 2, 69, 42, 63, 52, 79, 81, 81);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (8, 'Zagueiro Náutico 2', 'ZAG', 66, 29, 400.00, 'APTO', 2, 67, 39, 60, 49, 78, 83, 74);
+VALUES (8, 'Zagueiro Náutico 2', 'ZAG', 66, 29, 400.00, 'APTO', 2, 67, 39, 60, 49, 78, 83, 83);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
 VALUES (9, 'Zagueiro Náutico 3', 'ZAG', 74, 23, 450.00, 'APTO', 2, 76, 48, 68, 63, 74, 78, 84);
@@ -58,13 +58,13 @@ VALUES (10, 'Atacante Náutico', 'ATA', 82, 24, 800.00, 'APTO', 2, 86, 83, 74, 8
 
 -- Elenco do Santa Cruz (Clube ID 3)
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (11, 'Goleiro Santa', 'GOL', 69, 26, 450.00, 'APTO', 3, 64, 31, 57, 41, 81, 72, 76);
+VALUES (11, 'Goleiro Santa', 'GOL', 69, 26, 450.00, 'APTO', 3, 64, 31, 57, 41, 81, 72, 81);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (12, 'Zagueiro Santa', 'ZAG', 65, 27, 380.00, 'APTO', 3, 66, 37, 59, 47, 77, 79, 73);
+VALUES (12, 'Zagueiro Santa', 'ZAG', 65, 27, 380.00, 'APTO', 3, 66, 37, 59, 47, 77, 79, 79);
 
 INSERT INTO jogadores (id, nome, posicao, agilidade, idade, valor_base, condicao, clube_id, velocidade, finalizacao, passe, drible, defesa, fisico, potencial)
-VALUES (13, 'Atacante Santa', 'ATA', 78, 23, 750.00, 'APTO', 3, 83, 80, 68, 77, 38, 73, 81);
+VALUES (13, 'Atacante Santa', 'ATA', 78, 23, 750.00, 'APTO', 3, 83, 80, 68, 77, 38, 73, 83);
 
 
 -- ==========================================

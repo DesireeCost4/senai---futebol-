@@ -11,7 +11,7 @@
   display: inline-flex;
   margin-bottom: 15px;
   color: #687688;
-  font-size: 10px;
+  font-size: 11.5px;
   text-decoration: none;
 }
 
@@ -48,7 +48,7 @@
 .matches-page__header div div {
   margin-bottom: 3px;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -57,13 +57,13 @@
 .matches-page__header h1 {
   margin: 0;
   color: #263443;
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .matches-page__header p {
   margin: 4px 0 0;
   color: #7d8998;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .match-create-panel {
@@ -96,7 +96,7 @@
   position: absolute;
   margin-top: -64px;
   color: #586576;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .latest-match-card__teams {
@@ -112,13 +112,13 @@
   display: grid;
   gap: 2px;
   color: #344253;
-  font-size: 10px;
+  font-size: 11.5px;
   text-align: center;
 }
 
 .latest-match-card__teams strong small {
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
   font-weight: 400;
 }
 
@@ -130,7 +130,7 @@
   border-radius: 7px;
   background: #f1f2f4;
   color: #596677;
-  font-size: 7px;
+  font-size: 8.05px;
   font-weight: 700;
 }
 
@@ -139,7 +139,7 @@
   background: #f5f6f8;
   padding: 7px 10px;
   color: #263443;
-  font-size: 13px;
+  font-size: 14.95px;
 }
 
 .match-history-inline {
@@ -158,14 +158,14 @@
 .match-history-inline h2 {
   margin: 0 0 3px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
 }
 
 .match-history-inline header p,
 .matches-footnote {
   margin: 0;
   color: #8994a2;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .match-history-inline > header select {
@@ -175,7 +175,7 @@
   background: #fff;
   padding: 0 8px;
   color: #536274;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .match-history-inline__row {
@@ -187,7 +187,7 @@
   border-bottom: 1px solid #edf0f3;
   padding: 0 11px;
   color: #586576;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .match-history-inline__row > b {
@@ -207,7 +207,7 @@
   background: transparent;
   color: #344253;
   font: inherit;
-  font-size: 8px;
+  font-size: 9.2px;
   cursor: pointer;
 }
 
@@ -223,7 +223,7 @@
   background: #fafbfd;
   padding: 9px;
   color: #748192;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.4;
 }
 
@@ -274,13 +274,13 @@
 .match-create-panel > header h2 {
   margin: 0 0 4px;
   color: #344253;
-  font-size: 12px;
+  font-size: 13.8px;
 }
 
 .match-create-panel > header p {
   margin: 0;
   color: #8994a2;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-selectors {
@@ -298,7 +298,7 @@
 
 .match-selectors label > span {
   color: #465465;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 620;
 }
 
@@ -314,7 +314,7 @@
   background: #fff;
   padding: 0 9px;
   color: #344253;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .match-selectors select[aria-invalid="true"] {
@@ -323,13 +323,13 @@
 
 .match-field-error {
   color: #a13e47;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-versus {
   padding-bottom: 9px;
   color: #9aa4b1;
-  font-size: 16px;
+  font-size: 18.4px;
   text-align: center;
 }
 
@@ -350,7 +350,7 @@
   gap: 6px;
   margin: 0;
   color: #83909e;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .play-match-button {
@@ -366,7 +366,7 @@
   padding: 0 11px;
   color: #fff;
   font: inherit;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 650;
   cursor: pointer;
 }
@@ -390,7 +390,7 @@
   background: #fff6f6;
   padding: 10px 14px;
   color: #9d4149;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 @keyframes match-spin {

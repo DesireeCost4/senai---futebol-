@@ -49,20 +49,20 @@
 .transaction-result h2 {
   margin: 12px 0 3px;
   color: #2c3948;
-  font-size: 14px;
+  font-size: 16.1px;
 }
 
 .transaction-result__player {
   margin: 0;
   color: #7b8796;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.4;
 }
 
 .transaction-result__description {
   margin: 2px 0 0;
   color: #7b8796;
-  font-size: 8px;
+  font-size: 9.2px;
   line-height: 1.4;
 }
 
@@ -86,19 +86,19 @@
   display: grid;
   gap: 2px;
   color: #748192;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .transaction-result__fields dt small {
   color: #9aa4b0;
-  font-size: 7px;
+  font-size: 8.05px;
   font-weight: 400;
 }
 
 .transaction-result__fields dd {
   margin: 0;
   color: #384657;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 620;
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -131,7 +131,7 @@
   display: inline-flex;
   border-radius: 5px;
   padding: 3px 6px;
-  font-size: 7px;
+  font-size: 8.05px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -160,7 +160,7 @@
   padding: 0 11px;
   color: #596677;
   font: inherit;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 620;
   cursor: pointer;
 }
@@ -172,7 +172,7 @@
   background: #2875d1;
   color: #fff;
   font: inherit;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 650;
   cursor: pointer;
 }

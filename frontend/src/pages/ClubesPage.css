@@ -29,14 +29,14 @@
 .clubs-page__title-row h1 {
   margin: 0 0 2px;
   color: #17191d;
-  font-size: 17px;
+  font-size: 19.55px;
   font-weight: 700;
 }
 
 .clubs-page__title-row p {
   margin: 0;
   color: #70747d;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .clubs-create-button {
@@ -50,7 +50,7 @@
   background: #1761ef;
   padding: 0 10px;
   color: #fff;
-  font-size: 10px;
+  font-size: 11.5px;
   cursor: pointer;
 }
 
@@ -72,13 +72,13 @@
 }
 
 .clubs-count { display: flex; align-items: center; gap: 8px; }
-.clubs-count strong { color: #25282d; font-size: 10px; }
+.clubs-count strong { color: #25282d; font-size: 11.5px; }
 .clubs-count span {
   border-radius: 4px;
   background: #f0f1f3;
   padding: 2px 5px;
   color: #4d5158;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .clubs-toolbar__actions { display: flex; align-items: center; gap: 7px; }
@@ -92,7 +92,7 @@
   border-radius: 5px;
   padding: 0 7px;
   color: #61666f;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .clubs-sort svg { color: #777d87; }
@@ -103,7 +103,7 @@
   appearance: none;
   background: transparent;
   color: #25282d;
-  font-size: 9px;
+  font-size: 10.35px;
   cursor: pointer;
 }
 
@@ -116,7 +116,7 @@
   background: #fafafa;
   padding: 0 10px;
   color: #747981;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 500;
   text-align: left;
 }
@@ -125,7 +125,7 @@
   border-bottom: 1px solid #eceef0;
   padding: 0 10px;
   color: #292c31;
-  font-size: 10px;
+  font-size: 11.5px;
   white-space: nowrap;
 }
 .clubs-table tbody tr:hover { background: #fafcff; }
@@ -140,14 +140,14 @@
   border-radius: 6px;
   background: #f5f6f7;
   color: #363a40;
-  font-size: 8px;
+  font-size: 9.2px;
   font-weight: 700;
 }
 .clubs-table__name {
   display: inline-block;
   margin-left: 7px;
   color: #25282d;
-  font-size: 10px;
+  font-size: 11.5px;
   text-decoration: none;
 }
 .clubs-table__name:hover { color: #1761ef; }
@@ -159,14 +159,14 @@
   border: 1px solid #e2e4e7;
   border-radius: 4px;
   color: #52575e;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 .clubs-table__money { text-align: right !important; font-variant-numeric: tabular-nums; }
 .clubs-table__net-worth { font-weight: 700; }
 .clubs-table__action { text-align: right; }
-.clubs-table__action a { color: #22262b; font-size: 9px; text-decoration: none; }
-.clubs-table__action span { margin-left: 5px; font-size: 16px; vertical-align: -1px; }
-.clubs-page__hint { margin: 14px 0 0; color: #7d828a; font-size: 8px; }
+.clubs-table__action a { color: #22262b; font-size: 10.35px; text-decoration: none; }
+.clubs-table__action span { margin-left: 5px; font-size: 18.4px; vertical-align: -1px; }
+.clubs-page__hint { margin: 14px 0 0; color: #7d828a; font-size: 9.2px; }
 
 .clubs-empty-state {
   display: grid;
@@ -185,8 +185,8 @@
   background: #f2f3f5;
   color: #9aa1aa;
 }
-.clubs-empty-state strong { margin-top: 7px; color: #34383e; font-size: 9px; }
-.clubs-empty-state p { margin: 5px 0 8px; color: #7d838b; font-size: 7px; line-height: 1.45; }
+.clubs-empty-state strong { margin-top: 7px; color: #34383e; font-size: 10.35px; }
+.clubs-empty-state p { margin: 5px 0 8px; color: #7d838b; font-size: 8.05px; line-height: 1.45; }
 .clubs-empty-state button {
   display: inline-flex;
   align-items: center;
@@ -197,14 +197,14 @@
   background: #fff;
   padding: 0 8px;
   color: #343a42;
-  font-size: 8px;
+  font-size: 9.2px;
   cursor: pointer;
 }
 
 .clubs-toast {
   position: fixed; z-index: 10; right: 22px; bottom: 20px; display: flex;
   align-items: center; gap: 9px; border: 1px solid #cde9dc; border-radius: 6px;
-  background: #f0faf5; padding: 10px 12px; color: #2d7b59; font-size: 11px;
+  background: #f0faf5; padding: 10px 12px; color: #2d7b59; font-size: 12.65px;
 }
 .clubs-toast > button { border: 0; background: transparent; color: inherit; cursor: pointer; }
 
@@ -217,32 +217,32 @@
   background: #fff; padding: 16px; box-shadow: 0 12px 30px rgb(0 0 0 / 18%);
 }
 .clubs-modal__header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-.clubs-modal__header h2 { margin: 0; color: #1d2024; font-size: 13px; }
-.clubs-modal__header p { margin: 3px 0 0; color: #858a92; font-size: 9px; }
+.clubs-modal__header h2 { margin: 0; color: #1d2024; font-size: 14.95px; }
+.clubs-modal__header p { margin: 3px 0 0; color: #858a92; font-size: 10.35px; }
 .clubs-modal__close { border: 0; background: transparent; color: #25282d; cursor: pointer; }
 .clubs-field { display: grid; gap: 4px; margin-top: 10px; }
-.clubs-field > span { color: #272a2e; font-size: 9px; }
+.clubs-field > span { color: #272a2e; font-size: 10.35px; }
 .clubs-field input {
   width: 100%; height: 24px; border: 1px solid #bfc3ca; border-radius: 5px;
-  padding: 0 8px; color: #272a2e; font-size: 10px;
+  padding: 0 8px; color: #272a2e; font-size: 11.5px;
 }
 .clubs-field input[aria-invalid="true"] { border-color: #ff4d5b; }
-.clubs-field small { color: #858a92; font-size: 8px; line-height: 1.3; }
+.clubs-field small { color: #858a92; font-size: 9.2px; line-height: 1.3; }
 .clubs-field__error { color: #e53443 !important; }
 .clubs-checkbox-field {
   display: flex; align-items: center; gap: 6px; margin: 10px 0 0; border: 1px solid #e5e6e8;
-  border-radius: 5px; background: #fbfbfc; padding: 7px; color: #666b73; font-size: 8px;
+  border-radius: 5px; background: #fbfbfc; padding: 7px; color: #666b73; font-size: 9.2px;
 }
 .clubs-checkbox-field input { margin: 0; }
 .clubs-form__error {
   display: grid; gap: 2px; border: 1px solid #ffb7bd; border-radius: 6px;
-  background: #fff1f2; padding: 8px; color: #dc3545; font-size: 9px;
+  background: #fff1f2; padding: 8px; color: #dc3545; font-size: 10.35px;
 }
 .clubs-form__error strong { display: flex; align-items: center; gap: 5px; font-weight: 650; }
 .clubs-modal__actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 14px; }
 .clubs-cancel-button, .clubs-submit-button {
   min-height: 25px; border: 1px solid #dfe1e5; border-radius: 5px; background: #fff;
-  padding: 0 9px; color: #26292e; font-size: 9px; cursor: pointer;
+  padding: 0 9px; color: #26292e; font-size: 10.35px; cursor: pointer;
 }
 .clubs-submit-button { border-color: #1761ef; background: #1761ef; color: #fff; }
 .clubs-submit-button:disabled { opacity: .65; cursor: wait; }

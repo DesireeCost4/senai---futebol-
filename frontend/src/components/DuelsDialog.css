@@ -39,13 +39,13 @@
 .duels-dialog__eyebrow {
   margin: 0 36px 6px 0;
   color: #8793a1;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .duels-dialog h2 {
   margin: 0;
   color: #344253;
-  font-size: 16px;
+  font-size: 18.4px;
   line-height: 1.45;
 }
 
@@ -58,7 +58,7 @@
 .duels-dialog__formations {
   margin: 5px 0 16px;
   color: #8b96a3;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .match-field-panel {
@@ -80,12 +80,12 @@
 .match-field-panel__header h3 {
   margin: 0;
   color: #344253;
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .match-field-panel__header span {
   color: #8994a2;
-  font-size: 7px;
+  font-size: 8.05px;
   text-align: right;
 }
 
@@ -171,7 +171,7 @@
   justify-items: center;
   gap: 2px;
   color: #fff;
-  font-size: 7px;
+  font-size: 8.05px;
   text-align: center;
   transform: translate(-50%, -50%);
 }
@@ -179,7 +179,7 @@
 .match-field__player strong {
   max-width: 55px;
   overflow: hidden;
-  font-size: 7px;
+  font-size: 8.05px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -187,7 +187,7 @@
 
 .match-field__player small {
   color: rgb(255 255 255 / 74%);
-  font-size: 6px;
+  font-size: 6.9px;
 }
 
 .match-field__player-avatar {
@@ -199,7 +199,7 @@
   border-radius: 50%;
   background: #286dbe;
   box-shadow: 0 2px 5px rgb(0 0 0 / 25%);
-  font-size: 6px;
+  font-size: 6.9px;
   font-weight: 700;
 }
 
@@ -232,7 +232,7 @@
   top: 50%;
   left: 50%;
   color: rgb(255 255 255 / 78%);
-  font-size: 9px;
+  font-size: 10.35px;
   transform: translate(-50%, -50%);
   white-space: nowrap;
 }
@@ -265,7 +265,7 @@
   border-radius: 50%;
   background: #eef2f6;
   color: #677486;
-  font-size: 9px;
+  font-size: 10.35px;
   font-weight: 650;
 }
 
@@ -278,7 +278,7 @@
 .duel__player strong {
   overflow: hidden;
   color: #364454;
-  font-size: 10px;
+  font-size: 11.5px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -286,31 +286,31 @@
 .duel__player span,
 .duel__player small {
   color: #84909e;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .duel__player small b {
   margin-left: 3px;
   color: #4c5b6c;
-  font-size: 9px;
+  font-size: 10.35px;
 }
 
 .duel__versus {
   color: #9ba5b0;
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 700;
   text-align: center;
 }
 
 .duel--goal .duel__versus {
   color: #31835c;
-  font-size: 8px;
+  font-size: 9.2px;
 }
 
 .duels-empty {
   margin: 20px 0 4px;
   color: #84909e;
-  font-size: 10px;
+  font-size: 11.5px;
   text-align: center;
 }
 
@@ -326,6 +326,6 @@
   }
 
   .duel__player strong {
-    font-size: 9px;
+    font-size: 10.35px;
   }
 }

@@ -253,6 +253,7 @@ public class LigaService {
         return resp;
     }
 
+    @Transactional(readOnly = true)
     public List<PartidaResponseDTO> listarPartidasDto(Integer clubId) {
         List<PartidaModel> partidas = partidaRepository.findByClubeIdOrAll(clubId != null ? clubId.longValue() : null);
 
@@ -280,6 +281,7 @@ public class LigaService {
         return lista;
     }
 
+    @Transactional(readOnly = true)
     public PartidaResponseDTO buscarPartidaDto(Integer id) {
         PartidaModel p = partidaRepository.findById(id.longValue())
                 .orElseThrow(() -> new RecursoNotFoundException("Partida não encontrada."));
